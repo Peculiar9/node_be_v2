@@ -31,9 +31,9 @@ export class DIContainer {
     private static resolveDependencies(): void {
         const container = DIContainer.containerInstance;
     
-        console.log({container});
+        console.log({container})
         // Infrastructure layer
-        container.bind<ConnectionPoolManager>(TYPES.ConnectionPoolManager).to(ConnectionPoolManager).inSingletonScope();
+        // container.bind<ConnectionPoolManager>(TYPES.ConnectionPoolManager).to(ConnectionPoolManager).inSingletonScope();
         
         // TransactionManager binding
         container.bind<TransactionManager>(TYPES.TransactionManager)

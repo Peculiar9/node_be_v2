@@ -9,6 +9,7 @@ import { DIContainer } from './Core/DIContainer';
 
 import './Controllers/ControllerShave';
 import './Controllers/auth/AccountController';
+import { Container } from 'inversify';
 
 class App {
     public app: any;
@@ -20,12 +21,13 @@ class App {
 
     private async initialize() {
         try {
-            // Initialize database connection
-            await DatabaseService.initialize();
-
+            
             // Get the DI container instance
             const container = DIContainer.getInstance();
             
+            // Initialize database connection
+            await DatabaseService.initialize(container);
+
             // Setup express server with inversify
             const server = new InversifyExpressServer(container);
             
@@ -40,9 +42,8 @@ class App {
 
             this.app = server.build();
             this.initErrorHandling();
-
             // Graceful shutdown
-            this.setupGracefulShutdown();
+            this.setupGracefulShutdown(container);
         } catch (error: any) {
             console.error("App initialization error:", error.message);
             process.exit(1);
@@ -59,10 +60,10 @@ class App {
         });
     }
 
-    private setupGracefulShutdown() {
+    private setupGracefulShutdown(container: Container) {
         const shutdown = async () => {
             console.log('Shutting down gracefully...');
-            await DatabaseService.shutdown();
+            await DatabaseService.shutdown(container);
             process.exit(0);
         };
 

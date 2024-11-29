@@ -10,11 +10,13 @@ export class DatabaseService {
     static async initialize(): Promise<void> {
         try {
             const config = getDatabaseConfig();
+            console.log("Connection Pool manager before initialization: ", this.poolManager);
             console.log({config});
             this.poolManager = ConnectionPoolManager.getInstance({
                 ...config,
                 connectionString: this.buildConnectionString(config) as string
             });
+            console.log("Connection Pool manager after initialization: ", this.poolManager);
 
             // Test connection
             const client = await this.poolManager.getConnection();
