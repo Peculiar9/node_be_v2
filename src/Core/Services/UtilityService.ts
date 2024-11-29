@@ -30,4 +30,10 @@ export class UtilityService {
     static async verifyTokenHash(token: string, hash: string): Promise<boolean> {
         return bcrypt.compare(token, hash);
     }
+    
+    static dateToUnix = (dateTime: any) => {
+        const dateObject = new Date(dateTime);
+        const unixTimeStamp = Math.floor(dateObject.getTime() / 1000);
+        return unixTimeStamp;
+      }
 }
