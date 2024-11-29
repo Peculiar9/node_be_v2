@@ -1,27 +1,20 @@
-import { injectable } from 'inversify';
+import { Container, injectable } from 'inversify';
 import { ConnectionPoolManager } from '../Repository/SQL/Abstractions/ConnectionPoolManager';
 import { getDatabaseConfig } from './DatabaseConfig';
 import { DatabaseError } from '../../Core/Application/Error/AppError';
+import { TYPES } from '../../Core/Types/Constants';
 
 @injectable()
 export class DatabaseService {
-    private static poolManager: ConnectionPoolManager;
 
-    static async initialize(): Promise<void> {
+    static async initialize(container: Container): Promise<void> {
         try {
-            const config = getDatabaseConfig();
-            console.log("Connection Pool manager before initialization: ", this.poolManager);
-            console.log({config});
-            this.poolManager = ConnectionPoolManager.getInstance({
-                ...config,
-                connectionString: this.buildConnectionString(config) as string
-            });
-            console.log("Connection Pool manager after initialization: ", this.poolManager);
+            const poolManager = container.get<ConnectionPoolManager>(TYPES.ConnectionPoolManager);
 
             // Test connection
-            const client = await this.poolManager.getConnection();
+            const client = await poolManager.getConnection();
             await client.query('SELECT NOW()');
-            await this.poolManager.releaseConnection(client);
+            await poolManager.releaseConnection(client);
             
             console.log('Database connection established successfully');
         } catch (error: any) {
@@ -29,21 +22,13 @@ export class DatabaseService {
         }
     }
 
-    static async shutdown(): Promise<void> {
-        if (this.poolManager) {
-            await this.poolManager.dispose();
-            console.log('Database connections closed');
+    static async shutdown(container: Container): Promise<void> {
+        try {
+          const poolManager = container.get<ConnectionPoolManager>(TYPES.ConnectionPoolManager);
+          await poolManager.dispose();
+          console.log('Database connections closed');
+        } catch (error: any) {
+          console.error('Error during shutdown:', error);
         }
-    }
-
-    private static buildConnectionString(config: any): string {
-        const { user, password, host, port, database, ssl } = config;
-        let connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
-        console.log({connectionString});
-        if (ssl) {
-            connectionString += '?sslmode=require';
-        }
-        
-        return connectionString;
-    }
+      }
 }
