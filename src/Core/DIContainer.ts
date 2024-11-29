@@ -8,7 +8,8 @@ import { AccountUseCase } from './Application/UseCases/AccountUseCase';
 import { IAccountUseCase } from './Application/Interface/UseCases/IAccountUseCase';
 import { IAuthService } from './Application/Interface/Services/IAuthService';
 import { AuthMiddleware } from '../Middleware/AuthMiddleware';
-
+import { getDatabaseConfig } from '../Infrastructure/Database/DatabaseConfig';
+import { PoolOptions } from 'pg';
 /**
  * Container for dependency injection configuration
  * Uses interface bindings for better decoupling and testability
@@ -30,29 +31,55 @@ export class DIContainer {
 
     private static resolveDependencies(): void {
         const container = DIContainer.containerInstance;
-    
-        console.log({container})
+
+
+        // Load database config
+        const config = getDatabaseConfig();
+        const connectionString = this.buildConnectionString(config);
+        console.log({config})
+        // Create PoolOptions
+        const poolOptions: PoolOptions = {
+            ...config,
+            connectionString: connectionString as string,
+        } as any;
+
+        console.log({ container })
+
         // Infrastructure layer
-        // container.bind<ConnectionPoolManager>(TYPES.ConnectionPoolManager).to(ConnectionPoolManager).inSingletonScope();
-        
+        //this singleton instance is scoped to the request and is used through out the app lifecycle
+        container.bind<ConnectionPoolManager>(TYPES.ConnectionPoolManager)
+            .toDynamicValue(() => new ConnectionPoolManager(poolOptions as any))
+            .inSingletonScope();
+
         // TransactionManager binding
         container.bind<TransactionManager>(TYPES.TransactionManager)
             .toDynamicValue((context) => {
                 const poolManager = context.container.get<ConnectionPoolManager>(TYPES.ConnectionPoolManager);
                 return new TransactionManager(poolManager);
             }).inRequestScope();
-        
+
         // UserRepository binding with TYPES symbol
         container.bind<UserRepository>(TYPES.UserRepository).to(UserRepository).inRequestScope();
-    
+
         // Service layer binding with TYPES symbol
         container.bind<IAuthService>(TYPES.AuthService).to(AuthService).inRequestScope();
-        
+
         // Middleware layer binding
         container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware).inRequestScope();
-        
+
         // Use case layer binding
         container.bind<IAccountUseCase>(TYPES.AccountUseCase).to(AccountUseCase).inRequestScope();
     }
-    
+
+    private static buildConnectionString(config: any): string {
+        const { user, password, host, port, database, ssl } = config;
+        let connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
+        console.log({ connectionString });
+        if (ssl) {
+            connectionString += '?sslmode=require';
+        }
+
+        return connectionString;
+    }
+
 }
