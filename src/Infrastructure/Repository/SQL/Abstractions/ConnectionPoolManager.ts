@@ -24,7 +24,6 @@ interface ConnectionOptions {
 
 @injectable()
 export class ConnectionPoolManager {
-  private static instance: ConnectionPoolManager;
   private pool: Pool;
   private activeConnections: number = 0;
   private readonly eventEmitter: EventEmitter;
@@ -33,13 +32,6 @@ export class ConnectionPoolManager {
     this.pool = new Pool(options);
     this.eventEmitter = new EventEmitter();
     this.setupPoolEvents();
-  }
-
-  public static getInstance(options: PoolOptions): ConnectionPoolManager {
-    if (!ConnectionPoolManager.instance) {
-      ConnectionPoolManager.instance = new ConnectionPoolManager(options);
-    }
-    return ConnectionPoolManager.instance;
   }
 
   private setupPoolEvents(): void {
