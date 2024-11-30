@@ -22,7 +22,6 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     constructor(transactionManager: TransactionManager, tableName: TableNames) {
         this.transactionManager = transactionManager;
         this.tableName = tableName;
-        console.log({tableName})
     }
 
     /**

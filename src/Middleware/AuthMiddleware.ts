@@ -7,11 +7,12 @@ import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
 import { UserType } from '../Core/Application/Enums/UserType';
 import { UserRepository } from '../Infrastructure/Repository/SQL/users/UserRepository';
 import { DIContainer } from '../Core/DIContainer';
+import { IAuthService } from '../Core/Application/Interface/Services/IAuthService';
 
 @injectable()
 export class AuthMiddleware {
   constructor(
-    @inject(TYPES.AuthService) private authService: AuthService,
+    @inject(TYPES.AuthService) private authService: IAuthService,
     @inject(TYPES.UserRepository) private userRepository: UserRepository
   ) {}
 

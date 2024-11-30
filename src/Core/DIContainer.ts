@@ -26,6 +26,7 @@ export class DIContainer {
             DIContainer.containerInstance = new Container();
             DIContainer.resolveDependencies();
         }
+        console.log("Got here!!! -> ", 1);
         return DIContainer.containerInstance;
     }
 
@@ -36,14 +37,11 @@ export class DIContainer {
         // Load database config
         const config = getDatabaseConfig();
         const connectionString = this.buildConnectionString(config);
-        console.log({config})
         // Create PoolOptions
         const poolOptions: PoolOptions = {
             ...config,
             connectionString: connectionString as string,
         } as any;
-
-        console.log({ container })
 
         // Infrastructure layer
         //this singleton instance is scoped to the request and is used through out the app lifecycle
@@ -69,12 +67,12 @@ export class DIContainer {
 
         // Use case layer binding
         container.bind<IAccountUseCase>(TYPES.AccountUseCase).to(AccountUseCase).inRequestScope();
+        console.log("All dependencies bound!!")
     }
 
     private static buildConnectionString(config: any): string {
         const { user, password, host, port, database, ssl } = config;
         let connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
-        console.log({ connectionString });
         if (ssl) {
             connectionString += '?sslmode=require';
         }
