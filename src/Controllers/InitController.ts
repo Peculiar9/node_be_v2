@@ -1,15 +1,18 @@
 import { controller, httpGet } from "inversify-express-utils";
 import { UtilityService } from "../Core/Services/UtilityService";
 import { API_DOC_URL, APP_NAME, APP_VERSION } from "../Core/Types/Constants";
+import { BaseController } from "./BaseController";
 
 @controller('/')
-export default class InitController {
+export class InitController extends BaseController{
     constructor(){
+        super();
     }
 
     @httpGet('')
     async baseMethod(){
          //This is what anyone who calls the base Url sees
+         console.log('it got here!!!')!
         const baseRequestPayload = this.constructBaseRouterPayload();
         return baseRequestPayload;
      }
@@ -35,17 +38,18 @@ export default class InitController {
      }
      
 } 
- 
- interface IBaseUrlPayload{
-     api_info: IApiInfo;
-     success: boolean;
-     authentication: string;
-     scopes: [];
-     request_time: number
- }
- interface IApiInfo {
-     name: string;
-     version: string
-     description: string;
-     documentation: string;
- }
+
+
+interface IBaseUrlPayload{
+    api_info: IApiInfo;
+    success: boolean;
+    authentication: string;
+    scopes: [];
+    request_time: number
+}
+interface IApiInfo {
+    name: string;
+    version: string
+    description: string;
+    documentation: string;
+}
