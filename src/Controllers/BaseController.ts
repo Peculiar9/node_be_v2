@@ -12,6 +12,8 @@ export class BaseController extends BaseMiddleware {
     });
   }
 
+  
+
   protected error(res: Response, message: string, status: number = 400) {
     return res.status(status).json({
       success: false,
