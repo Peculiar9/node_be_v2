@@ -72,6 +72,7 @@ export class ConnectionPoolManager {
   public async releaseConnection(client: PoolClient): Promise<void> {
     if (client) {
       client.release();
+      console.log("Connection pool released!!");
     }
   }
 
