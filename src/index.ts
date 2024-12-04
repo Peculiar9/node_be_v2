@@ -7,9 +7,10 @@ dotenv.config();
 
 const startApp = async () => {
     try {
+        const app = await App.initialize();
         const port = process.env.PORT || 3000;
         
-        const server = App.listen(port, () => {
+        const server = app.listen(port, () => {
             console.log(`${APP_NAME} Server is running on port http://localhost:${port}`);
         });
 
@@ -21,11 +22,10 @@ const startApp = async () => {
                 process.exit(0);
             });
         });
-
     } catch (error: any) {
         console.error('Error starting server:', error.message);
         process.exit(1);
     }
 };
 
-startApp();
+startApp().then(() => console.log("APP_START"));

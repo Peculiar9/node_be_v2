@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import cors from 'cors'
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
@@ -13,48 +13,46 @@ import { DIContainer } from './Core/DIContainer';
 
 import express, { Response, Request, NextFunction } from 'express';
 import path from 'path';
+
 class App {
-    public app: any;
+    public app: express.Application;
+    private container: Container;
 
     constructor() {
+        this.container = DIContainer.getInstance();
         this.app = express();
-        this.initialize();
-        console.log("App initialized")
     }
 
-    private async initialize() {
+    public async initialize(): Promise<express.Application> {
         try {
-            
-            // Get the DI container instance
-            const container = DIContainer.getInstance();
-            
-            // Initialize database connection
-            await DatabaseService.initialize(container);
+            // Initialize database first
+            await DatabaseService.initialize(this.container);
+            console.log('✅ Database initialized successfully');
 
             // Setup express server with inversify
-            const server = new InversifyExpressServer(container);
+            const server = new InversifyExpressServer(this.container);
             
-            server.setConfig((app: any) => {
+            server.setConfig((app: express.Application) => {
                 app.use(express.json());
                 app.use(bodyParser.json());
                 app.use(bodyParser.urlencoded({ extended: false }));
                 app.set('view engine', 'ejs');
                 app.set('views', path.join(__dirname, '..', 'src', 'static'));
                 app.use(cors());
-                console.log("Setting config.....");
             });
-            
 
-            console.log("Building server.....");
             this.app = server.build();
             this.initErrorHandling();
-            // Graceful shutdown
-            this.setupGracefulShutdown(container);
-            const routeInfo = getRouteInfo(container);
-            console.log(JSON.stringify(routeInfo, null, 2));
+            this.setupGracefulShutdown();
+
+            // Log route information
+            const routeInfo = getRouteInfo(this.container);
+            console.log('Registered Routes:', JSON.stringify(routeInfo, null, 2));
+
+            return this.app;
         } catch (error: any) {
             console.error("App initialization error:", error.message);
-            process.exit(1);
+            throw error;
         }
     }
 
@@ -68,10 +66,10 @@ class App {
         });
     }
 
-    private setupGracefulShutdown(container: Container) {
+    private setupGracefulShutdown() {
         const shutdown = async () => {
             console.log('Shutting down gracefully...');
-            await DatabaseService.shutdown(container);
+            await DatabaseService.shutdown(this.container);
             process.exit(0);
         };
 
@@ -80,4 +78,4 @@ class App {
     }
 }
 
-export default new App().app;
+export default new App();
