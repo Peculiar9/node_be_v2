@@ -189,3 +189,20 @@
 // startApp().then(() => console.log("APP_START"));
 
 // Index.ts file
+
+
+
+//AUTH SERVICE FOR TOKEN VERIFICATION SYSTEM
+     // Generate verification token
+            // const verificationToken = await this.generateVerificationToken(newUser);
+
+            // Store verification token
+            // await this.userRepository.update(newUser._id as string, {
+            //     verification_token: await UtilityService.hashToken(verificationToken)
+            // });
+
+            // Send verification email (could be a separate microservice or event)
+            // await this.emailService.sendVerificationEmail(
+            //     newUser.email,
+            //     verificationToken
+            // );
