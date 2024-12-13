@@ -1,20 +1,22 @@
 // User entity interface definition
 
+import { UserRole } from "@/Core/Application/Enums/UserRole";
+
 export interface IUser{
-    _id?:  string | null | undefined; // alternate type could be of type say uuid 
-    first_name: string | null | undefined;
-    last_name: string | null | undefined;
-    email: string | null | undefined;
-    password: string | null | undefined;
-    profile_image: string | null | undefined; //url for user image
-    status: string | null | undefined;
-    isActive: boolean;
+    _id?: string | null | undefined;
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    profile_image: string | null | undefined;
+    status: string;
+    is_active: boolean;
     user_secret: string | null | undefined;
     salt: string | null | undefined;
     refresh_token: string | null | undefined;
     last_login: string | null | undefined;
-    roles: string[]; //Roles: "renter", "host" or both
-    created_at: string | null | undefined;
-    updated_at: string | null | undefined;
+    roles: string[] | UserRole[];
+    created_at: string;
+    updated_at: string;
     __v: number;
 }
