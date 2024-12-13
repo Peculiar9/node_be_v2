@@ -14,13 +14,18 @@ export class ResponseMessage {
   static readonly NOT_FOUND_MESSAGE = 'Resource not found';
   static readonly VALIDATION_ERROR_MESSAGE = 'Validation failed';
   static readonly DATABASE_ERROR_MESSAGE = 'Database operation failed';
+  static readonly FAILED_TOKEN_DESTRUCTURE = 'Failed to get user from token!!!';
   static readonly INTERNAL_SERVER_ERROR_MESSAGE = 'Internal server error';
   static readonly INVALID_CREDENTIALS_MESSAGE = 'Invalid credentials';
   static readonly INVALID_TOKEN_MESSAGE = 'Invalid or expired token';
+  static readonly INVALID_TOKEN_PAYLOAD_MESSAGE = 'Invalid token payload';
+  static readonly INVALID_TOKEN_TYPE_MESSAGE = 'Invalid token type';
+  static readonly INVALID__REFRESH_TOKEN_MESSAGE = 'Invalid or expired refresh token';
   static readonly USER_EXISTS_MESSAGE = 'User already exists';
   static readonly USER_NOT_FOUND_MESSAGE = 'User not found';
   static readonly INVALID_PASSWORD_MESSAGE = 'Invalid password';
   static readonly MISSING_REQUIRED_FIELDS = 'Missing required fields';
   static readonly INSUFFICIENT_PRIVILEDGES_MESSAGE = 'User does not have sufficient priviledges to access this function';
   static readonly INVALID_AUTH_HEADER_MESSAGE = 'Invalid auth header';
+  static readonly USER_CREATION_FAILED = 'User creation failed';
 }
