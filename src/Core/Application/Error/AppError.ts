@@ -38,6 +38,14 @@ export class ForbiddenError extends AppError {
   }
 }
 
+// 422 Unprocessable Entity
+export class UnprocessableEntityError extends AppError {
+  constructor(message: string) {
+      super(message, 422, 11);
+      this.name = 'UnprocessableEntityError';
+  }
+}
+
 export class NotFoundError extends AppError {
   constructor(message: string) {
     super(message, 404, 400); // Not Found errors: 400-499
