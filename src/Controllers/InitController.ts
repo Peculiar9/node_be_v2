@@ -1,9 +1,9 @@
 import { controller, httpGet } from "inversify-express-utils";
 import { UtilityService } from "../Core/Services/UtilityService";
-import { API_DOC_URL, APP_NAME, APP_VERSION } from "../Core/Types/Constants";
+import { API_DOC_URL, API_PATH, APP_NAME, APP_VERSION } from "../Core/Types/Constants";
 import { BaseController } from "./BaseController";
 
-@controller('/')
+@controller(``)
 export class InitController extends BaseController{
     constructor(){
         super();
