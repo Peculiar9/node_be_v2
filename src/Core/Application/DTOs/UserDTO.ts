@@ -25,7 +25,7 @@ export interface UserResponseDTO {
   profile_image?: string;
   roles: UserRole[];
   status: string;
-  isActive: boolean;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
