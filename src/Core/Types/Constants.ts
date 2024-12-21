@@ -4,7 +4,10 @@ export const TYPES = {
     AccountUseCase: Symbol.for('AccountUseCase'),
     AuthService: Symbol.for('AuthService'),
     TransactionManager: Symbol.for('TransactionManager'),
-    AuthMiddleware: Symbol.for('AuthMiddleware')
+    AuthMiddleware: Symbol.for('AuthMiddleware'),
+    UserService: Symbol.for('UserService'),
+    HttpClientFactory: Symbol.for('HttpClientFactory'),
+    UserController: Symbol.for('UserController'),
 };
 
 export const API_PATH = 'api/v1';

@@ -10,6 +10,7 @@ import { IAuthService } from './Application/Interface/Services/IAuthService';
 import { AuthMiddleware } from '../Middleware/AuthMiddleware';
 import { getDatabaseConfig } from '../Infrastructure/Database/DatabaseConfig';
 import { PoolOptions } from 'pg';
+import { UserService } from '../Infrastructure/Services/UserService';
 /**
  * Container for dependency injection configuration
  * Uses interface bindings for better decoupling and testability
@@ -67,6 +68,8 @@ export class DIContainer {
 
         // Use case layer binding
         container.bind<IAccountUseCase>(TYPES.AccountUseCase).to(AccountUseCase).inRequestScope();
+
+        container.bind<UserService>(TYPES.UserService).to(UserService).inRequestScope();
         console.log("All dependencies bound!!")
     }
 
