@@ -31,6 +31,19 @@ export class AuthorizationError extends AppError {
   }
 }
 
+export class HttpClientError extends AppError {
+  constructor(message: string, statusCode: number) {
+    super(message, statusCode, 400); // Client errors: 400-499
+    this.name = 'HttpClientError';
+  }
+
+  static fromAxiosError(error: any): HttpClientError {
+    const message = error.response?.data?.message || 'An error occurred';
+    const statusCode = error.response?.status || 400;
+    return new HttpClientError(message, statusCode);
+  }
+}
+
 // 403 Forbidden
 export class ForbiddenError extends AppError {
   constructor(message: string) {
