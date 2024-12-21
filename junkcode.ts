@@ -206,3 +206,93 @@
             //     newUser.email,
             //     verificationToken
             // );
+
+
+
+
+
+            /// Auth Service, Will test later
+
+            // import { Container } from 'inversify';
+// import { AuthService } from '../../Infrastructure/Services/AuthService';
+// import { TYPES } from '../../Core/Types/Constants';
+// import { TestUtils } from '../utils/TestUtils';
+// import { mockUserData } from '../mocks/MockData';
+// import { ValidationError } from '../../Core/Application/Error/AppError';
+// import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
+
+// describe('AuthService', () => {
+//     let container: Container;
+//     let authService: AuthService;
+//     let mockUserRepository: any;
+//     let mockTransactionManager: any;
+
+//     beforeEach(() => {
+//         container = TestUtils.createMockContainer();
+        
+//         mockUserRepository = TestUtils.createSpyObj('UserRepository', [
+//             'findByEmail',
+//             'create',
+//             'update',
+//             'findById'
+//         ]);
+
+//         mockTransactionManager = TestUtils.createSpyObj('TransactionManager', [
+//             'beginTransaction',
+//             'commit',
+//             'rollback'
+//         ]);
+
+//         container.bind(TYPES.UserRepository).toConstantValue(mockUserRepository);
+//         container.bind(TYPES.TransactionManager).toConstantValue(mockTransactionManager);
+//         container.bind(AuthService).toSelf();
+
+//         authService = container.get(AuthService);
+//     });
+
+//     describe('createUser', () => {
+//         it('should create a new user successfully', async () => {
+//             mockUserRepository.findByEmail.mockResolvedValue(null);
+//             mockUserRepository.create.mockResolvedValue(mockUserData.userResponseDTO);
+
+//             const result = await authService.createUser(mockUserData.createUserDTO);
+
+//             expect(result).toEqual(mockUserData.userResponseDTO);
+//             expect(mockTransactionManager.beginTransaction).toHaveBeenCalled();
+//             expect(mockTransactionManager.commit).toHaveBeenCalled();
+//         });
+
+//         it('should throw error if user already exists', async () => {
+//             mockUserRepository.findByEmail.mockResolvedValue(mockUserData.userResponseDTO);
+
+//             await expect(authService.createUser(mockUserData.createUserDTO))
+//                 .rejects
+//                 .toThrow(ResponseMessage.USER_EXISTS_MESSAGE);
+//         });
+//     });
+
+//     describe('authenticate', () => {
+//         it('should authenticate user and return tokens', async () => {
+//             mockUserRepository.findByEmail.mockResolvedValue({
+//                 ...mockUserData.userResponseDTO,
+//                 password: 'hashedPassword'
+//             });
+
+//             const result = await authService.authenticate('test@example.com', 'password');
+
+//             expect(result).toHaveProperty('accessToken');
+//             expect(result).toHaveProperty('refreshToken');
+//             expect(result).toHaveProperty('user');
+//         });
+
+//         it('should throw error for invalid credentials', async () => {
+//             mockUserRepository.findByEmail.mockResolvedValue(null);
+
+//             await expect(authService.authenticate('test@example.com', 'password'))
+//                 .rejects
+//                 .toThrow(ResponseMessage.INVALID_CREDENTIALS_MESSAGE);
+//         });
+//     });
+
+//     // Add more test cases for other methods...
+// });
