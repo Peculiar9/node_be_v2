@@ -1,6 +1,5 @@
 import { Container, injectable } from 'inversify';
 import { ConnectionPoolManager } from '../Repository/SQL/Abstractions/ConnectionPoolManager';
-import { getDatabaseConfig } from './DatabaseConfig';
 import { DatabaseError } from '../../Core/Application/Error/AppError';
 import { TYPES } from '../../Core/Types/Constants';
 

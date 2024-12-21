@@ -4,6 +4,8 @@ import { TransactionManager } from '../Abstractions/TransactionManager';
 import { IUser } from '../../../../Core/Application/Interface/Entities/auth-and-user/IUser';
 import { TableNames } from '../../../../Core/Application/Enums/TableNames';
 import { TYPES } from '../../../../Core/Types/Constants';
+import { getEntityMetadata } from '../../../../extensions/decorators';
+import { InternalServerError } from '../../../../Core/Application/Error/AppError';
 
 @injectable()
 export class UserRepository extends BaseRepository<IUser> {
@@ -15,11 +17,19 @@ export class UserRepository extends BaseRepository<IUser> {
 
     // async findById(id: number): Promise<IUser | null> {
     async findById(id: string): Promise<any> {
-        const result = await this.executeQuery<IUser>(
-            `SELECT * FROM ${this.tableName} WHERE id = $1`,
-            [id]
-        );
-        return result.rows[0] || null;
+        try{
+
+            const result = await this.executeQuery<IUser>(
+                `SELECT * FROM ${this.tableName} WHERE id = $1`,
+                [id]
+            );
+            return result.rows[0] || null;
+        }catch(error: any){
+            console.error('UserRepository::findById(): ', {
+                message: error.message,
+                stack: error.stack
+            });
+        }
     }
 
     // async findAll(): Promise<IUser[]> {
@@ -32,16 +42,25 @@ export class UserRepository extends BaseRepository<IUser> {
 
     // async create(entity: IUser): Promise<IUser> {
     async create(entity: IUser): Promise<any> {
-        const { columns, values, placeholders } = this.getEntityColumns(entity);
-        
-        const query = `
-            INSERT INTO ${this.tableName} (${columns.join(', ')})
+        try{
+
+            const { columns, values, placeholders } = this.getEntityColumns(entity);
+            
+            const query = `INSERT INTO ${this.tableName} (${columns.join(', ')})
             VALUES (${placeholders.join(', ')})
             RETURNING *
-        `;
-
-        const result = await this.executeQuery<IUser>(query, values);
-        return result.rows[0];
+            `;
+            
+            console.log({query});
+            console.log({values});
+            const result = await this.executeQuery<IUser>(query, values);
+            return result.rows[0];
+        }catch(error: any){
+            console.error('UserRepository::create(): ', {
+                message: error.message,
+                stack: error.stack
+            });
+        }
     }
 
     // async findByCondition(condition: Partial<IUser>): Promise<IUser[]> {
@@ -56,12 +75,15 @@ export class UserRepository extends BaseRepository<IUser> {
 
     // async update(id: number, entity: Partial<IUser>): Promise<IUser | null> {
     async update(id: string, entity: Partial<IUser>): Promise<any> {
+        // Add updated_at to the entity
+        entity.updated_at = new Date().toISOString();
+
         const { setClause, values } = this.buildUpdateSet(entity);
         const result = await this.executeQuery<IUser>(
             `UPDATE ${this.tableName} 
-             SET ${setClause} 
-             WHERE id = $${values.length + 1}
-             RETURNING *`,
+            SET ${setClause} 
+            WHERE id = $${values.length + 1}
+            RETURNING *`,
             [...values, id]
         );
         return result.rows[0] || null;
@@ -101,10 +123,52 @@ export class UserRepository extends BaseRepository<IUser> {
 
     // async findByEmail(email: string): Promise<IUser | null> {
     async findByEmail(email: string): Promise<IUser | null> {
+        const query = `SELECT * FROM ${this.tableName} WHERE email = $1`;
+        console.log({query})
         const result = await this.executeQuery<IUser>(
-            `SELECT * FROM ${this.tableName} WHERE email = $1`,
+            query,
             [email.toLowerCase()]
         );
+        console.log({result})
         return result.rows[0] as any || null;
     }
+
+    async ensureTableExists(entity: Function, tableName: string): Promise<void> {
+        try {
+            // Attempt to get metadata
+            const columns = getEntityMetadata(entity);
+            
+            // Fallback if no metadata found
+            if (!columns || Object.keys(columns).length === 0) {
+                console.error('No column metadata found for entity');
+                throw new Error('Unable to extract table schema');
+            }
+    
+            // Convert metadata to column definitions
+            const columnDefinitions = Object.entries(columns)
+                .map(([name, type]) => `"${name}" ${type}`)
+                .join(',\n    ');
+    
+            const query = `
+                CREATE TABLE IF NOT EXISTS "${tableName}" (
+                    ${columnDefinitions}
+                );
+            `;
+    
+            console.log('Generated Table Creation Query:', query);
+    
+            // Execute the query
+            const result = await this.executeQuery(query);
+            console.log('Table Creation Result:', result);
+        } catch (error: any) {
+            console.error('Table Creation Error:', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw new InternalServerError(`Failed to create table ${tableName}: ${error.message}`);
+        }
+    }
+
+  
+    
 }

@@ -65,6 +65,8 @@ export abstract class BaseRepository<T> implements IRepository<T> {
             parameterIndex++;
         }
 
+        
+
         return { columns, values, placeholders };
     }
 
