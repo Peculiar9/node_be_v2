@@ -109,13 +109,104 @@ describe('AccountController', () => {
                 mockResponse as Response
             );
 
-            // Verify login was called with correct credentials
             expect(mockAccountUseCase.login).toHaveBeenCalledWith(loginDTO.email, loginDTO.password);
             expect(mockResponse.status).toHaveBeenCalledWith(200);
             expect(mockResponse.json).toHaveBeenCalledWith({
                 success: true,
                 message: ResponseMessage.SUCCESSFUL_REQUEST_MESSAGE,
                 data: mockUserData.loginResponse
+            });
+        });
+
+        it('should handle login error', async () => {
+            const loginDTO = { email: 'test@example.com', password: 'password123' };
+            const error = new Error('Login failed');
+            // Not setting error.name, so it will be treated as a generic error
+            mockAccountUseCase.login.mockRejectedValue(error);
+
+            mockRequest.body = loginDTO;
+
+            await accountController.login(
+                loginDTO,
+                mockRequest as Request,
+                mockResponse as Response
+            );
+
+            expect(mockAccountUseCase.login).toHaveBeenCalledWith(loginDTO.email, loginDTO.password);
+            expect(mockResponse.status).toHaveBeenCalledWith(400); // Generic errors get 400
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                success: false,
+                message: error.message,
+                data: null
+            });
+        });
+
+        it('should handle invalid credentials', async () => {
+            const loginDTO = { email: 'invalid@example.com', password: 'wrongpassword' };
+            const error = new Error(ResponseMessage.INVALID_CREDENTIALS_MESSAGE);
+            error.name = 'AuthenticationError'; // Add error type to distinguish
+            mockAccountUseCase.login.mockRejectedValue(error);
+
+            mockRequest.body = loginDTO;
+
+            await accountController.login(
+                loginDTO,
+                mockRequest as Request,
+                mockResponse as Response
+            );
+
+            expect(mockAccountUseCase.login).toHaveBeenCalledWith(loginDTO.email, loginDTO.password);
+            expect(mockResponse.status).toHaveBeenCalledWith(401); // Authentication failures should return 401
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                success: false,
+                message: ResponseMessage.INVALID_CREDENTIALS_MESSAGE,
+                data: null
+            });
+        });
+
+        it('should handle general login error', async () => {
+            const loginDTO = { email: 'test@example.com', password: 'password123' };
+            const error = new Error('Login failed');
+            error.name = 'Error'; // Generic error
+            mockAccountUseCase.login.mockRejectedValue(error);
+
+            mockRequest.body = loginDTO;
+
+            await accountController.login(
+                loginDTO,
+                mockRequest as Request,
+                mockResponse as Response
+            );
+
+            expect(mockAccountUseCase.login).toHaveBeenCalledWith(loginDTO.email, loginDTO.password);
+            expect(mockResponse.status).toHaveBeenCalledWith(400); // Generic errors should be 500
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                success: false,
+                message: error.message,
+                data: null
+            });
+        });
+
+        it('should handle invalid credentials with AuthenticationError', async () => {
+            const loginDTO = { email: 'invalid@example.com', password: 'wrongpassword' };
+            const error = new Error(ResponseMessage.INVALID_CREDENTIALS_MESSAGE);
+            error.name = 'AuthenticationError'; // This should trigger 401 response
+            mockAccountUseCase.login.mockRejectedValue(error);
+
+            mockRequest.body = loginDTO;
+
+            await accountController.login(
+                loginDTO,
+                mockRequest as Request,
+                mockResponse as Response
+            );
+
+            expect(mockAccountUseCase.login).toHaveBeenCalledWith(loginDTO.email, loginDTO.password);
+            expect(mockResponse.status).toHaveBeenCalledWith(401); // AuthenticationError should be 401
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                success: false,
+                message: ResponseMessage.INVALID_CREDENTIALS_MESSAGE,
+                data: null
             });
         });
     });
