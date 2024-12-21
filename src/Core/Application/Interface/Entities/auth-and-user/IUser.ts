@@ -11,9 +11,11 @@ export interface IUser{
     profile_image: string | null | undefined;
     status: string;
     is_active: boolean;
+    email_verified: boolean;
     user_secret: string | null | undefined;
     salt: string | null | undefined;
     refresh_token: string | null | undefined;
+    reset_token: string | null | undefined;
     last_login: string | null | undefined;
     roles: string[] | UserRole[];
     created_at: string;

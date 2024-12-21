@@ -41,6 +41,12 @@ export class User implements IUser {
     @Column('TEXT DEFAULT NULL')
     public refresh_token: string | null | undefined;
 
+    @Column('BOOLEAN DEFAULT false')
+    email_verified: boolean;
+
+    @Column('TEXT DEFAULT NULL')
+    reset_token: string | null | undefined;
+
     @Column('TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
     public last_login: string | null | undefined;
 
@@ -61,6 +67,7 @@ export class User implements IUser {
     private constructor(data: Partial<IUser>) {
         Object.assign(this, data);
     }
+   
 
     static async createFromDTO(dto: CreateUserDTO): Promise<User | undefined> {
         try{
