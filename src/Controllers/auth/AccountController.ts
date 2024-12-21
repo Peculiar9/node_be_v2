@@ -46,7 +46,9 @@ export class AccountController extends BaseController {
       const result = await this.accountUseCase.login(dto.email, dto.password);
       return this.success(res, result, ResponseMessage.SUCCESSFUL_REQUEST_MESSAGE);
     } catch (error: any) {
-      return this.error(res, error.message, error.statusCode);
+      // Check error type to determine status code
+      const statusCode = error.name === 'AuthenticationError' ? 401 : 400;
+      return this.error(res, error.message, statusCode);
     }
   }
 
@@ -94,5 +96,5 @@ export class AccountController extends BaseController {
     } catch (error: any) {
       return this.error(res, error.message, error.statusCode);
     }
-  }
+}
 }
