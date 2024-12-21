@@ -1,11 +1,15 @@
+import { CreateUserDTO, UserResponseDTO, UpdateUserDTO } from '../../DTOs/UserDTO';
 import { LoginResponseDTO } from '../../DTOs/AuthDTO';
-import { CreateUserDTO } from '../../DTOs/UserDTO';
 
 export interface IAuthService {
-    authenticate(email: string, password: string): Promise<LoginResponseDTO>;
-    verifyToken(token: string): Promise<any>;
-    refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }>;
+    createUser(dto: CreateUserDTO): Promise<UserResponseDTO| undefined>;
+    authenticate(email: string, password: string): Promise<LoginResponseDTO | undefined>;
+    getUserFromToken(userId: string): Promise<UserResponseDTO | undefined>;
+    updateUser(userId: string, dto: UpdateUserDTO): Promise<UserResponseDTO | undefined>;
+    verifyEmailToken(token: string): Promise<boolean>;
+    requestPasswordReset(email: string): Promise<void>;
+    resetPassword(token: string, newPassword: string): Promise<boolean>;
+    refreshAccessToken(userId: string): Promise<{ accessToken: string }>;
     revokeRefreshToken(userId: string): Promise<void>;
-    getUserFromToken(userId: string): Promise<any>;
-    createUser(createUserDto: CreateUserDTO): Promise<any>;
+    verifyToken(token: string): Promise<any>;
 }
