@@ -37,17 +37,30 @@ export class DIContainer {
 
         // Load database config
         const config = getDatabaseConfig();
-        const connectionString = this.buildConnectionString(config);
+        console.log("Got here!!! -> ", {config});
+        const connectionString = config.connectionString;
+        console.log("Got here!!! -> ", {connectionString});
         // Create PoolOptions
         const poolOptions: PoolOptions = {
-            ...config,
-            connectionString: connectionString as string,
-        } as any;
+            user: config.user,
+            password: config.password,
+            host: config.host,
+            port: config.port,
+            database: config.database,
+            max: config.max,
+            connectionString: connectionString,
+            idleTimeoutMillis: config.idleTimeoutMillis,
+            connectionTimeoutMillis: config.connectionTimeoutMillis,
+            ssl: config.ssl,
+            maxUses: 7500,
+            allowExitOnIdle: true,
+            maxLifetimeSeconds: 3600
+        };
 
         // Infrastructure layer
         //this singleton instance is scoped to the request and is used through out the app lifecycle
         container.bind<ConnectionPoolManager>(TYPES.ConnectionPoolManager)
-            .toDynamicValue(() => new ConnectionPoolManager(poolOptions as any))
+            .toDynamicValue(() => new ConnectionPoolManager(poolOptions))
             .inSingletonScope();
 
         // TransactionManager binding
