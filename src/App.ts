@@ -13,6 +13,7 @@ import { DIContainer } from './Core/DIContainer';
 
 import express, { Response, Request, NextFunction } from 'express';
 import path from 'path';
+import { TYPES } from './Core/Types/Constants';
 
 class App {
     public app: express.Application;
@@ -25,7 +26,9 @@ class App {
 
     public async initialize(): Promise<express.Application> {
         try {
-            // Initialize database first
+            // Initialize Sentry first
+
+            // Initialize database
             await DatabaseService.initialize(this.container);
             console.log('✅ Database initialized successfully');
 
@@ -77,5 +80,4 @@ class App {
         process.on('SIGINT', shutdown);
     }
 }
-
 export default new App();
