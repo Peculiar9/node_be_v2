@@ -1,8 +1,18 @@
-import dotenv from 'dotenv';
+import { EnvironmentConfig } from '../Config/EnvironmentConfig';
+import fs from 'fs';
 
-dotenv.config();
+type Environment = 'development' | 'test' | 'production';
 
-export interface DatabaseConfig {
+interface SSLConfig {
+  rejectUnauthorized: boolean;
+  ca?: string;
+  key?: string;
+  cert?: string;
+  sslmode?: string;
+}
+
+interface DatabaseConfig {
+  connectionString?: string;
   user: string;
   password: string;
   host: string;
@@ -11,19 +21,57 @@ export interface DatabaseConfig {
   max: number;
   idleTimeoutMillis: number;
   connectionTimeoutMillis: number;
-  ssl?: boolean;
+  ssl: SSLConfig | boolean;
 }
 
+const getSSLConfig = (env: Environment): SSLConfig | boolean => {
+  console.log("getSSLConfig called with env: ", env);
+  switch (env) {
+    case 'production':
+      return {
+        rejectUnauthorized: true,
+        sslmode: 'verify-full',
+        ca: EnvironmentConfig.get('SSL_CA') ? fs.readFileSync(EnvironmentConfig.get('SSL_CA')).toString() : undefined,
+        key: EnvironmentConfig.get('SSL_KEY') ? fs.readFileSync(EnvironmentConfig.get('SSL_KEY')).toString() : undefined,
+        cert: EnvironmentConfig.get('SSL_CERT') ? fs.readFileSync(EnvironmentConfig.get('SSL_CERT')).toString() : undefined,
+      };
+    case 'test':
+      return {
+        rejectUnauthorized: false
+        // sslmode: 'prefer'
+      };
+    case 'development':
+      return false;
+    default:
+      return false;
+  }
+};
+
 export const getDatabaseConfig = (): DatabaseConfig => {
-  return {
-    user: process.env.DB_USER! as string || 'postgres',
-    password: process.env.DB_PASSWORD! as string || '',
-    host: process.env.DB_HOST! as string || 'localhost',
-    port: parseInt(process.env.DB_PORT! as string || '5432'),
-    database: process.env.DB_NAME! as string || 'postgres',
-    max: parseInt(process.env.DB_POOL_MAX! as string || '10'),
-    idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT! as string || '30000'),
-    connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT! as string || '2000'),
-    ssl: process.env.DB_SSL! as string === 'true'
+  const nodeEnv = (EnvironmentConfig.get('NODE_ENV', 'test')) as Environment;
+  const dbHost = EnvironmentConfig.get('DB_HOST');
+  console.log("DatabaseConfig nodeEnv: ", nodeEnv);
+  const config: DatabaseConfig = {
+    user: EnvironmentConfig.get('DB_USER', 'postgres'),
+    password: EnvironmentConfig.get('DB_PASSWORD', ''),
+    host: (!dbHost && nodeEnv === 'development')
+      ? 'localhost'
+      : (dbHost || ''),
+    port: EnvironmentConfig.getNumber('DB_PORT', 5432),
+    database: EnvironmentConfig.get('DB_NAME', 'postgres'),
+    max: EnvironmentConfig.getNumber('DB_POOL_MAX', 10),
+    idleTimeoutMillis: EnvironmentConfig.getNumber('DB_IDLE_TIMEOUT', 30000),
+    connectionTimeoutMillis: EnvironmentConfig.getNumber('DB_CONNECTION_TIMEOUT', 10000),
+    ssl: getSSLConfig(nodeEnv)
   };
+
+  // Build connection string for non-local environments
+  if (nodeEnv !== 'development') {
+    const sslMode = nodeEnv === 'production' ? 'verify-full' : 'prefer';
+    console.log("sslMode: ", sslMode);
+    config.connectionString = `postgresql://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`;
+    // ?sslmode=${sslMode}`;
+  }
+
+  return config;
 };

@@ -4,18 +4,27 @@ import { TYPES } from '../Core/Types/Constants';
 import { AuthService } from '../Infrastructure/Services/AuthService';
 import { AuthenticationError, ForbiddenError } from '../Core/Application/Error/AppError';
 import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
-import { UserType } from '../Core/Application/Enums/UserType';
 import { UserRepository } from '../Infrastructure/Repository/SQL/users/UserRepository';
 import { DIContainer } from '../Core/DIContainer';
 import { IAuthService } from '../Core/Application/Interface/Services/IAuthService';
+import { TransactionManager } from '../Infrastructure/Repository/SQL/Abstractions/TransactionManager';
+import { IUser } from '../Core/Application/Interface/Entities/auth-and-user/IUser';
+import { UserRole } from '../Core/Application/Enums/UserRole';
 
 @injectable()
 export class AuthMiddleware {
+  // private static getTransactionManager(): TransactionManager {
+  //   return DIContainer.getInstance().get<TransactionManager>(TYPES.TransactionManager);
+  // }
+  private readonly transactionManager: TransactionManager;
   constructor(
     @inject(TYPES.AuthService) private authService: IAuthService,
-    @inject(TYPES.UserRepository) private userRepository: UserRepository
-  ) {}
-
+    @inject(TYPES.UserRepository) private userRepository: UserRepository,
+  ) {
+    // this.transactionManager = AuthMiddleware.getTransactionManager();
+    // console.log('it got here auth middleware constructor', this.transactionManager);
+  }
+  
   public static authenticate() {
     const middleware = AuthMiddleware.createInstance();
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -23,6 +32,7 @@ export class AuthMiddleware {
     };
   }
 
+  
   public static authenticateAdmin() {
     const middleware = AuthMiddleware.createInstance();
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +44,13 @@ export class AuthMiddleware {
     const middleware = AuthMiddleware.createInstance();
     return async (req: Request, res: Response, next: NextFunction) => {
       await middleware.authenticateSuperAdminInstance(req, res, next);
+    };
+  }
+
+  public static authenticateOptional() {
+    const middleware = AuthMiddleware.createInstance();
+    return async (req: Request, res: Response, next: NextFunction) => {
+      await middleware.authenticateOptionalInstance(req, res, next);
     };
   }
 
@@ -58,7 +75,11 @@ export class AuthMiddleware {
   private authenticateAdminInstance = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = this.extractToken(req);
-      const user = await this.validateTokenAndUser(token, UserType.ADMIN);
+      if(token === 'undefined' || token === null || token === '' || !token) {
+        throw new AuthenticationError(ResponseMessage.INVALID_TOKEN_MESSAGE);
+      }
+      const user = await this.validateTokenAndUser(token, UserRole.ADMIN);
+      console.log('user', user);
       req.user = user;
       next();
     } catch (error: any) {
@@ -69,11 +90,30 @@ export class AuthMiddleware {
   private authenticateSuperAdminInstance = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = this.extractToken(req);
-      const user = await this.validateTokenAndUser(token, UserType.SUPER_ADMIN);
+      if(token === 'undefined' || token === null || token === '' || !token) {
+        throw new AuthenticationError(ResponseMessage.INVALID_TOKEN_MESSAGE);
+      }
+      const user = await this.validateTokenAndUser(token, UserRole.SUPER_ADMIN);
+      console.log('user', user);
       req.user = user;
       next();
     } catch (error: any) {
       this.handleAuthError(res, error);
+    }
+  };
+
+  private authenticateOptionalInstance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = this.extractTokenOptional(req);
+      if (token) {
+        const user = await this.validateTokenAndUser(token);
+        req.user = user;
+      }
+      next();
+    } catch (error: any) {
+      // Optionally log the error, but proceed as unauthenticated.
+      console.log('Optional authentication failed:', error.message);
+      next();
     }
   };
 
@@ -91,18 +131,26 @@ export class AuthMiddleware {
     return token;
   }
 
-  private async validateTokenAndUser(token: string, requiredRole?: UserType) {
-    const decodedToken = await this.authService.verifyToken(token);
-    const user = await this.userRepository.findById(decodedToken.id);
-
-    if (!user) {
-      throw new AuthenticationError(ResponseMessage.INVALID_TOKEN_MESSAGE);
+  private extractTokenOptional(req: Request): string | null {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return null;
     }
+    const [bearer, token] = authHeader.split(' ');
+    if (bearer !== 'Bearer' || !token) {
+      return null;
+    }
+    return token;
+  }
 
-    if (requiredRole && !user.roles.includes(requiredRole)) {
+  private async validateTokenAndUser(token: string, requiredRole?: UserRole) {
+    console.log("it got here validate token and user");
+    const decodedToken = await this.authService.verifyToken(token);
+    const user: IUser = await this.authService.validateUser(decodedToken.sub as string);
+    console.log('user', user);
+    if (requiredRole && !user?.roles?.includes(requiredRole)) {
       throw new ForbiddenError(ResponseMessage.INSUFFICIENT_PRIVILEDGES_MESSAGE);
     }
-
     return user;
   }
 

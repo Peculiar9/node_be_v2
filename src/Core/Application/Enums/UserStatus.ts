@@ -1,8 +1,8 @@
 export enum UserStatus {
-    ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',        // Voluntarily deactivated account
-    ARCHIVED = 'ARCHIVED',        // Long-term inactive account
-    DELETED = 'DELETED', 
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',        // Voluntarily deactivated account
+    ARCHIVED = 'archived',        // Long-term inactive account
+    DELETED = 'deleted', 
     // ONLINE = 'ONLINE',            // User is currently logged in
     // IDLE = 'IDLE',                // User account is inactive due to inactivity
   

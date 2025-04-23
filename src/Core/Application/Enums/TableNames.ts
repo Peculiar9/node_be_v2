@@ -3,5 +3,20 @@ export enum TableNames {
     PRODUCTS = 'products',
     FILES = 'files',
     PROFILES = 'profiles',
-    SESSIONS = 'sessions'
+    SESSIONS = 'sessions',
+    VERIFICATIONS = 'verifications',
+    CHARGING_STATIONS = 'chargingstations',
+    EV_CAR_MODELS = 'evcarmodels',
+    CHARGING_SESSIONS = 'chargingsessions',
+    CHARGING_SESSIONS_HISTORY = 'chargingsessionshistory',
+    CHARGER_CONNECTORS = 'chargerconnectors',
+    CAR_FEATURES = 'carfeatures',
+    VEHICLES = 'vehicles',
+    BOOKMARKS = 'bookmarks',
+    AUDITS = 'audits',
+    CHECKINS = "checkins",
+    REVIEWS = "reviews",
+    RATINGS = "ratings",
+    ACTIVITIES = "activities",
+    LINKED_ACCOUNTS = "linked_accounts"
 }

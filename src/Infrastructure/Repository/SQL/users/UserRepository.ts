@@ -4,14 +4,15 @@ import { TransactionManager } from '../Abstractions/TransactionManager';
 import { IUser } from '../../../../Core/Application/Interface/Entities/auth-and-user/IUser';
 import { TableNames } from '../../../../Core/Application/Enums/TableNames';
 import { TYPES } from '../../../../Core/Types/Constants';
-import { getEntityMetadata } from '../../../../extensions/decorators';
-import { InternalServerError } from '../../../../Core/Application/Error/AppError';
+import { DatabaseError } from '../../../../Core/Application/Error/AppError';
 
 @injectable()
 export class UserRepository extends BaseRepository<IUser> {
+
     constructor(
         @inject(TYPES.TransactionManager) transactionManager: TransactionManager
     ) {
+        // console.log("UserRepository::constructor -> ", {transactionManager});
         super(transactionManager, TableNames.USERS);
     }
 
@@ -20,7 +21,7 @@ export class UserRepository extends BaseRepository<IUser> {
         try{
 
             const result = await this.executeQuery<IUser>(
-                `SELECT * FROM ${this.tableName} WHERE id = $1`,
+                `SELECT * FROM ${this.tableName} WHERE _id = $1`,
                 [id]
             );
             return result.rows[0] || null;
@@ -29,6 +30,22 @@ export class UserRepository extends BaseRepository<IUser> {
                 message: error.message,
                 stack: error.stack
             });
+        }
+    }
+
+    async findByPhone(phone: string): Promise<IUser | undefined | null> {
+        try {
+            const result = await this.executeQuery<IUser>(
+                `SELECT * FROM ${this.tableName} WHERE phone = $1`,
+                [phone]
+            );
+            return (result.rows[0] as unknown as IUser) || null;
+        } catch(error: any) {
+            console.error('UserRepository::findByPhone(): ', {
+                message: error.message,
+                stack: error.stack
+            });
+            return null;
         }
     }
 
@@ -75,16 +92,31 @@ export class UserRepository extends BaseRepository<IUser> {
 
     // async update(id: number, entity: Partial<IUser>): Promise<IUser | null> {
     async update(id: string, entity: Partial<IUser>): Promise<any> {
-        // Add updated_at to the entity
-        entity.updated_at = new Date().toISOString();
+        
 
+        
         const { setClause, values } = this.buildUpdateSet(entity);
+        console.log({setClause});
         const result = await this.executeQuery<IUser>(
             `UPDATE ${this.tableName} 
-            SET ${setClause} 
-            WHERE id = $${values.length + 1}
+            SET ${setClause}, updated_at = NOW()
+            WHERE _id = $${values.length + 1}
             RETURNING *`,
             [...values, id]
+        );
+        return result.rows[0] || null;
+    }
+
+    // async update(id: number, entity: Partial<IUser>): Promise<IUser | null> {
+    async updateByPhone(phone: string, entity: Partial<IUser>): Promise<any> {
+        const { setClause, values } = this.buildUpdateSet(entity);
+        console.log({setClause});
+        const result = await this.executeQuery<IUser>(
+            `UPDATE ${this.tableName} 
+            SET ${setClause}, updated_at = NOW()
+            WHERE phone = $2
+            RETURNING *`,
+            [...values, phone]
         );
         return result.rows[0] || null;
     }
@@ -92,7 +124,7 @@ export class UserRepository extends BaseRepository<IUser> {
     // async delete(id: number): Promise<boolean> {
     async delete(id: string): Promise<boolean> {
         const result = await this.executeQuery(
-            `DELETE FROM ${this.tableName} WHERE id = $1`,
+            `DELETE FROM ${this.tableName} WHERE _id = $1`,
             [id]
         );
         return result.rowCount as number > 0;
@@ -133,42 +165,83 @@ export class UserRepository extends BaseRepository<IUser> {
         return result.rows[0] as any || null;
     }
 
-    async ensureTableExists(entity: Function, tableName: string): Promise<void> {
+
+
+    /**
+     * Creates multiple users in a single transaction
+     * @param users Array of users to create
+     * @returns Array of created users
+     */
+    async bulkCreate(users: IUser[]): Promise<any> {
+        const { valuesClause, values, columns } = this.buildBulkInsertClause(users);
+        
+        if (users.length === 0) {
+            return [];
+        }
+
+        const query = `
+            INSERT INTO ${this.tableName} (${columns.join(', ')})
+            VALUES ${valuesClause}
+            RETURNING *
+        `;
+
         try {
-            // Attempt to get metadata
-            const columns = getEntityMetadata(entity);
-            
-            // Fallback if no metadata found
-            if (!columns || Object.keys(columns).length === 0) {
-                console.error('No column metadata found for entity');
-                throw new Error('Unable to extract table schema');
-            }
-    
-            // Convert metadata to column definitions
-            const columnDefinitions = Object.entries(columns)
-                .map(([name, type]) => `"${name}" ${type}`)
-                .join(',\n    ');
-    
-            const query = `
-                CREATE TABLE IF NOT EXISTS "${tableName}" (
-                    ${columnDefinitions}
-                );
-            `;
-    
-            console.log('Generated Table Creation Query:', query);
-    
-            // Execute the query
-            const result = await this.executeQuery(query);
-            console.log('Table Creation Result:', result);
+            const result = await this.executeQuery<IUser>(query, values);
+            return result.rows;
         } catch (error: any) {
-            console.error('Table Creation Error:', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw new InternalServerError(`Failed to create table ${tableName}: ${error.message}`);
+            throw new DatabaseError(`Bulk user creation failed: ${error.message}`);
         }
     }
 
-  
-    
+    /**
+     * Updates multiple users in a single transaction
+     * @param users Array of users with their IDs and update data
+     * @returns Array of updated users
+     */
+    async bulkUpdate(users: Partial<IUser>[]): Promise<any> {
+        if (users.length === 0) {
+            return [];
+        }
+
+        const { updateClause, values } = this.buildBulkUpdateClause(users);
+        const userIds = users.map(user => (user as any)._id);
+
+        const query = `
+            UPDATE ${this.tableName}
+            SET ${updateClause} 
+            WHERE _id = ANY($${values.length + 1}::uuid[])
+            RETURNING *
+        `;
+
+        try {
+            const result = await this.executeQuery<IUser>(query, [...values, userIds]);
+            return result.rows;
+        } catch (error: any) {
+            throw new DatabaseError(`Bulk user update failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Deletes multiple users by their IDs
+     * @param ids Array of user IDs to delete
+     * @returns Number of deleted users
+     */
+    async bulkDelete(ids: string[]): Promise<any> {
+        if (ids.length === 0) {
+            return 0;
+        }
+
+        const query = `
+            DELETE FROM ${this.tableName}
+            WHERE _id = ANY($1::uuid[])
+            RETURNING _id
+        `;
+
+        try {
+            const result = await this.executeQuery(query, [ids]);
+            return result.rowCount;
+        } catch (error: any) {
+            throw new DatabaseError(`Bulk user deletion failed: ${error.message}`);
+        }
+    }
 }

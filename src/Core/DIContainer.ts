@@ -6,11 +6,24 @@ import { ConnectionPoolManager } from '../Infrastructure/Repository/SQL/Abstract
 import { AuthService } from '../Infrastructure/Services/AuthService';
 import { AccountUseCase } from './Application/UseCases/AccountUseCase';
 import { IAccountUseCase } from './Application/Interface/UseCases/IAccountUseCase';
-import { IAuthService } from './Application/Interface/Services/IAuthService';
 import { AuthMiddleware } from '../Middleware/AuthMiddleware';
 import { getDatabaseConfig } from '../Infrastructure/Database/DatabaseConfig';
 import { PoolOptions } from 'pg';
 import { UserService } from '../Infrastructure/Services/UserService';
+import { SMSService } from '../Infrastructure/Services/SMSService';
+import { IAWSHelper } from './Application/Interface/Services/IAWSHelper';
+import { AWSHelper } from '../Infrastructure/Services/external-api-services/AWSHelper';
+import { VerificationRepository } from '../Infrastructure/Repository/SQL/auth/VerificationRepository';
+import { OTPService } from '../Infrastructure/Services/OTPService';
+import { HttpClientFactory } from '../Infrastructure/Http/HttpClientFactory';
+import { DatabaseInitializer } from '../Infrastructure/Config/DatabaseInitializer';
+import { IAuthService } from './Application/Interface/Services/IAuthService';
+import { GoogleService } from '../Infrastructure/Services/external-api-services/GoogleService';
+import { IGoogleService } from '../Core/Application/Interface/Services/IGoogleService';
+import { IEmailService } from './Application/Interface/Services/IEmailService';
+import { EmailService } from '../Infrastructure/Services/EmailService';
+import { LinkedAccountsRepository } from '../Infrastructure/Repository/SQL/auth/LinkedAccountsRepository';
+
 /**
  * Container for dependency injection configuration
  * Uses interface bindings for better decoupling and testability
@@ -21,7 +34,6 @@ export class DIContainer {
     private constructor() {
         // Private constructor to prevent instantiation
     }
-
     public static getInstance(): Container {
         if (!DIContainer.containerInstance) {
             DIContainer.containerInstance = new Container();
@@ -37,17 +49,30 @@ export class DIContainer {
 
         // Load database config
         const config = getDatabaseConfig();
-        const connectionString = this.buildConnectionString(config);
+        console.log("Got here!!! -> ", {config});
+        const connectionString = config.connectionString;
+        console.log("Got here!!! -> ", {connectionString});
         // Create PoolOptions
         const poolOptions: PoolOptions = {
-            ...config,
-            connectionString: connectionString as string,
-        } as any;
+            user: config.user,
+            password: config.password,
+            host: config.host,
+            port: config.port,
+            database: config.database,
+            max: config.max,
+            connectionString: connectionString,
+            idleTimeoutMillis: config.idleTimeoutMillis,
+            connectionTimeoutMillis: config.connectionTimeoutMillis,
+            ssl: config.ssl,
+            maxUses: 7500,
+            allowExitOnIdle: true,
+            maxLifetimeSeconds: 3600
+        };
 
         // Infrastructure layer
         //this singleton instance is scoped to the request and is used through out the app lifecycle
         container.bind<ConnectionPoolManager>(TYPES.ConnectionPoolManager)
-            .toDynamicValue(() => new ConnectionPoolManager(poolOptions as any))
+            .toDynamicValue(() => new ConnectionPoolManager(poolOptions))
             .inSingletonScope();
 
         // TransactionManager binding
@@ -57,30 +82,52 @@ export class DIContainer {
                 return new TransactionManager(poolManager);
             }).inRequestScope();
 
-        // UserRepository binding with TYPES symbol
+        container.bind<DatabaseInitializer>(TYPES.DatabaseInitializer).to(DatabaseInitializer).inRequestScope();    
+        
+        // Repository bindings
         container.bind<UserRepository>(TYPES.UserRepository).to(UserRepository).inRequestScope();
-
-        // Service layer binding with TYPES symbol
-        container.bind<IAuthService>(TYPES.AuthService).to(AuthService).inRequestScope();
+        container.bind<VerificationRepository>(TYPES.VerificationRepository).to(VerificationRepository).inRequestScope();
+        container.bind<LinkedAccountsRepository>(TYPES.LinkedAccountsRepository).to(LinkedAccountsRepository).inRequestScope();
 
         // Middleware layer binding
         container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware).inRequestScope();
 
         // Use case layer binding
         container.bind<IAccountUseCase>(TYPES.AccountUseCase).to(AccountUseCase).inRequestScope();
-
+      
+        // Service layer binding
         container.bind<UserService>(TYPES.UserService).to(UserService).inRequestScope();
+        container.bind<SMSService>(TYPES.SMSService)
+            .to(SMSService)
+            .inRequestScope();
+        container.bind<OTPService>(TYPES.OTPService)
+            .to(OTPService)
+            .inRequestScope();
+        container.bind<IAuthService>(TYPES.AuthService)
+            .to(AuthService)
+            .inRequestScope();
+        container.bind<IAWSHelper>(TYPES.AWSHelper).to(AWSHelper).inRequestScope();
+        container.bind<IEmailService>(TYPES.EmailService).to(EmailService).inRequestScope();
+        
+        // Google OAuth Configuration bindings
+        container.bind<string>(TYPES.GOOGLE_CLIENT_ID)
+            .toConstantValue(process.env.GOOGLE_CLIENT_ID || '');
+        
+        container.bind<string>(TYPES.GOOGLE_CLIENT_SECRET)
+            .toConstantValue(process.env.GOOGLE_CLIENT_SECRET || '');
+        
+        container.bind<string>(TYPES.GOOGLE_REDIRECT_URI)
+            .toConstantValue(process.env.GOOGLE_REDIRECT_URI || '');
+
+        // Google Service binding
+        container.bind<IGoogleService>(TYPES.GoogleService)
+            .to(GoogleService)
+            .inSingletonScope();
+
+        container.bind<HttpClientFactory>(TYPES.HttpClientFactory)
+            .to(HttpClientFactory)
+            .inSingletonScope();
+
         console.log("All dependencies bound!!")
     }
-
-    private static buildConnectionString(config: any): string {
-        const { user, password, host, port, database, ssl } = config;
-        let connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
-        if (ssl) {
-            connectionString += '?sslmode=require';
-        }
-
-        return connectionString;
-    }
-
 }

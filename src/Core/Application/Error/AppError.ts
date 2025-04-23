@@ -86,3 +86,11 @@ export class DatabaseError extends AppError {
     this.name = 'DatabaseError';
   }
 }
+
+export class RegistrationError extends AppError {
+  constructor(message: string) {
+    // Choose an appropriate status code and error code; for example, 422 Unprocessable Entity
+    super(message, 422, 120); // Error code 120 (for example) could be reserved for registration errors.
+    this.name = 'RegistrationError';
+  }
+}

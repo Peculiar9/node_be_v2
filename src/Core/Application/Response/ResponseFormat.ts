@@ -7,6 +7,7 @@ export interface ResponseDataInterface {
 }
 
 export class ResponseMessage {
+  static readonly INVALID_PHONE_NUMBER = "Phone number is invalid";
   static readonly SUCCESSFUL_REQUEST_MESSAGE = 'Request processed successfully';
   static readonly INVALID_REQUEST_MESSAGE = 'Invalid request data provided';
   static readonly UNAUTHORIZED_MESSAGE = 'Unauthorized access';
@@ -16,7 +17,7 @@ export class ResponseMessage {
   static readonly DATABASE_ERROR_MESSAGE = 'Database operation failed';
   static readonly FAILED_TOKEN_DESTRUCTURE = 'Failed to get user from token!!!';
   static readonly INTERNAL_SERVER_ERROR_MESSAGE = 'Internal server error';
-  static readonly INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
+  static readonly INVALID_CREDENTIALS_MESSAGE = 'Invalid email, phone or password';
   static readonly INVALID_TOKEN_MESSAGE = 'Invalid or expired token';
   static readonly INVALID_TOKEN_PAYLOAD_MESSAGE = 'Invalid token payload';
   static readonly EMAIL_PASSWORD_REQUIRED = 'Email and password are required';
@@ -41,4 +42,23 @@ export class ResponseMessage {
   static readonly INVALID_UPDATE_REQUEST = 'Invalid update request';
   static readonly VERIFICATION_TOKEN_REQUIRED = 'Verification token is required';
   static readonly TOKEN_PASSWORD_REQUIRED = 'Token and new password are required';
+  static readonly INVALID_FILE_TYPE = 'Invalid file type';
+  static readonly FAILED_PHONE_VERIFICATION_MESSAGE = 'The phone number could not be verified';
+  static readonly INVALID_VERIFICATION = 'The verification is invalid or expired, please contact admin';
+  static readonly INVALID_OTP = 'The OTP is invalid';
+  static readonly VERIFICATION_FAILED = 'Verification failed!!!';
+  static readonly RATE_LIMIT_ERROR = "Too many requests - try again later.";
+  static readonly VERIFICATION_ALREADY_COMPLETED = 'Verification already completed';
+  static readonly BOOKMARK_SUCCESS = 'Successfully bookmarked station';
+  static readonly BOOKMARK_ALREADY_EXISTS = 'Station already bookmarked';
+  static readonly BOOKMARK_NOT_FOUND = 'Bookmark not found';
+  static readonly REVIEW_SUCCESS = 'Successfully reviewed station';
+  static readonly REVIEW_NOT_FOUND = 'Review not found';
+  static readonly REVIEW_ALREADY_EXISTS = 'Review already exists';
+  static readonly REVIEW_ALREADY_COMPLETED = 'Review already completed';
+  static readonly PASSWORD_SETUP_SUCCESS = 'Password setup successful';
+  static readonly USER_PASSWORD_SETUP_FAILED = 'User password setup failed';
+  static readonly CHECKIN_SUCCESS = 'Successfully checked in';
+  static readonly USER_YOURE_TRYING_TO_VERIFY_DOES_NOT_EXIST = 'You are trying to verify a number that does not exist';
+  static readonly SUCCESSFUL_REGISTRATION = 'User registration completed successfully';
 }

@@ -16,6 +16,13 @@ export class InitController extends BaseController{
         const baseRequestPayload = this.constructBaseRouterPayload();
         return baseRequestPayload;
      }
+    @httpGet('/health')
+    async healthCheck(){
+        return {
+            status: 'ok',
+            message: 'The service is running!!!'
+        }
+     }
      
      private constructBaseRouterPayload(){
          const reqTime = Date.now();

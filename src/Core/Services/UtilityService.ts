@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import CryptoService from '../Services/CryptoService';
 
 export class UtilityService {
     private static readonly SALT_ROUNDS = 10;
@@ -18,8 +19,32 @@ export class UtilityService {
         return crypto.randomBytes(32).toString('hex');
     }
 
-    static async verifyPassword(password: string, hash: string): Promise<boolean> {
-        return bcrypt.compare(password, hash);
+    static generate4Digit(): string {
+        let token = '';
+        const digits = '0123456789';
+    
+        for (let i = 0; i < 4; i++) {
+          const index = Math.floor(Math.random() * digits.length);
+          token += digits[index];
+        }
+    
+        return token;
+    }
+
+    static generate6Digit(): string {
+        let token = '';
+        const digits = '0123456789';
+    
+        for (let i = 0; i < 6; i++) {
+          const index = Math.floor(Math.random() * digits.length);
+          token += digits[index];
+        }
+    
+        return token;
+    }
+
+    static async verifyPassword(password: string, hash: string, salt: string): Promise<boolean> {
+        return CryptoService.verifyHash(password, hash, salt);
     }
 
     static generateUUID(): string {
@@ -32,6 +57,15 @@ export class UtilityService {
 
     static async verifyTokenHash(token: string, hash: string): Promise<boolean> {
         return bcrypt.compare(token, hash);
+    }
+
+    static isValidEmail(email: string): boolean {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    static toSnakeCase(key: string): string {
+        return key.replace(/([A-Z])/g, letter => `_${letter.toLowerCase()}`);
     }
 
     static async hashPassword(password: string): Promise<{ hash: string; salt: string;}> {
