@@ -13,6 +13,8 @@ import { DIContainer } from './Core/DIContainer';
 
 import express, { Response, Request, NextFunction } from 'express';
 import path from 'path';
+import { Console } from './Infrastructure/Utils/Console';
+import { LoggingConfig } from './Infrastructure/Config/LoggingConfig';
 
 class App {
     public app: express.Application;
@@ -25,9 +27,14 @@ class App {
 
     public async initialize(): Promise<express.Application> {
         try {
-            // Initialize database first
+            
+            // Initialize logging first
+            LoggingConfig.getInstance().initialize(this.app);
+            Console.info('✅ Logging initialized successfully');
+            
+            // Initialize database
             await DatabaseService.initialize(this.container);
-            console.log('✅ Database initialized successfully');
+            Console.info('✅ Database initialized successfully');
 
             // Setup express server with inversify
             const server = new InversifyExpressServer(this.container);
@@ -51,18 +58,25 @@ class App {
 
             return this.app;
         } catch (error: any) {
-            console.error("App initialization error:", error.message);
+            const errorMessage = error.message || 'Unknown error';
+            Console.error(error, {message: errorMessage});
             throw error;
         }
     }
 
     private initErrorHandling() {
+        // 404 handler - must be added after all routes are defined
+        this.app.use((req: Request, res: Response, next: NextFunction) => {
+            // Import and use the NotFoundMiddleware
+            const { NotFoundMiddleware } = require('./Middleware/NotFoundMiddleware');
+            return NotFoundMiddleware.handleNotFound(req, res, next);
+        });
+
+        // Global error handler - must be the last middleware
         this.app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-            console.error(err.stack);
-            res.status(err.status || 500).json({
-                success: false,
-                message: err.message || 'Internal Server Error',
-            });
+            // Import and use the ErrorHandlerMiddleware
+            const { ErrorHandlerMiddleware } = require('./Middleware/ErrorHandlerMiddleware');
+            return ErrorHandlerMiddleware.handleError(err, req, res, next);
         });
     }
 

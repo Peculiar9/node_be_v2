@@ -5,16 +5,19 @@ import { DatabaseIsolationLevel } from '../../../../Core/Application/Enums/Datab
 import { injectable } from 'inversify';
 
 interface PoolOptions {
-  user: string;
-  password: string;
-  host: string;
-  port: number;
-  database: string;
-  max: number;
-  connectionString: string | undefined;
-  idleTimeoutMillis?: number;
+  user?: string;
+  password?: string | (() => string | Promise<string>);
+  host?: string;
+  port?: number;
+  database?: string;
+  max?: number;
+  connectionString?: string;
+  idleTimeoutMillis?: number| null | undefined;
   connectionTimeoutMillis?: number;
-  ssl?: boolean;
+  ssl?: any;
+  maxUses?: number;
+  allowExitOnIdle?: boolean;
+  maxLifetimeSeconds?: number;
 }
 
 interface ConnectionOptions {
@@ -62,7 +65,6 @@ export class ConnectionPoolManager {
       if (options?.readOnly !== undefined) {
         await client.query(options.readOnly ? 'SET TRANSACTION READ ONLY' : 'SET TRANSACTION READ WRITE');
       }
-
       return client;
     } catch (error: any) {
       throw new DatabaseError(`Failed to get database connection: ${error.message}`);

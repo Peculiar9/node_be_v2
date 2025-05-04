@@ -20,6 +20,9 @@ export class TransactionManager {
     this.poolManager = poolManager;
   }
 
+  public isActive(): boolean{
+    return this.isTransactionActive;
+  }
   public async beginTransaction(options?: TransactionOptions): Promise<void> {
     if (this.isTransactionActive) {
       throw new InternalServerError('Transaction already in progress');
@@ -36,6 +39,7 @@ export class TransactionManager {
     }
 
     this.isTransactionActive = true;
+    console.log("TransactionManager::beginTransaction -> ", {isTransactionActive: this.isTransactionActive});
   }
 
   public async commit(): Promise<void> {
@@ -48,6 +52,7 @@ export class TransactionManager {
     } finally {
       this.releaseClient();
     }
+    console.log("TransactionManager::commit -> ", {isTransactionActive: this.isTransactionActive});
   }
 
   public async rollback(): Promise<void> {
@@ -60,6 +65,7 @@ export class TransactionManager {
     } finally {
       this.releaseClient();
     }
+    console.log("TransactionManager::rollback -> ", {isTransactionActive: this.isTransactionActive});
   }
 
   public getClient(): PoolClient {

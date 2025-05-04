@@ -7,4 +7,7 @@ export interface IRepository<T> {
   delete(id: string): Promise<boolean>;
   executeRawQuery(query: string, params: any[]): Promise<any>;
   count(condition?: Partial<T>): Promise<number>;
+  bulkCreate(entities: T[]): Promise<T[]>;
+  bulkUpdate(entities: Partial<T>[]): Promise<T[]>;
+  bulkDelete(ids: string[]): Promise<number>;
 }

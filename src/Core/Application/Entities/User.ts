@@ -1,9 +1,11 @@
-import { IUser } from '../Interface/Entities/auth-and-user/IUser';
+import { IBillingInfo, ICardToken, ILocation, IUser } from '../Interface/Entities/auth-and-user/IUser';
 import { CreateUserDTO, UpdateUserDTO } from '../DTOs/UserDTO';
-import { ValidationError } from '../Error/AppError';
+import { InternalServerError, ValidationError } from '../Error/AppError';
 import { UtilityService } from '../../Services/UtilityService';
 import { UserRole } from '../Enums/UserRole';
-import { Column, CompositeIndex, Index } from '../../../extensions/decorators';
+import { Column, CompositeIndex, ForeignKey, Index } from '../../../extensions/decorators';
+import { UserStatus } from '../Enums/UserStatus';
+
 
 @CompositeIndex(['first_name', 'last_name'])
 export class User implements IUser {
@@ -16,8 +18,8 @@ export class User implements IUser {
     @Column('VARCHAR(255) NOT NULL')
     public last_name: string;
 
-    @Index({ unique: true })
-    @Column('VARCHAR(255) UNIQUE NOT NULL')
+    @Index({ unique: true, type: 'BTREE' })
+    @Column('VARCHAR(255) UNIQUE DEFAULT NULL')
     public email: string;
 
     @Column('VARCHAR(255) NOT NULL')
@@ -42,23 +44,121 @@ export class User implements IUser {
     public refresh_token: string | null | undefined;
 
     @Column('BOOLEAN DEFAULT false')
-    email_verified: boolean;
+    public email_verified: boolean;
 
     @Column('TEXT DEFAULT NULL')
-    reset_token: string | null | undefined;
+    public reset_token: string | null | undefined;
 
-    @Column('TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+    @Index({ unique: false })
+    @Column('TIMESTAMP DEFAULT NULL')
     public last_login: string | null | undefined;
 
     @Column('TEXT[] DEFAULT ARRAY[]::TEXT[]')
     public roles: string[] | UserRole[] = [];
 
-    @Index()
+    @Column('INTEGER DEFAULT 0')
+    public age: number;
+
+    @Column('TIMESTAMP WITH TIME ZONE DEFAULT NULL')
+    public dob: string | Date;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public gender?: string | undefined;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public drivers_license: string;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public country_code: string;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public international_phone: string;
+
+    @Index({ unique: true })
+    @Column('VARCHAR(255) UNIQUE DEFAULT NULL')
+    public phone: string;
+
+    @Column('INTEGER DEFAULT 0')
+    public trips_count: number;
+
+    @Column('INTEGER DEFAULT 0')
+    public host_trip_count: number;
+
+    @Column('JSONB DEFAULT NULL')
+    public location: ILocation;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public user_criteria?: string | undefined;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public host_badges: string;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public stripe_id: string;
+
+    @Column('JSONB DEFAULT NULL')
+    public billing_info: IBillingInfo;
+
+    @Column('TEXT[] DEFAULT ARRAY[]::TEXT[]')
+    public hosted_cars: (string | null | undefined)[];
+
+    @Column('TEXT[] DEFAULT ARRAY[]::TEXT[]')
+    public favourite_cars: (string | null | undefined)[];
+
+    @Column('TEXT[] DEFAULT ARRAY[]::TEXT[]')
+    public favourite_hosts: (string | null | undefined)[];
+
+    @Column('TEXT[] DEFAULT ARRAY[]::TEXT[]')
+    public card_tokens: (ICardToken | string | null | undefined)[];
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public verification_progress: string;
+
+    @Column('INTEGER DEFAULT 0')
+    public verification_level: number;
+
+    @Column('INTEGER DEFAULT 0')
+    public host_verification_level?: number | undefined;
+
+    // @Index({ unique: false })
+    // @ForeignKey({ table: 'verifications', field: '_id' }    )
+    // @Column('VARCHAR(255) DEFAULT NULL')
+    // public verification_id?: string | null | undefined;
+
+    @Column('BOOLEAN DEFAULT false')
+    public required_pid: boolean;
+
+    @Column('BOOLEAN DEFAULT false')
+    public required_poa: boolean;
+
+    @Column('BOOLEAN DEFAULT false')
+    public required_selfie: boolean;
+
+    @Column('BOOLEAN DEFAULT false')
+    public verified_selfie: boolean;
+
+    @Column('BOOLEAN DEFAULT false')
+    public verified_poa: boolean;
+
+    @Column('BOOLEAN DEFAULT false')
+    public verified_pid: boolean;
+
+    @Column('VARCHAR(255)') 
+    auth_method: string;
+
+    @Column('VARCHAR(255)')
+    oauth_provider: string;
+
+    @Index({ unique: false })
+    @Column('VARCHAR(255)')
+    oauth_id: string;
+
+    @Index({unique: false})
     @Column('TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP')
     public created_at: string;
 
-    @Index()
-    @Column('TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+    @Index({unique: false})
+    @Column('TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP')
     public updated_at: string;
 
     @Column('INTEGER DEFAULT 0')
@@ -67,28 +167,35 @@ export class User implements IUser {
     private constructor(data: Partial<IUser>) {
         Object.assign(this, data);
     }
+  
    
 
     static async createFromDTO(dto: CreateUserDTO): Promise<User | undefined> {
         try{
             const { hash: password, salt } = await UtilityService.generatePasswordHash(dto.password);
+            let email;
+
+            if(dto.email === '') {
+                email = null;
+            } else {
+                email = dto.email.toLowerCase();
+            }
+
+            console.log("Email: ", {email});
             const user_secret = UtilityService.generateUserSecret();
             const userData: Partial<IUser> = {
                 // _id: UtilityService.generateUUID(),
                 first_name: dto.first_name,
                 last_name: dto.last_name,
-                email: dto.email.toLowerCase(),
+                email,
                 password,
                 salt,
                 user_secret,
                 profile_image: dto.profile_image || '',
-                status: 'active',
+                // status: UserStatus.INACTIVE,
                 is_active: true,
                 refresh_token: '',  // Initialize with empty string
                 roles: dto.roles,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                __v: 0
             };
 
             const user = new User(userData);
@@ -103,6 +210,73 @@ export class User implements IUser {
         }
     }
 
+    static async createFromPhone(phoneNumber: string, salt: string): Promise<User | undefined> {
+        try{
+            const user_secret = UtilityService.generateUserSecret();
+            if(!salt){
+                throw new InternalServerError('Salt is required');
+            }
+
+            const userData: Partial<IUser> = {
+                // _id: UtilityService.generateUUID(),
+                first_name: '',
+                last_name: '',
+                email: null,
+                phone: phoneNumber,
+                password: '',
+                country_code: '',
+                international_phone: '',
+                drivers_license: '',
+                auth_method: '',
+                salt,
+                last_login: null,
+                user_secret,
+                profile_image: '',
+                status: UserStatus.INACTIVE,
+                is_active: true,
+                refresh_token: '',  // Initialize with empty string
+                roles: [UserRole.USER],
+                __v: 0
+            };
+
+            const user = new User(userData);
+            return user;
+        }catch(error: any){
+            console.error('User Object creation: ', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
+    }
+
+    static async createFromOAuth(dto: CreateUserDTO): Promise<User | undefined> {
+        try{
+            const user_secret = UtilityService.generateUserSecret();
+            const userData: Partial<IUser> = {
+                // _id: UtilityService.generateUUID(),
+                first_name: dto.first_name,
+                last_name: dto.last_name,
+                email: dto.email,
+                phone: dto.phone || '',
+                password: '',
+                user_secret,
+                profile_image: dto.profile_image || '',
+                status: UserStatus.ACTIVE,
+                is_active: true,
+                refresh_token: '',  // Initialize with empty string
+                roles: [UserRole.USER],
+                auth_method: 'oauth',
+            };
+            return new User(userData);
+        }catch(error: any){
+            console.error('User Object creation: ', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
+    }
     static async updateFromDTO(existingUser: User, dto: UpdateUserDTO): Promise<User> {
         const updates: Partial<IUser> = { ...dto };
         
@@ -134,13 +308,10 @@ export class User implements IUser {
                 throw new ValidationError(`${field.replace('_', ' ')} is required`);
             }
         }
-
-        // Email validation
         if (!this.isValidEmail(this.email as string)) {
             throw new ValidationError('Invalid email format');
         }
 
-        // Roles validation
         if (!this.roles?.length) {
             throw new ValidationError('At least one role is required');
         }

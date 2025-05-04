@@ -1,1 +1,0 @@
-// Authentication use cases interface
