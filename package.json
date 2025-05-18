@@ -13,7 +13,7 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepare": "husky install",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org gr33nwh33lz --project charging-station ./dist && sentry-cli sourcemaps upload --org gr33nwh33lz --project charging-station ./dist"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org orgName --project appName ./dist && sentry-cli sourcemaps upload --org orgName --project appName ./dist"
   },
   "dependencies": {
     "@aws-sdk/client-rekognition": "^3.731.1",
