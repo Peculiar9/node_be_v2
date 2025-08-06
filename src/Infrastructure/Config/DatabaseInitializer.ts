@@ -5,7 +5,6 @@ import { TransactionManager } from '../Repository/SQL/Abstractions/TransactionMa
 import { User } from '../../Core/Application/Entities/User';
 import { getEntityMetadata, getIndexMetadata } from '../../extensions/decorators';
 import { DatabaseError } from '../../Core/Application/Error/AppError';
-import { car_features, charger_connectors, ev_car_models } from '../../static/data/seed_data';
 import { Console } from '../Utils/Console';
 import { LinkedAccounts } from '../../Core/Application/Entities/LinkedAccounts';
 import { FileManager } from '../../Core/Application/Entities/FileManager';

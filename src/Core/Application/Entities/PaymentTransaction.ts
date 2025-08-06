@@ -19,11 +19,6 @@ export class PaymentTransaction implements IPaymentTransaction {
     public user_id: string;
 
     @Index({ unique: false })
-    @ForeignKey({
-        table: TableNames.CHARGING_SESSIONS,
-        field: '_id',
-        constraint: 'fk_payment_transaction_session_id'
-    })
     @Column('UUID NOT NULL')
     public session_id: string;
 
