@@ -90,12 +90,21 @@ export class LinkedAccountsRepository extends BaseRepository<ILinkedAccounts> im
 
     async findByCondition(condition: Partial<ILinkedAccounts>): Promise<ILinkedAccounts[]> {
         try {
+            // Special case for the common user_id + auth_method lookup
+            if (condition.user_id && condition.auth_method) {
+                const query = `SELECT * FROM ${this.tableName} WHERE user_id = $1 AND auth_method = $2`;
+                const values = [condition.user_id, condition.auth_method];
+                const result = await this.executeQuery<LinkedAccountsRow>(query, values);
+                return result.rows.map(row => row as unknown as ILinkedAccounts);
+            }
+            
+            // Default case using buildWhereClause for other conditions
             const { whereClause, values } = this.buildWhereClause(condition);
             const query = `SELECT * FROM ${this.tableName} ${whereClause}`;
             const result = await this.executeQuery<LinkedAccountsRow>(query, values);
-            return result.rows;
+            return result.rows.map(row => row as unknown as ILinkedAccounts);
         } catch (error: any) {
-            throw new DatabaseError(`Failed to find linked accounts by condition: ${error.message}`);
+            throw new DatabaseError(`Failed to fetch linked accounts by condition: ${error.message}`);
         }
     }
 

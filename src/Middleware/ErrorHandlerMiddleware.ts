@@ -25,9 +25,7 @@ export class ErrorHandlerMiddleware {
             Console.error(err, errorContext);
             
             // Report server errors to Sentry
-            // Temporarily commenting out Sentry usage for build purposes
-            // Will be re-enabled in the future when Sentry is properly configured
-            // Sentry.captureException(err);
+            Sentry.captureException(err);
         } else {
             Console.warn(err.message, errorContext);
         }

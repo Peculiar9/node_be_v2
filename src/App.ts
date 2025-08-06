@@ -8,6 +8,25 @@ import { getRouteInfo } from 'inversify-express-utils';
 
 import './Controllers/InitController';
 import './Controllers/auth/AccountController';
+import './Controllers/auth/AuthController';
+import './Controllers/StationController';
+import './Controllers/EVCarModelController';
+import './Controllers/ChargingConnectorsController';
+import './Controllers/CarFeatureController';
+import './Controllers/VehicleController';
+import './Controllers/ReviewController';
+import './Controllers/BookmarkController';
+import './Controllers/charging/ChargingSessionController'
+import './Controllers/charging/CheckinController'
+
+//===============PAYMENT STUFF===================//
+import './Controllers/payment/PaymentController';
+import './Controllers/payment/StripeWebhookController';
+//===============PAYMENT STUFF===================//
+
+// =================CONSOLIDATED ==================== //
+import './Controllers/auth/HostOnboardingController';
+// =================CONSOLIDATED ==================== //
 
 import { DIContainer } from './Core/DIContainer';
 

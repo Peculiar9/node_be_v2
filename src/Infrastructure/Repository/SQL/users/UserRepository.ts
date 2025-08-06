@@ -60,9 +60,7 @@ export class UserRepository extends BaseRepository<IUser> {
     // async create(entity: IUser): Promise<IUser> {
     async create(entity: IUser): Promise<any> {
         try{
-
             const { columns, values, placeholders } = this.getEntityColumns(entity);
-            
             const query = `INSERT INTO ${this.tableName} (${columns.join(', ')})
             VALUES (${placeholders.join(', ')})
             RETURNING *
@@ -126,6 +124,14 @@ export class UserRepository extends BaseRepository<IUser> {
         const result = await this.executeQuery(
             `DELETE FROM ${this.tableName} WHERE _id = $1`,
             [id]
+        );
+        return result.rowCount as number > 0;
+    }
+
+    async deleteByEmail(email: string): Promise<boolean> {
+        const result = await this.executeQuery(
+            `DELETE FROM ${this.tableName} WHERE email = $1`,
+            [email]
         );
         return result.rowCount as number > 0;
     }

@@ -1,8 +1,11 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import CryptoService from '../Services/CryptoService';
+import { EnvironmentConfig } from '../../Infrastructure/Config/EnvironmentConfig';
 
 export class UtilityService {
+    private static readonly OTP_LENGTH = 6;
+    private static readonly OTP_HASH_ROUNDS = 10;
     private static readonly SALT_ROUNDS = 10;
     private static readonly TOKEN_SALT_ROUNDS = 12;
     private static readonly MIN_PASSWORD_LENGTH = 8;
@@ -19,7 +22,23 @@ export class UtilityService {
         return crypto.randomBytes(32).toString('hex');
     }
 
-    static generate4Digit(): string {
+    static generateOTP(): string {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    static async hashOTP(otp: string): Promise<string> {
+        return await bcrypt.hash(otp, this.OTP_HASH_ROUNDS);
+    }
+
+    static async verifyOTP(plainOTP: string, hashedOTP: string): Promise<boolean> {
+        // In non-production environments, '1234' is always valid
+        if (!EnvironmentConfig.isProduction() && plainOTP === '1234') {
+            return true;
+        }
+        return await bcrypt.compare(plainOTP, hashedOTP);
+    }
+
+    static generate4Digit(): string {   
         let token = '';
         const digits = '0123456789';
     
@@ -41,6 +60,11 @@ export class UtilityService {
         }
     
         return token;
+    }
+    
+    static validateUUID(uuid: string): boolean {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(uuid);
     }
 
     static async verifyPassword(password: string, hash: string, salt: string): Promise<boolean> {
@@ -88,5 +112,15 @@ export class UtilityService {
         const dateObject = new Date(dateTime);
         const unixTimeStamp = Math.floor(dateObject.getTime() / 1000);
         return unixTimeStamp;
-      }
+    }
+
+    static formatDateToUrlSafeISOFormat(date: Date) {
+        return date.toISOString().replace(/[:.]/g, '-'); // Replace colons and dots
+    }
+
+    static removeField<T>(obj: T, fieldToRemove: keyof T): Partial<T> {
+        const result = { ...obj };
+        delete result[fieldToRemove];
+        return result;
+    }
 }

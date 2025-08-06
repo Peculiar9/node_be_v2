@@ -30,9 +30,6 @@ export class LoggingConfig {
             console.log('\n');
             console.log('SENTRY_DSN:', dsn);
             console.log('\n');
-            // Temporarily commenting out Sentry initialization for build purposes
-            // Will be re-enabled in the future when Sentry is properly configured
-            /*
             Sentry.init({
                 dsn,
                 environment: environment,
@@ -44,7 +41,6 @@ export class LoggingConfig {
                     return event;
                 },
             });
-            */
         }
 
         this.initialized = true;
@@ -57,8 +53,6 @@ export class LoggingConfig {
     public getRequestHandler(): RequestHandler {
         return (req, res, next) => {
             if (this.initialized) {
-                // Temporarily commenting out Sentry usage
-                /*
                 Sentry.addBreadcrumb({
                     category: 'http',
                     data: {
@@ -66,7 +60,6 @@ export class LoggingConfig {
                         method: req.method
                     }
                 });
-                */
             }
             next();
         };
@@ -75,8 +68,6 @@ export class LoggingConfig {
     public getTracingHandler(): RequestHandler {
         return (req, res, next) => {
             if (this.initialized) {
-                // Temporarily commenting out Sentry usage
-                /*
                 Sentry.addBreadcrumb({
                     category: 'http.tracing',
                     data: {
@@ -84,7 +75,6 @@ export class LoggingConfig {
                         method: req.method
                     }
                 });
-                */
             }
             next();
         };
@@ -93,15 +83,12 @@ export class LoggingConfig {
     public getErrorHandler(): ErrorRequestHandler {
         return (error, req, res, next) => {
             if (this.initialized) {
-                // Temporarily commenting out Sentry usage
-                /*
                 Sentry.captureException(error, {
                     extra: {
                         url: req.url,
                         method: req.method
                     }
                 });
-                */
             }
             next(error);
         };
@@ -111,26 +98,20 @@ export class LoggingConfig {
         const environment = process.env.NODE_ENV || 'development';
         
         if (environment !== 'development' && this.initialized) {
-            // Temporarily commenting out Sentry usage
-            /*
             Sentry.captureException(error, {
                 extra: context
             });
-            */
         }
     }
 
-    public captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info', context?: Record<string, any>): void {
+    public captureMessage(message: string, level: 'info' | 'warning' | 'error' | 'debug' = 'info', context?: Record<string, any>): void {
         const environment = process.env.NODE_ENV || 'development';
         
         if (environment !== 'development' && this.initialized) {
-            // Temporarily commenting out Sentry usage
-            /*
             Sentry.captureMessage(message, {
                 level,
                 extra: context
             });
-            */
         }
     }
 }

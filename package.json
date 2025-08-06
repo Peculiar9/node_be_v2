@@ -6,6 +6,7 @@
     "start": "node dist/index.js",
     "dev": "nodemon",
     "build": "tsc",
+    "build:sourcemaps": "tsc && yarn sentry:sourcemaps",
     "buildprod": "tsc",
     "test": "jest",
     "lint": "eslint src --ext .ts",
@@ -13,13 +14,14 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepare": "husky install",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org orgName --project appName ./dist && sentry-cli sourcemaps upload --org orgName --project appName ./dist"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org gr33nwh33lz --project charging-station ./dist && sentry-cli sourcemaps upload --org gr33nwh33lz --project charging-station ./dist"
   },
   "dependencies": {
     "@aws-sdk/client-rekognition": "^3.731.1",
-    "@aws-sdk/client-s3": "^3.732.0",
+    "@aws-sdk/client-s3": "^3.850.0",
     "@aws-sdk/client-ses": "^3.731.1",
     "@aws-sdk/client-sns": "^3.732.0",
+    "@aws-sdk/s3-request-presigner": "^3.850.0",
     "@sentry/cli": "^2.43.0",
     "@sentry/node": "^9.10.0",
     "@sentry/tracing": "^7.120.3",
@@ -36,6 +38,8 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.2.0",
     "helmet": "^8.0.0",
     "inversify": "^6.0.1",
     "inversify-express-utils": "^6.4.3",
@@ -45,6 +49,8 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.3",
+    "stripe": "^18.3.0",
+    "typeorm": "^0.3.25",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
@@ -59,6 +65,7 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.5",
     "@types/pg": "^8.10.9",
+    "@types/stripe": "^8.0.417",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",

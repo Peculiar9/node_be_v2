@@ -5,9 +5,13 @@ import { TransactionManager } from '../Repository/SQL/Abstractions/TransactionMa
 import { User } from '../../Core/Application/Entities/User';
 import { getEntityMetadata, getIndexMetadata } from '../../extensions/decorators';
 import { DatabaseError } from '../../Core/Application/Error/AppError';
-import { Verification } from '../../Core/Application/Entities/Verification';
+import { car_features, charger_connectors, ev_car_models } from '../../static/data/seed_data';
 import { Console } from '../Utils/Console';
 import { LinkedAccounts } from '../../Core/Application/Entities/LinkedAccounts';
+import { FileManager } from '../../Core/Application/Entities/FileManager';
+import { PaymentTransaction } from '../../Core/Application/Entities/PaymentTransaction';
+import { PaymentMethod } from '../../Core/Application/Entities/PaymentMethod';
+import { UserKYC } from '../../Core/Application/Entities/UserKYC';
 
 @injectable()
 export class DatabaseInitializer {
@@ -16,52 +20,58 @@ export class DatabaseInitializer {
     ) {}
 
     async initializeTables(): Promise<void> {
-        try {
-            await this.transactionManager.beginTransaction();
-            Console.info("Database initialization started");
-    
-            const entityTableMap = new Map<
-            typeof User 
-            | typeof Verification 
-            | typeof LinkedAccounts,
-            TableNames>([                
-                [User, TableNames.USERS],
-                [Verification, TableNames.VERIFICATIONS],
-                [LinkedAccounts, TableNames.LINKED_ACCOUNTS],
-            ]);
-    
-            const errors: Error[] = [];
-            
-            for (const [Entity, tableName] of entityTableMap) {
-                try {
-                    Console.info(`Processing table`, { tableName });
-                    const tableExists = await this.checkTableExists(tableName);
-                    if (!tableExists) {
-                        Console.info(`Table does not exist, creating`, { tableName });
-                        await this.createTableIfNotExists(Entity, tableName);
-                        // await this.seedDataToDatabase(tableName);
-                    } else {
-                        Console.info(`Table exists, updating schema`, { tableName });
-                        await this.updateTableSchema(Entity, tableName);
-                    }
-                } catch (error: any) {
-                    Console.error(error, { message: `Error processing table`, tableName });
-                    errors.push(error);
+        // STEP 1: DEFINE THE CORRECT AND FINAL CREATION ORDER
+        const creationOrder = [
+            { entity: User, tableName: TableNames.USERS },
+            { entity: FileManager, tableName: TableNames.FILE_MANAGER },
+            { entity: LinkedAccounts, tableName: TableNames.LINKED_ACCOUNTS },
+            { entity: PaymentMethod, tableName: TableNames.PAYMENT_METHOD },
+            { entity: PaymentTransaction, tableName: TableNames.PAYMENTS },
+            { entity: UserKYC, tableName: TableNames.USER_KYC}
+        ];
+
+        // STEP 2: PROCESS EACH TABLE INDIVIDUALLY TO ISOLATE FAILURES
+        for (const { entity, tableName } of creationOrder) {
+            Console.info(`Starting transaction for table: ${tableName}`);
+            try {
+                // Each table gets its own transaction. This stops the cascading "transaction aborted" errors.
+                await this.transactionManager.beginTransaction();
+
+                const tableExists = await this.checkTableExists(tableName);
+
+                if (!tableExists) {
+                    Console.info(`-> Table does not exist. Attempting to create: ${tableName}`);
+                    await this.createTableIfNotExists(entity, tableName);
+                    Console.info(`-> Successfully created table: ${tableName}`);
+                    
+                    // Seeding is part of the same transaction for atomicity.
+                    await this.seedDataToDatabase(tableName);
+                    Console.info(`-> Successfully seeded data for table: ${tableName}`);
+                } else {
+                    Console.info(`-> Table exists. Attempting to update schema: ${tableName}`);
+                    await this.updateTableSchema(entity, tableName);
+                    Console.info(`-> Successfully updated schema for table: ${tableName}`);
                 }
-            }
-    
-            if (errors.length > 0) {
-                Console.error(new Error(`Failed to initialize/update tables`), { errorCount: errors.length, errors: errors.map(e => e.message) });
-                throw new DatabaseError(`Failed to initialize/update some tables: ${errors.map(e => e.message).join(', ')}`);
-            } else {
+
                 await this.transactionManager.commit();
-                Console.info('All database tables initialized/updated successfully');
+                Console.info(`Committed transaction for table: ${tableName}\n`);
+
+            } catch (error: any) {
+                // If we are here, this specific table is the ROOT CAUSE of the failure.
+                Console.error(error, { message: `FATAL ERROR: Transaction failed for table: ${tableName}. This is the primary point of failure.` });
+                
+                try {
+                    await this.transactionManager.rollback();
+                } catch (rollbackError) {
+                    Console.error(rollbackError as Error, { message: 'Rollback failed after initialization error.'});
+                }
+                
+                // Re-throw the catastrophic error to stop the server startup.
+                throw new DatabaseError(`Failed to initialize table: ${tableName}. Reason: ${error.message}`);
             }
-        } catch (error) {
-            await this.transactionManager.rollback();
-            Console.error(error as Error, {message: 'Failed to initialize/update database tables:'});
-            throw error;
         }
+
+        Console.info('All database tables initialized/updated successfully');
     }
 
     private async createTableIfNotExists(entity: Function, tableName: string): Promise<void> {
@@ -218,7 +228,29 @@ export class DatabaseInitializer {
         }
     }
 
-   
+    private async seedDataToDatabase(tableName: string): Promise<void> {
+        // Console.info(`Starting data seeding`, { tableName });
+        // try {
+        //     switch (tableName) {
+        //         case TableNames.EV_CAR_MODELS:
+        //             await this.seedEVCarModels();
+        //             break;
+        //         case TableNames.CHARGER_CONNECTORS:
+        //             await this.seedChargerConnectors();
+        //             break;
+        //         case TableNames.CAR_FEATURES:
+        //             await this.seedCarFeatures();
+        //             break;
+        //         default:
+        //             Console.info(`No seed data available for table`, { tableName });
+        //             break;
+        //     }
+        //     Console.info(`Data seeding completed successfully`, { tableName });
+        // } catch (error: any) {
+        //     Console.error(error, { message: `Failed to seed data for table`, tableName });
+        //     throw new DatabaseError(`Failed to seed data for ${tableName}: ${error.message}`);
+        // }
+    }
 
     private async checkTableExists(tableName: string): Promise<boolean> {
         try {
@@ -239,4 +271,82 @@ export class DatabaseInitializer {
             throw new DatabaseError(`Failed to check if table ${tableName} exists: ${error.message}`);
         }
     }
+
+    // PostGIS installations and configurations //
+    //  ========================================//
+
+    private async checkPostGISStatus(): Promise<{ installed: boolean; version?: string; schema?: string }> {
+        const client = await this.transactionManager.getStandaloneClient();
+        try {
+            Console.info('Checking PostGIS installation status...');
+            const extensionQuery = `
+                SELECT e.extname, e.extversion, n.nspname as schema
+                FROM pg_extension e
+                JOIN pg_namespace n ON n.oid = e.extnamespace
+                WHERE e.extname = 'postgis';
+            `;
+            const { rows: extensions } = await client.query(extensionQuery);
+            console.log('PostGIS installation status:', extensions);
+            if (extensions.length > 0) {
+                return { installed: true, version: extensions[0].extversion, schema: extensions[0].schema };
+            } else {
+                Console.info('PostGIS extension is NOT installed');
+                return { installed: false };
+            }
+        } catch (error: any) {
+            Console.error(error, { message: 'Failed to check PostGIS status' });
+            return { installed: false }; // Don't re-throw, just report status
+        } finally {
+            await client.release();
+        }
+    }
+
+    private async installPostGISExtensions(): Promise<void> {
+        const status = await this.checkPostGISStatus();
+        if (status.installed) {
+            Console.info(`PostGIS is already installed (version ${status.version} in schema ${status.schema}). Skipping installation.`);
+            return;
+        }
+
+        Console.info('Attempting to install PostGIS extensions...');
+        // Extension installation should happen outside regular app transactions, or in its own auto-committed one.
+        // For pg library, each query is auto-committed unless inside BEGIN/COMMIT block.
+        // We'll use a standalone client for this.
+        const client = await this.transactionManager.getStandaloneClient();
+        try {
+            Console.info('Using standalone client for PostGIS installation.');
+            // It's often recommended to install extensions in the 'public' schema explicitly if that's your goal.
+            // Superuser privileges are typically required for CREATE EXTENSION.
+            await client.query('CREATE EXTENSION IF NOT EXISTS postgis SCHEMA public;');
+            Console.info('CREATE EXTENSION IF NOT EXISTS postgis SCHEMA public; --- Executed');
+
+            // Install related extensions if needed, also with explicit schema
+            await client.query('CREATE EXTENSION IF NOT EXISTS postgis_topology SCHEMA topology;'); // Installs into 'topology' schema
+             Console.info('CREATE EXTENSION IF NOT EXISTS postgis_topology SCHEMA topology; --- Executed');
+            await client.query('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;');
+             Console.info('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public; --- Executed');
+
+            const postInstallStatus = await this.checkPostGISStatus(); // Re-check status using its own client logic
+            if (!postInstallStatus.installed) {
+                throw new Error('PostGIS installation command executed, but verification check failed. Check PostgreSQL logs and user permissions.');
+            }
+            Console.info('PostGIS and related extensions installed/verified successfully.', { version: postInstallStatus.version, schema: postInstallStatus.schema });
+
+        } catch (error: any) {
+            Console.error(error, { message: 'Failed during PostGIS extension installation process.'});
+            // Log the specific error from PostgreSQL if available
+            if (error.detail) {
+                Console.error(error.detail, { detail: error.detail });
+                console.log("PostgreSQL Error Detail reached");
+            }
+            if (error.hint) {
+                Console.error(error.hint, { hint: error.hint })
+                console.log("PostgreSQL Error Hint reached");
+            }
+            throw new DatabaseError(`Failed to install PostGIS extensions: ${error.message}. Ensure DB user has superuser privileges.`);
+        } finally {
+            await client.release();
+        }
+    }
+
 }

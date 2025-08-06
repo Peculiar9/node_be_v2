@@ -1,5 +1,6 @@
 export enum UserStatus {
     ACTIVE = 'active',
+    VERIFIED = 'verified',
     INACTIVE = 'inactive',        // Voluntarily deactivated account
     ARCHIVED = 'archived',        // Long-term inactive account
     DELETED = 'deleted', 

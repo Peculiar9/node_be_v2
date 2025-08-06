@@ -1,4 +1,5 @@
 import { UserRole } from '../Enums/UserRole';
+import { LoginType } from '../Enums/LoginType';
 import { ILocation, IUser } from '../Interface/Entities/auth-and-user/IUser';
 import { UserResponseDTO } from './UserDTO';
 import { 
@@ -9,9 +10,11 @@ import {
   Matches, 
   IsPhoneNumber,
   IsOptional,
-  IsDate
+  IsDate,
+  IsObject
 } from 'class-validator';
 import { Expose } from 'class-transformer';
+
 
 export interface LoginResponseDTO {
     accessToken: string;
@@ -55,8 +58,56 @@ export interface UserCreateResponseDTO {
     }
   }
 
+@Expose()
+export class LoginDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Identifier is required' })
+    @IsString({ message: 'Identifier must be a string' })
+    identifier: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Password is required' })
+    @IsString({ message: 'Password must be a string' })
+    password: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Login type is required' })
+    @IsString({ message: 'Login type must be a string' })
+    loginType: LoginType;
+}
 
 // @Expose()
+@Expose()
+export class VerifyEmailDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Email is required' })
+    @IsString({ message: 'Email must be a string' })
+    @IsEmail({}, { message: 'Email must be a valid email address' })
+    email: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Verification code is required' })
+    @IsString({ message: 'Verification code must be a string' })
+    @Length(4, 4, { message: 'Verification code must be 4 digits' })
+    @Matches(/^\d{4}$/, { message: 'Verification code must contain only digits' })
+    code: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Reference is required' })
+    @IsString({ message: 'Reference must be a string' })
+    reference: string;
+}
+
+@Expose()
+export class EmailSignUpDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Email is required' })
+    @IsString({ message: 'Email must be a string' })
+    @IsEmail({}, { message: 'Email must be a valid email address' })
+    email: string;
+}
+
+@Expose()
 export class PhoneSignUpDTO {
     @Expose()
     @IsNotEmpty({ message: 'Phone number is required' })
@@ -76,12 +127,26 @@ export class PhoneSignUpDTO {
 }
 
 @Expose()
+export class EmailLoginDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Email is required' })
+    @IsString({ message: 'Email must be a string' })
+    @IsEmail({}, { message: 'Email must be a valid email address' })
+    email: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Password is required' })
+    @IsString({ message: 'Password must be a string' })
+    @Length(8, 255, { message: 'Password must be between 8 and 255 characters long' })
+    password: string;
+}
+
 export class PhoneLoginDTO {
     @Expose()
     @IsNotEmpty({ message: 'Phone number is required' })
     @IsString({ message: 'Phone number must be a string' })
-    // @IsPhoneNumber('US', { message: 'Phone number must be a valid US phone number' })
-    @IsPhoneNumber('NG', { message: 'Phone number must be a valid Nigerian phone number' })
+    @IsPhoneNumber('US', { message: 'Phone number must be a valid US phone number' })
+    // @IsPhoneNumber('NG', { message: 'Phone number must be a valid Nigerian phone number' })
     international_phone: string;
 
     @Expose()
@@ -136,29 +201,54 @@ export class RegisterUserDTO {
     full_name: string;
 
     @Expose()
-    @IsNotEmpty({ message: 'Email is required' })
-    @IsString({ message: 'Email must be a string' })
-    @IsEmail({}, { message: 'Email must be a valid email address' })
-    email: string;
+    @IsString({ message: 'Country code must be a string' })
+    @Matches(/^\+\d{1,4}$/, { 
+        message: 'Country code must start with a plus (+) symbol followed by 1-4 digits' 
+    })
+    @IsNotEmpty({ message: 'Country code is required' })
+    country_code: string;
+    
+    @Expose()
+    @IsNotEmpty({ message: 'Phone is required' })
+    @IsString({ message: 'Phone must be a string' })
+    @Matches(/^\d{1,14}$/, { 
+      message: 'Phone number must contain only digits and be 1-14 characters long' 
+  })
+    international_phone?: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Gender is required' })
+    @IsString({ message: 'Gender must be a string' })
+    @Length(1, 1, { message: 'Gender must be a single character' })
+    gender: string;
 
     @Expose()
     @IsOptional()
     @IsNotEmpty({ message: 'Date of birth is required' })
-    @IsString({ message: 'Date of birth must be a string' })
+    // @IsString({ message: 'Date of birth must be a string' })
     @IsDate({ message: 'Date of birth must be a valid date' })
-    dob?: string;
-
-    @Expose()
-    @IsNotEmpty({ message: 'Address is required' })
-    @IsString({ message: 'Address must be a string' })
-    address: string;
+    dob?: Date;
 
     @Expose()
     @IsOptional()
+    @IsNotEmpty({ message: 'Address is required' })
+    @IsObject({ message: 'Address must be an object' })
+    address?: ILocation;
+
+    @Expose()
     @IsNotEmpty({ message: 'Password is required' })
     @IsString({ message: 'Password must be a string' })
     @Length(8, 255, { message: 'Password must be between 8 and 255 characters long' })
-    password?: string;
+    password: string;
+
+    image?: Express.Multer.File; //multer file
+
+    // @Expose()
+    // @IsOptional()
+    // @IsNotEmpty({ message: 'Password is required' })
+    // @IsString({ message: 'Password must be a string' })
+    // @Length(8, 255, { message: 'Password must be between 8 and 255 characters long' })
+    // password?: string;
 }
 
 @Expose()
@@ -170,12 +260,31 @@ export class RefreshTokenDTO {
 }
 
 @Expose()
+export class EmailSetupPasswordDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Email is required' })
+    @IsString({ message: 'Email must be a string' })
+    @IsEmail({}, { message: 'Email must be a valid email address' })
+    email: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Password is required' })
+    @IsString({ message: 'Password must be a string' })
+    @Length(8, 255, { message: 'Password must be between 8 and 255 characters long' })
+    password: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Verification reference is required' })
+    @IsString({ message: 'Verification reference must be a string' })
+    reference: string;
+}
+
 export class SetupPasswordDTO {
     @Expose()
     @IsNotEmpty({ message: 'Phone number is required' })
     @IsString({ message: 'Phone number must be a string' })
-    // @IsPhoneNumber('US', { message: 'Phone number must be a valid US phone number' })
-    @IsPhoneNumber('NG', { message: 'Phone number must be a valid Nigerian phone number' })
+    @IsPhoneNumber('US', { message: 'Phone number must be a valid US phone number' })
+    // @IsPhoneNumber('NG', { message: 'Phone number must be a valid Nigerian phone number' })
     international_phone: string;
 
     @Expose()
@@ -188,4 +297,16 @@ export class SetupPasswordDTO {
     @IsNotEmpty({ message: 'Verification token is required' })
     @IsString({ message: 'Verification token must be a string' })
     token: string;
+}
+
+export interface IPhoneVerificationResponse {
+  reference: string;
+  expiry: number;
+  phone?: string;
+}
+
+export interface IEmailVerificationResponse { 
+  reference: string;
+  expiry: number;
+  email?: string;
 }

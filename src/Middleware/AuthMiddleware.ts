@@ -4,22 +4,21 @@ import { TYPES } from '../Core/Types/Constants';
 import { AuthService } from '../Infrastructure/Services/AuthService';
 import { AuthenticationError, ForbiddenError } from '../Core/Application/Error/AppError';
 import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
-import { UserRepository } from '../Infrastructure/Repository/SQL/users/UserRepository';
 import { DIContainer } from '../Core/DIContainer';
 import { IAuthService } from '../Core/Application/Interface/Services/IAuthService';
-import { TransactionManager } from '../Infrastructure/Repository/SQL/Abstractions/TransactionManager';
 import { IUser } from '../Core/Application/Interface/Entities/auth-and-user/IUser';
 import { UserRole } from '../Core/Application/Enums/UserRole';
+import { AuthenticationService } from '../Infrastructure/Services/AuthenticationService';
+import { IAuthenticationService } from '../Core/Application/Interface/Services/IAuthenticationService';
 
 @injectable()
 export class AuthMiddleware {
   // private static getTransactionManager(): TransactionManager {
   //   return DIContainer.getInstance().get<TransactionManager>(TYPES.TransactionManager);
   // }
-  private readonly transactionManager: TransactionManager;
   constructor(
     @inject(TYPES.AuthService) private authService: IAuthService,
-    @inject(TYPES.UserRepository) private userRepository: UserRepository,
+    @inject(TYPES.AuthenticationService) private authenticationService: IAuthenticationService,
   ) {
     // this.transactionManager = AuthMiddleware.getTransactionManager();
     // console.log('it got here auth middleware constructor', this.transactionManager);
@@ -57,8 +56,8 @@ export class AuthMiddleware {
   private static createInstance(): AuthMiddleware {
     const container = DIContainer.getInstance();
     const authService = container.get<AuthService>(TYPES.AuthService);
-    const userRepository = container.get<UserRepository>(TYPES.UserRepository);
-    return new AuthMiddleware(authService, userRepository);
+    const authenticationService = container.get<AuthenticationService>(TYPES.AuthenticationService);
+    return new AuthMiddleware(authService, authenticationService);
   }
   
   private authenticateInstance = async (req: Request, res: Response, next: NextFunction) => {
@@ -119,6 +118,7 @@ export class AuthMiddleware {
 
   private extractToken(req: Request): string {
     const authHeader = req.headers.authorization;
+    console.log("Request Header: ", req.headers);
     if (!authHeader) {
       throw new AuthenticationError(ResponseMessage.INVALID_AUTH_HEADER_MESSAGE);
     }
@@ -145,9 +145,10 @@ export class AuthMiddleware {
 
   private async validateTokenAndUser(token: string, requiredRole?: UserRole) {
     console.log("it got here validate token and user");
-    const decodedToken = await this.authService.verifyToken(token);
-    const user: IUser = await this.authService.validateUser(decodedToken.sub as string);
-    console.log('user', user);
+    const decodedToken = await this.authenticationService.verifyToken(token);
+    const user: IUser = await this.authenticationService.validateUser(decodedToken.sub as string);
+    console.log('decodedToken from auth middleware', decodedToken)
+    console.log('user from auth middleware', user);
     if (requiredRole && !user?.roles?.includes(requiredRole)) {
       throw new ForbiddenError(ResponseMessage.INSUFFICIENT_PRIVILEDGES_MESSAGE);
     }

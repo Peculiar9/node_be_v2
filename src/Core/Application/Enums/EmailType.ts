@@ -5,4 +5,6 @@ export enum EmailType {
     SUBSCRIPTION = 'subscription',
     PROFILE_UPDATE = 'profile-update',
     WAITLIST = 'waitlist',
+    OTP = 'otp',
+    PASSWORD_RESET_OTP = 'password-reset-otp',
 }

@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import { IOTPService } from "../../Core/Application/Interface/Services/IOTPService";
 import { TYPES } from "../../Core/Types/Constants";
-import { Verification } from "../../Core/Application/Entities/Verification";
+import { IVerification } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
 import  CryptoService from "../../Core/Services/CryptoService";
 import { UtilityService } from "../../Core/Services/UtilityService";
 import { VerificationRepository } from "../Repository/SQL/auth/VerificationRepository";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
 import { DatabaseIsolationLevel } from "../../Core/Application/Enums/DatabaseIsolationLevel";
-import { AuthenticationError } from "../../Core/Application/Error/AppError";
+import { AppError, AuthenticationError } from "../../Core/Application/Error/AppError";
 import { VerificationStatus } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
 import { ResponseMessage } from "../../Core/Application/Response/ResponseFormat";
 
@@ -19,7 +19,7 @@ export class OTPService implements IOTPService {
   ) {}
 
 
-    public async createOtpInstance(otp: string, salt: string): Promise<Verification> {
+    public async createOtpInstance(otp: string, salt: string): Promise<IVerification> {
         try {
 
             await this._transactionManager.beginTransaction({
@@ -36,27 +36,26 @@ export class OTPService implements IOTPService {
                 reference: UtilityService.generateUUID()
             }
             console.log("OTPService::createOtpInstance() => Verification: ", verification);
-            const result: Verification = await this._verificationRepository.create({
+            const result: IVerification = await this._verificationRepository.create({
                 user_id: undefined,
                 otp: {
-                    code: CryptoService.hashString(otp, salt),
+                    code: await CryptoService.hashString(otp, salt),
                     expiry: UtilityService.dateToUnix(new Date(Date.now() + 10 * 60 * 1000)), //expires in 10mins
                     attempts: 0,
                     last_attempt: UtilityService.dateToUnix(new Date()) || null,
                     verified: false
                 },
                 reference: UtilityService.generateUUID()
-            }) as Verification;
+            }) as IVerification;
             await this._transactionManager.commit();
             return result;
         } catch (error: any) {
-            //TODO: Handle error differently using as it was in the other services
             console.log("OTPService::createOtpInstance() => Error: ", error.message);
-            throw new Error(error.message);
+            throw new AppError("Failed to create OTP instance");
         }
     }
 
-public async updateOtpInstance(verificationId: string, otp: string, salt: string): Promise<Verification> {
+public async updateOtpInstance(verificationId: string, otp: string, salt: string): Promise<IVerification> {
     // try {
     //     await this._transactionManager.beginTransaction({
     //         isolationLevel: DatabaseIsolationLevel.READ_COMMITTED,

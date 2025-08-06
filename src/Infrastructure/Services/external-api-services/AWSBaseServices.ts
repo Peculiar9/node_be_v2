@@ -9,7 +9,9 @@ import { BucketName } from "../../../Core/Application/Enums/BucketName";
 import { APP_NAME } from "../../../Core/Types/Constants";
 // import { RekognitionClient, DetectTextCommand } from "@aws-sdk/client-rekognition";
 import { RekognitionClient } from "@aws-sdk/client-rekognition";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
+import { AWSFileFormatterHelper } from "./AWSFileFormatterHelper";
+import { TYPES } from "../../../Core/Types/Constants";
 import { ValidationError } from "../../../Core/Application/Error/AppError";
 import { UtilityService } from "../../../Core/Services/UtilityService";
 import { FileService } from "../FileService";
@@ -28,6 +30,9 @@ export class AWSBaseServices {
 
     constructor() {
         const region = EnvironmentConfig.get('AWS_REGION', 'us-east-1');
+        // Set default from email
+        process.env.AWS_SES_FROM_EMAIL = EnvironmentConfig.get('AWS_SES_FROM_EMAIL', 'no-reply@gr33nwh33lz.com');
+        
         const credentials = {
             accessKeyId: EnvironmentConfig.get('AWS_ACCESS_KEY_ID_EMAIL'), //TODO: Change to AWS_ACCESS_KEY_ID_KYC if it does not work with S3Client
             secretAccessKey: EnvironmentConfig.get('AWS_SECRET_ACCESS_KEY_EMAIL')
@@ -74,13 +79,10 @@ export class AWSBaseServices {
         }, null, 2));
     }
 
+    @inject(TYPES.AWSFileFormatterHelper) private fileFormatter!: AWSFileFormatterHelper;
+
     protected replaceVariables(template: string, variables: { [key: string]: string }): string {
-        let result = template;
-        for (const [key, value] of Object.entries(variables)) {
-            const placeholder = `{{${key}}}`;
-            result = result.replace(new RegExp(placeholder, 'g'), value);
-        }
-        return result;
+        return this.fileFormatter.formatTemplate(template, variables);
     }
 
     //parse email template
@@ -117,26 +119,28 @@ export class AWSBaseServices {
     }
 
     protected async getEmailTemplate(emailType: string, data: EmailData): Promise<string> {
-        this.logOperation('Email Template Fetch Started', {
-            emailType,
-            bucket: BucketName.EMAIL_TEMPLATE_S3_BUCKET
-        });
-
         try {
             const bucketName = BucketName.EMAIL_TEMPLATE_S3_BUCKET;
+            console.log("GetEmail Template => : BucketName: ", bucketName);
             const templateMap: Record<string, string> = {
                 [EmailType.VERIFICATION]: `${emailType}-email.html`,
                 [EmailType.SUBSCRIPTION]: `${emailType}-email.html`,
                 [EmailType.FORGOT_PASSWORD]: `${emailType}-email.html`,
-                [EmailType.PROFILE_UPDATE]: `${emailType}-email.html`
+                [EmailType.PASSWORD_RESET_OTP]: `${emailType}-email.html`,
+                [EmailType.PROFILE_UPDATE]: `${emailType}-email.html`,
+                [EmailType.OTP]: `${emailType}-email.html`
             };
 
             const key = templateMap[emailType];
+            console.log("GetEmail Template => : Key: ", key);
             if (!key) {
                 throw new Error(`Invalid email type: ${emailType}`);
             }
 
-            const template = await this.getEmailFile(bucketName, key, data);
+            // Log bucket name and template key for debugging
+        console.log('[EMAIL TEMPLATE FETCH] S3 Bucket:', bucketName);
+        console.log('[EMAIL TEMPLATE FETCH] Template Key:', key);
+        const template = await this.getEmailFile(bucketName, key, data);
             
             this.logOperation('Email Template Fetch Completed', {
                 emailType,
@@ -174,6 +178,9 @@ export class AWSBaseServices {
 
     protected async getEmailFile(bucketName: string, key: string, data: EmailData): Promise<string> {
         try {
+            // Log again here for deeper visibility
+            console.log('[EMAIL TEMPLATE S3 FETCH] S3 Bucket:', bucketName);
+            console.log('[EMAIL TEMPLATE S3 FETCH] Template Key:', key);
             const command = new GetObjectCommand({
                 Bucket: bucketName,
                 Key: key
@@ -189,17 +196,16 @@ export class AWSBaseServices {
                     stream.on('error', reject);
                     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
                 });
-
+            
+            console.log('[EMAIL TEMPLATE S3 FETCH] Response ContentType:', response.ContentType)
             let template = '';
             if (response.Body) {
                 template = await streamToString(response.Body as NodeJS.ReadableStream);
             }
 
-            // Replace placeholders with actual data
-            Object.entries(data).forEach(([key, value]) => {
-                template = template.replace(new RegExp(`{{${key}}}`, 'g'), value);
-            });
-
+            // Format template with variables using the formatter helper
+            template = this.fileFormatter.formatTemplate(template, this.fileFormatter.createEmailVariables(data));
+            console.log('[EMAIL TEMPLATE S3 FETCH] Response template:', template);
             return template;
         } catch (error: any) {
             console.error('Error getting email template:', error);
@@ -214,6 +220,14 @@ export class AWSBaseServices {
         contentType,
     }: FileUploadOptions): Promise<void> {
         try {
+
+            console.log("AWSBaseServices::uploadFile() => ", {
+                bucketName,
+                directoryPath,
+                fileName,
+                contentType
+            });
+
             this.logOperation('S3 Upload Started', {
                 bucket: bucketName,
                 fileName,

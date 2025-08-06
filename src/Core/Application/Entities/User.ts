@@ -1,10 +1,11 @@
-import { IBillingInfo, ICardToken, ILocation, IUser } from '../Interface/Entities/auth-and-user/IUser';
+import { AuthMethod, IBillingInfo, ICardToken, ILocation, IUser } from '../Interface/Entities/auth-and-user/IUser';
 import { CreateUserDTO, UpdateUserDTO } from '../DTOs/UserDTO';
-import { InternalServerError, ValidationError } from '../Error/AppError';
+import {  ValidationError } from '../Error/AppError';
 import { UtilityService } from '../../Services/UtilityService';
 import { UserRole } from '../Enums/UserRole';
-import { Column, CompositeIndex, ForeignKey, Index } from '../../../extensions/decorators';
+import { Column, CompositeIndex,  Index } from '../../../extensions/decorators';
 import { UserStatus } from '../Enums/UserStatus';
+import { RegisterUserDTOV2 } from '../DTOs/AuthDTOV2';
 
 
 @CompositeIndex(['first_name', 'last_name'])
@@ -31,14 +32,16 @@ export class User implements IUser {
     @Column('VARCHAR(50) NOT NULL DEFAULT \'inactive\'')
     public status: string;
 
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public salt: string;
+
     @Column('BOOLEAN DEFAULT false')
     public is_active: boolean;
 
     @Column('TEXT DEFAULT NULL')
     public user_secret: string | null | undefined;
 
-    @Column('VARCHAR(255) DEFAULT NULL')
-    public salt: string | null | undefined;
+    // Removed salt field as bcrypt handles salt internally
 
     @Column('TEXT DEFAULT NULL')
     public refresh_token: string | null | undefined;
@@ -48,6 +51,9 @@ export class User implements IUser {
 
     @Column('TEXT DEFAULT NULL')
     public reset_token: string | null | undefined;
+
+    @Column('VARCHAR(255) DEFAULT NULL')
+    public reset_token_expires: number | null | undefined;
 
     @Index({ unique: false })
     @Column('TIMESTAMP DEFAULT NULL')
@@ -172,7 +178,6 @@ export class User implements IUser {
 
     static async createFromDTO(dto: CreateUserDTO): Promise<User | undefined> {
         try{
-            const { hash: password, salt } = await UtilityService.generatePasswordHash(dto.password);
             let email;
 
             if(dto.email === '') {
@@ -188,8 +193,7 @@ export class User implements IUser {
                 first_name: dto.first_name,
                 last_name: dto.last_name,
                 email,
-                password,
-                salt,
+                password: dto.password,
                 user_secret,
                 profile_image: dto.profile_image || '',
                 // status: UserStatus.INACTIVE,
@@ -199,7 +203,43 @@ export class User implements IUser {
             };
 
             const user = new User(userData);
-            user.validate();
+            await user.validate();
+            return user;
+        }catch(error: any){
+            console.error('User Object creation: ', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
+    }
+    static async createFromRegisterUserDTO(dto: RegisterUserDTOV2): Promise<User | undefined> {
+        try{
+            let email;
+
+            if(dto.email === '') {
+                email = null;
+            } else {
+                email = dto.email.toLowerCase();
+            }
+
+            console.log("Email: ", {email});
+            const user_secret = UtilityService.generateUserSecret();
+            const userData: Partial<IUser> = {
+                // _id: UtilityService.generateUUID(),
+                first_name: dto.first_name,
+                last_name: dto.last_name,
+                email,
+                password: dto.password,
+                user_secret,
+                status: UserStatus.INACTIVE,
+                is_active: true,
+                refresh_token: '',  // Initialize with empty string
+                roles: [dto.role],
+            };
+
+            const user = new User(userData);
+            await user.validate();
             return user;
         }catch(error: any){
             console.error('User Object creation: ', {
@@ -210,12 +250,10 @@ export class User implements IUser {
         }
     }
 
-    static async createFromPhone(phoneNumber: string, salt: string): Promise<User | undefined> {
+    static async createFromPhone(phoneNumber: string): Promise<User | undefined> {
         try{
             const user_secret = UtilityService.generateUserSecret();
-            if(!salt){
-                throw new InternalServerError('Salt is required');
-            }
+
 
             const userData: Partial<IUser> = {
                 // _id: UtilityService.generateUUID(),
@@ -228,13 +266,46 @@ export class User implements IUser {
                 international_phone: '',
                 drivers_license: '',
                 auth_method: '',
-                salt,
+
                 last_login: null,
                 user_secret,
                 profile_image: '',
                 status: UserStatus.INACTIVE,
                 is_active: true,
-                refresh_token: '',  // Initialize with empty string
+                // refresh_token: '',  // Initialize with empty string
+                roles: [UserRole.USER],
+                __v: 0
+            };
+
+            const user = new User(userData);
+            return user;
+        }catch(error: any){
+            console.error('User Object creation: ', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
+    }
+
+    static async createFromEmail(email: string): Promise<User | undefined> {
+        try{
+            const user_secret = UtilityService.generateUserSecret();
+            const userData: Partial<IUser> = {
+                // _id: UtilityService.generateUUID(),
+                phone: UtilityService.generateUUID(),
+                email,
+                // Required NOT NULL fields with UUIDs instead of empty strings
+                first_name: UtilityService.generateUUID(),
+                last_name: UtilityService.generateUUID(),
+                password: UtilityService.generateUUID(),
+                // Other fields
+                auth_method: AuthMethod.PASSWORD,
+
+                last_login: null,
+                user_secret,
+                status: UserStatus.INACTIVE,
+                is_active: true,
                 roles: [UserRole.USER],
                 __v: 0
             };
@@ -277,48 +348,39 @@ export class User implements IUser {
             throw error;
         }
     }
-    static async updateFromDTO(existingUser: User, dto: UpdateUserDTO): Promise<User> {
-        const updates: Partial<IUser> = { ...dto };
-        
-        if (dto.password) {
-            const { hash: password, salt } = await UtilityService.generatePasswordHash(dto.password);
-            updates.password = password;
-            updates.salt = salt;
-        }
+    static async updateFromDTO(existingUser: IUser, dto: UpdateUserDTO): Promise<Partial<IUser>> {
+        try {
+            // Only include fields that are actually being updated
+            const userData: Partial<IUser> = {
+                _id: existingUser._id, // Keep the ID for reference
+                status: UserStatus.ACTIVE,
+                ...dto,
+            };
 
-        updates.updated_at = new Date().toISOString();
-        
-        const updatedUser = new User({ ...existingUser, ...updates });
-        updatedUser.validate();
-        return updatedUser;
+            const user = new User(userData);
+            await user.validateForUpdate();
+            return userData;
+        } catch (error: any) {
+            console.error('User Object update: ', {
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
     }
 
-    private validate(): void {
-        // Required fields validation
-        const requiredFields: (keyof IUser)[] = [
-            'email',
-            'first_name',
-            'last_name',
-            'status',
-            'roles'
-        ];
-
-        for (const field of requiredFields) {
-            if (!this[field]) {
-                throw new ValidationError(`${field.replace('_', ' ')} is required`);
-            }
-        }
-        if (!this.isValidEmail(this.email as string)) {
+    private async validate(): Promise<void> {
+        // Validation for creation
+        if (this.email && !this.isValidEmail(this.email as string)) {
             throw new ValidationError('Invalid email format');
         }
 
-        if (!this.roles?.length) {
-            throw new ValidationError('At least one role is required');
+        if (this.roles?.length) {
+            this.validateRoles();
         }
-        this.validateRoles();
 
         // Status validation
-        const validStatuses = ['active', 'inactive', 'pending'];
+        const validStatuses = ['active', 'inactive', 'pending', 'verified'];
         if (!validStatuses.includes(this.status as string)) {
             throw new ValidationError('Invalid status');
         }
@@ -332,11 +394,38 @@ export class User implements IUser {
         }
     }
 
-    private validateRoles(): void {
+    private async validateForUpdate(): Promise<void> {
+        // Validation for updates
+        if (this.email && !this.isValidEmail(this.email as string)) {
+            throw new ValidationError('Invalid email format');
+        }
+
+        if (this.roles?.length) {
+            this.validateRoles();
+        }
+
+        // Status validation
+        const validStatuses = ['active', 'inactive', 'pending'];
+        if (this.status && !validStatuses.includes(this.status as string)) {
+            throw new ValidationError('Invalid status');
+        }
+
+        // Date format validation
+        if(this.updated_at || this.last_login || this.created_at){
+            const dateFields = ['updated_at', 'last_login', 'created_at'];
+            for (const field of dateFields) {
+              if (this[field as keyof User] && !this.isValidISODate(this[field as keyof User] as string)) {
+                    throw new ValidationError(`Invalid ${field.replace('_', ' ')} date format`);
+                }
+            }
+        }
+    }
+
+    private validateRoles(roles?: string[] | UserRole[]): void {
         const validRoles = Object.values(UserRole);
-        const invalidRoles = this.roles.filter(role => !validRoles.includes(role as UserRole));
-        if (invalidRoles.length > 0) {
-            throw new ValidationError(`Invalid roles: ${invalidRoles.join(', ')}`);
+        const invalidRoles = roles?.filter(role => !validRoles.includes(role as UserRole));
+        if (invalidRoles?.length as number > 0) {
+            throw new ValidationError(`Invalid roles: ${(invalidRoles as any).join(', ')}`);
         }
     }
 

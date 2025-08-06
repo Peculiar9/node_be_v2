@@ -2,6 +2,7 @@ import { controller, httpGet } from "inversify-express-utils";
 import { UtilityService } from "../Core/Services/UtilityService";
 import { API_DOC_URL, API_PATH, APP_NAME, APP_VERSION } from "../Core/Types/Constants";
 import { BaseController } from "./BaseController";
+import { ResponseMessage } from "../Core/Application/Response/ResponseFormat";
 
 @controller(``)
 export class InitController extends BaseController{
@@ -20,7 +21,7 @@ export class InitController extends BaseController{
     async healthCheck(){
         return {
             status: 'ok',
-            message: 'The service is running!!!'
+            message: ResponseMessage.SERVICE_RUNNING
         }
      }
      

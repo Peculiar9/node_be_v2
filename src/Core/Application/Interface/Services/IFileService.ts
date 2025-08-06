@@ -1,6 +1,11 @@
 import { Readable } from 'stream';
+import { IUser } from '../Entities/auth-and-user/IUser';
+import { FileManager } from '../../Entities/FileManager';
 
-interface IFileService {
+export interface IFileService {
+
+  uploadFile(userId: string, file: Express.Multer.File): Promise<FileManager>;
+
   /**
    * Formats a file based on its type and performs specific actions (e.g., email or image processing).
    * @param Body - The file's content as a readable stream.
@@ -11,16 +16,6 @@ interface IFileService {
   fileFormatter(Body: Readable, ContentType: string, fileKey: string): Promise<Readable>;
 
   /**
-   * Renames a file based on the upload purpose, file type, user ID, and optional distinguisher.
-   * @param uploadPurpose - The purpose of the file upload.
-   * @param fileType - The type of the file (e.g., image, text).
-   * @param userId - The user ID associated with the file.
-   * @param distinguisher - An optional string to distinguish files.
-   * @returns A tuple containing the directory name and file name.
-   */
-  fileRename(uploadPurpose: UploadPurpose, fileType: string, userId: string, distinguisher?: string): [string, string];
-
-  /**
    * Saves file metadata to the database asynchronously.
    * @param userId - The ID of the user associated with the file.
    * @param fileType - The type of the file.
@@ -28,12 +23,7 @@ interface IFileService {
    * @param fileKeyData - An optional tuple of directory name and file key.
    * @returns A promise resolving to the file metadata stored in the database.
    */
-  saveFileMetadataToDatabaseAsync(
-    userId: string,
-    fileType: string,
-    uploadPurpose: UploadPurpose,
-    fileKeyData?: [string, string]
-  ): Promise<FileManager>;
+  saveFileMetaDataToDatabaseAsync(userId: string, fileType: string, uploadPurpose: string, fileName: string, fileUrl: string): Promise<FileManager> 
 
   /**
    * Validates the file type.
@@ -59,18 +49,18 @@ interface IFileService {
 }
 
 // Supporting types used in the interface
-interface FileManager {
-  create(fileData: FileData): void;
-}
+// interface FileManager {
+//   create(fileData: FileData): void;
+// }
 
-interface FileData {
-  key: string;
-  userId: string;
-  uploadPurpose: UploadPurpose;
-  bucketName: BucketName;
-  contentType: string;
-  createdTime: number;
-}
+// interface FileData {
+//   key: string;
+//   userId: string;
+//   uploadPurpose: UploadPurpose;
+//   bucketName: BucketName;
+//   contentType: string;
+//   createdTime: number;
+// }
 
 enum UploadPurpose {
   Verification = 'Verification',
