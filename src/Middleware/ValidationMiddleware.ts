@@ -39,13 +39,10 @@ import { Request, Response, NextFunction } from 'express';
 export function validationMiddleware(dtoClass: any) {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
-        // Create a new instance of the DTO class first
         const instance = new dtoClass();
-        
-        // Then transform the plain request body to the instance
         const dtoObject = plainToInstance(dtoClass, req.body, {
             enableImplicitConversion: true,
-            excludeExtraneousValues: true
+            // excludeExtraneousValues: true removed - we rely on class-validator decorators instead
         });
         console.log("DTO Object", dtoObject);
 
@@ -54,7 +51,7 @@ export function validationMiddleware(dtoClass: any) {
           whitelist: true,              // Remove properties that do not have decorators
           forbidNonWhitelisted: true,   // Throw an error when non-whitelisted properties are provided
         });
-        
+        console.log("Error length for DTO: ", errors.length);
         if (errors.length > 0) {
           return res.status(400).json({
             status: 'error',

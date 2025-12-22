@@ -3,7 +3,8 @@ import { LoggingConfig } from '../Config/LoggingConfig';
 export enum LogLevel {
     INFO = 'info',
     WARNING = 'warning',
-    ERROR = 'error'
+    ERROR = 'error',
+    DEBUG = 'debug'
 }
 
 export class Console {
@@ -23,33 +24,25 @@ export class Console {
         const environment = process.env.NODE_ENV || 'development';
         const messageStr = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
         
-        // Always log to console in development
-        if (environment === 'test') {
+        // Format log entry with context if available
+        const logEntry = context ? `${messageStr} Context: ${JSON.stringify(context, null, 2)}` : messageStr;
+
+        // Always log to console in development and test
+        if (environment === 'test' || environment === 'development') {
+            console.log('\n');
             switch (level) {
-                case 'warning':
-                    console.log('\n')
-                    console.warn(messageStr);
-                    console.log('\n')
+                case LogLevel.WARNING:
+                    console.warn(logEntry);
                     break;
-                    case 'error':
-                    console.log('\n')
-                    console.error(messageStr);
-                    console.log('\n')
+                case LogLevel.ERROR:
+                    console.error(logEntry);
                     break;
-                    case 'info':
-                    console.log('\n')
-                    console.log(messageStr);
-                    console.log('\n')
-                    break;
-                    default:
-                    console.log('\n')
-                    console.log(messageStr);
-                    console.log('\n')
+                case LogLevel.INFO:
+                default:
+                    console.log(logEntry);
                     break;
             }
-            if (context) {
-                console.log('Context:', context);
-            }
+            console.log('\n');
         }
 
         this.loggingConfig.captureMessage(messageStr, level, context);

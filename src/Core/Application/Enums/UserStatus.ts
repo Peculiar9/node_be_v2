@@ -1,10 +1,24 @@
 export enum UserStatus {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',        // Voluntarily deactivated account
-    ARCHIVED = 'archived',        // Long-term inactive account
-    DELETED = 'deleted', 
-    // ONLINE = 'ONLINE',            // User is currently logged in
-    // IDLE = 'IDLE',                // User account is inactive due to inactivity
+    // Registration States
+    PENDING_EMAIL_VERIFICATION = 'pending_email_verification',  // Awaiting email verification 
+    EMAIL_VERIFIED = 'email_verified',                          // Email verified, ready for onboarding
+    
+    // Onboarding States
+    ONBOARDING_IN_PROGRESS = 'onboarding_in_progress',         // Currently going through onboarding
+    ONBOARDING_COMPLETED = 'onboarding_completed',             // Onboarding completed, pending final approval
+    
+    // Active States
+    ACTIVE = 'active',                                          // Fully verified and active
+    INACTIVE = 'inactive',                                      // Temporarily inactive
+    
+    // Restricted States
+    SUSPENDED = 'suspended',                                    // Account suspended
+    UNDER_REVIEW = 'under_review',                             // Account under administrative review
+    REJECTED = 'rejected',                                      // Application rejected
+    
+    // Administrative States
+    ARCHIVED = 'archived',                                      // Long-term inactive account
+    DELETED = 'deleted'                                         // Soft-deleted account
   
     // // Verification States
     // PENDING_VERIFICATION = 'PENDING_VERIFICATION', // Awaiting email/phone verification

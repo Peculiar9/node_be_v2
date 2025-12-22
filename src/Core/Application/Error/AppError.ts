@@ -11,9 +11,15 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string) {
-    super(message, 400, 100); // Validation errors: 100-199
+  constructor(message: string, errorCode?: number) {
+    super(message, 400, errorCode || 100); // Validation errors: 100-199
     this.name = 'ValidationError';
+  }
+}
+export class PaymentError extends AppError {
+  constructor(message: string, errorCode?: number) {
+    super(message, 402, errorCode || 200); // Payment errors: 200-299
+    this.name = 'PaymentError';
   }
 }
 
@@ -81,9 +87,15 @@ export class InternalServerError extends AppError {
 }
 
 export class DatabaseError extends AppError {
+  protected details?: any;
+
   constructor(message: string) {
     super(message, 500, 700); // Database errors: 700-799
     this.name = 'DatabaseError';
+  }
+
+  public getDetails(): any | undefined {
+    return this.details;
   }
 }
 
@@ -94,3 +106,38 @@ export class RegistrationError extends AppError {
     this.name = 'RegistrationError';
   }
 }
+
+export class ServiceError extends AppError {
+    constructor(message: string) {
+        super(message, 503, 13); // 503 Service Unavailable
+        this.name = 'ServiceError';
+    }
+}
+
+export enum ErrorCode {
+    // Validation errors (1000-1999)
+  INVALID_INPUT = 1001,
+  MISSING_REQUIRED_FIELD = 1002,
+  INVALID_FORMAT = 1003,
+  
+  // Authentication errors (2000-2999)
+  INVALID_CREDENTIALS = 2001,
+  EXPIRED_TOKEN = 2002,
+  INVALID_TOKEN = 2003,
+  ACCOUNT_LOCKED = 2004,
+  
+  // Payment errors (6000-6099)
+  REQUIRE_PAYMENT_METHOD = 6001,
+  PAYMENT_METHOD_NOT_FOUND = 6002,
+  PAYMENT_DECLINED = 6003,
+  INSUFFICIENT_FUNDS = 6004,
+  
+  // Database errors (8000-8999)
+  CONNECTION_ERROR = 8001,
+  QUERY_ERROR = 8002,
+  CONSTRAINT_VIOLATION = 8003,
+  TRANSACTION_ERROR = 8004,
+  
+
+}
+

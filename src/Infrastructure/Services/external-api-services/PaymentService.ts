@@ -17,12 +17,10 @@ export class PaymentService extends BaseApiService {
     }
 
     async processPayment(paymentData: any) {
-        // Use the configured client
         return await this.httpClient.post('/payments', paymentData);
     }
 
     async getPaymentStatus(paymentId: string, token: string) {
-        // Use an authenticated client
         const authClient = this.createAuthenticatedClient(token);
         return await authClient.get(`/payments/${paymentId}`);
     }

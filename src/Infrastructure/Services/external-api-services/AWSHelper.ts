@@ -60,6 +60,24 @@ export class AWSHelper extends AWSBaseServices implements IAWSHelper {
         );
     }
 
+    async sendOTPEmail(to: string, data: EmailData): Promise<boolean> {
+        const template = await this.getEmailTemplate(EmailType.OTP, data);
+        return await this.sendEmail(
+            to,
+            'Your Verification Code',
+            template
+        );
+    }
+
+    async sendPasswordResetOTPEmail(to: string, data: EmailData): Promise<boolean> {
+        const template = await this.getEmailTemplate(EmailType.PASSWORD_RESET_OTP, data);
+        return await this.sendEmail(
+            to,
+            'Your Password Reset Code',
+            template
+        );
+    }
+
     async sendSMS(data: SMSData, smsType: string): Promise<any> {
         try {
             // Sanitize message and attributes
@@ -121,15 +139,25 @@ export class AWSHelper extends AWSBaseServices implements IAWSHelper {
         return await this.uploadFile(uploadData);
     }
 
-    async profileImageUpload(file: any, fileKey: string): Promise<any> {
+    async profileImageUpload(file: any, fileKey: string): Promise<string> {
+        // Get file extension from mimetype or default to jpg
+        const extension = file.mimetype ? file.mimetype.split('/')[1] || 'jpg' : 'jpg';
+        const fileKeyWithExt = `${fileKey}.${extension}`;
+
         const uploadData = {
-            bucketName: BucketName.VERIFICATION,
+            bucketName: BucketName.MEDIA_ARCHIVE,
             directoryPath: `profileImage/`,
-            fileName: fileKey,
+            fileName: fileKeyWithExt,
             fileBody: file.buffer,
-            contentType: file.type,
+            contentType: file.mimetype || 'image/jpeg',
         };
-        return await this.uploadFile(uploadData);
+        
+        console.log("AWSHelper::profileImageUpload() before uploadFile calling of the profileImageUpload: => ", uploadData);
+        const result = await this.uploadFile(uploadData);
+        
+        // Construct and return the full URL
+        const region = process.env.AWS_REGION || 'us-east-1';
+        return `https://${BucketName.MEDIA_ARCHIVE}.s3.${region}.amazonaws.com/${uploadData.directoryPath}${fileKeyWithExt}`;
     }
 
     async batchImageUpload(
@@ -182,11 +210,62 @@ export class AWSHelper extends AWSBaseServices implements IAWSHelper {
     selfieUpload(file: Express.Multer.File, fileKey: string): Promise<any> {
         throw new Error("Method not implemented.");
     }
-    detectImageObject(file: Buffer, validLabels: string[]): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    /**
+     * Generate a presigned upload URL for a given bucket/key/contentType
+     */
+    async generatePresignedUploadUrl(bucketName: string, key: string, contentType: string, expiresIn: number = 300): Promise<string> {
+        const { PutObjectCommand } = await import("@aws-sdk/client-s3");
+        const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
+        const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: key,
+            ContentType: contentType,
+        });
+        return await getSignedUrl(this.s3KYCClient, command, { expiresIn });
     }
-    extractDocumentText(fileKey: string): Promise<string[]> {
-        throw new Error("Method not implemented.");
+
+    /**
+     * Delete a file from a given bucket/key
+     */
+    async deleteFile(bucketName: string, key: string): Promise<void> {
+        await this.removeFile({ bucketName, fileName: key });
+    }
+
+    /**
+     * Extract text from a document in S3 using Rekognition DetectText
+     */
+    async extractDocumentText(fileKey: string): Promise<string[]> {
+        const { DetectTextCommand } = await import("@aws-sdk/client-rekognition");
+        const command = new DetectTextCommand({
+            Image: {
+                S3Object: {
+                    Bucket: BucketName.VERIFICATION,
+                    Name: fileKey,
+                },
+            },
+        });
+        const response = await this.rekognitionClient.send(command);
+        return (response.TextDetections || []).map(d => d.DetectedText || '').filter(Boolean);
+    }
+
+    /**
+     * Detect if an image contains valid vehicle labels using Rekognition DetectLabels
+     */
+    async detectImageObject(fileKey: string, validLabels: string[]): Promise<boolean> {
+        const { DetectLabelsCommand } = await import("@aws-sdk/client-rekognition");
+        const command = new DetectLabelsCommand({
+            Image: {
+                S3Object: {
+                    Bucket: BucketName.VERIFICATION,
+                    Name: fileKey,
+                },
+            },
+            MaxLabels: 20,
+            MinConfidence: 70,
+        });
+        const response = await this.rekognitionClient.send(command);
+        const labels = response.Labels || [];
+        return labels.some(label => label.Name && validLabels.includes(label.Name));
     }
     extractLicenseDocumentText(fileKey: string): Promise<string[]> {
         throw new Error("Method not implemented.");

@@ -1,8 +1,11 @@
 import { CreateUserDTO, UserResponseDTO, UpdateUserDTO } from '../../DTOs/UserDTO';
-import { LoginResponseDTO, PhoneSignUpDTO } from '../../DTOs/AuthDTO';
+import { LoginResponseDTO, EmailSignUpDTO, VerifyEmailDTO, IEmailVerificationResponse } from '../../DTOs/AuthDTO';
 import { IUser } from '../Entities/auth-and-user/IUser';
 
+
 export interface IAuthService {
+    preSignUpEmailInit(dto: EmailSignUpDTO, salt: string): Promise<IEmailVerificationResponse>;
+    verifyEmailCode(data: VerifyEmailDTO): Promise<LoginResponseDTO>;
     createUser(dto: CreateUserDTO): Promise<UserResponseDTO| undefined>;
     authenticate(phone: string, password: string): Promise<LoginResponseDTO | undefined>;
     getUserFromToken(userId: string): Promise<UserResponseDTO | undefined>;
@@ -20,5 +23,10 @@ export interface IAuthService {
     handleExpiredVerification(phoneNumber: string): Promise<any>;
     oauth(data: CreateUserDTO): Promise<LoginResponseDTO | undefined>;
     setupPassword(phone: string, password: string, token: string): Promise<UserResponseDTO>;
-    // completeSignUpPhone(data: PhoneSignUpDTO, verificationId: string): Promise<{ reference: string, expiry: string, phone: string }>;
+    setupEmailPassword(email: string, password: string, reference: string): Promise<UserResponseDTO>;
+    updateProfileImage(image: Express.Multer.File, user: IUser): Promise<UserResponseDTO>;
+    removeUser(email: string): Promise<UserResponseDTO | undefined>;
+    resendEmailVerification(email: string, reference: string): Promise<IEmailVerificationResponse>;
+    resetPasswordWithOtp(email: string, otp: string, newPassword: string): Promise<boolean>;
+    requestPasswordResetOTP(email: string): Promise<void>;
 }

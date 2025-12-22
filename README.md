@@ -1,323 +1,119 @@
-# Clean Architecture Backend
+# Universal Enterprise Node.js Backend Template
 
-A robust Node.js backend application built with TypeScript, following Clean Architecture principles and SOLID design patterns.
+A robust, production-ready Node.js backend starter kit built with TypeScript, following Clean Architecture principles (SOLID, Dependency Injection). Designed to be the solid foundation for enterprise-grade applications.
 
-## Table of Contents
+## 🚀 Features
 
-- [Architecture Overview](#architecture-overview)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [API Documentation](#api-documentation)
-- [Testing](#testing)
-- [Error Handling](#error-handling)
-- [Database](#database)
-- [Authentication](#authentication)
-- [Deployment](#deployment)
+- **Clean Architecture**: Separation of concerns logic (Core/Application, Infrastructure, Interface Adapters).
+- **Dependency Injection**: Powered by InversifyJS for loose coupling and testability.
+- **Repository Pattern**: Abstracted data access layer using generic repositories with TypeORM (or custom generic SQL implementation).
+- **Authentication**: Complete JWT-based auth flow (Login, Register, OTP Verification, Password Reset).
+- **Security**: 
+  - `bcryptjs` for password hashing.
+  - `helmet` for HTTP header security.
+  - `cors` for Cross-Origin Resource Sharing.
+- **Validation**: Decorator-based validation using `class-validator` and `class-transformer`.
+- **Media Handling**: Service abstractions for Cloudinary/AWS S3 (built-in support).
+- **Communication**: 
+  - Email (SendGrid/Mailgun abstraction).
+  - SMS/WhatsApp (Twilio abstraction).
+- **Database**: PostgreSQL with connection pooling and transaction management.
 
-## Architecture Overview
-
-This project implements Clean Architecture principles, separating concerns into distinct layers:
-
-### Core Layer
-- Contains business logic and domain entities
-- Defines interfaces and use cases
-- Independent of external frameworks and tools
-- Houses DTOs (Data Transfer Objects) and business rules
-
-### Application Layer
-- Implements use cases defined in the core layer
-- Orchestrates data flow between layers
-- Contains application-specific business rules
-- Manages transactions and coordinates responses
-
-### Infrastructure Layer
-- Implements interfaces defined in core layer
-- Contains database implementations
-- Handles external services and frameworks
-- Manages technical concerns (caching, logging, etc.)
-
-### Presentation Layer
-- Express.js controllers and routes
-- Request/Response handling
-- Input validation
-- Authentication middleware
-
-## Technology Stack
+## 🛠 Technology Stack
 
 - **Runtime**: Node.js
 - **Language**: TypeScript
 - **Framework**: Express.js
 - **Database**: PostgreSQL
-- **ORM**: None- Custom SQL implementation
-- **Dependency Injection**: InversifyJS
-- **Authentication**: JWT (JSON Web Tokens)
+- **DI Container**: InversifyJS
 - **Testing**: Jest
-- **Validation**: class-validator and custom validation
-- **File Upload**: Multer
-- **Security**: bcrypt, CORS
+- **Linting**: ESLint
 
-## Project Structure
+## 📦 Project Structure
 
-```
+```bash
 src/
+├── Controllers/        # Request handlers (Express Controllers)
 ├── Core/
-│   ├── Application/
-│   │   ├── DTOs/
-│   │   ├── Entities/
-│   │   ├── Enums/
-│   │   ├── Error/
-│   │   ├── Interface/
-│   │   ├── Response/
-│   │   └── UseCases/
-│   ├── DIContainer.ts
-│   ├── Services/
-│   └── Types/
-├── Infrastructure/
-│   ├── Database/
-│   ├── Repository/
-│   │   ├── MongoDB/
-│   │   └── SQL/
-│   └── Services/
-├── Middleware/
-└── Controllers/
+│   ├── Application/    # Application Business Rules
+│   │   ├── DTOs/       # Data Transfer Objects
+│   │   ├── Entities/   # Domain Entities
+│   │   ├── Enums/      # Domain Enumerations
+│   │   ├── Interface/  # Interfaces (Ports)
+│   │   └── UseCases/   # Application Flows (Interactors)
+│   ├── DIContainer.ts  # Dependency Injection Setup
+│   └── Types/          # DI Symbols & Constants
+├── Infrastructure/     # Frameworks & Drivers
+│   ├── Config/         # Environment & App Config
+│   ├── Database/       # Database Connection Logic
+│   ├── Repository/     # Data Access Implementations
+│   └── Services/       # External Services (Email, SMS, Payment)
+├── Middleware/         # Express Middleware (Auth, Error Handling)
+└── index.ts            # Entry Point
 ```
 
-## Getting Started
+## 🏁 Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- PostgreSQL (v12 or higher)
-- npm or yarn
+- Node.js (v18+)
+- PostgreSQL (v14+)
+- pnpm (recommended) or npm/yarn
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd name-of-project
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd <project-name>
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+   *(Or `npm install` / `yarn install`)*
 
-3. Create environment file:
-```bash
-cp .env.example .env
-```
+3. **Configure Environment**
+   Duplicate `.env.example` to `.env` and fill in your credentials.
+   ```bash
+   cp .env.example .env
+   ```
 
-4. Configure environment variables in `.env`:
-```env
-PORT=3000
-NODE_ENV=development
+4. **Build the project**
+   ```bash
+   npm run build
+   ```
 
-# Database Configuration
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=your_database
-DB_SSL=false
-DB_POOL_MAX=10
-DB_IDLE_TIMEOUT=30000
-DB_CONNECTION_TIMEOUT=2000
+5. **Start the server**
+   ```bash
+   npm start
+   ```
 
-# JWT Configuration
-JWT_ACCESS_SECRET=your_access_token_secret
-JWT_REFRESH_SECRET=your_refresh_token_secret
-JWT_ACCESS_EXPIRATION=15m
-JWT_REFRESH_EXPIRATION=7d
-```
+## 🧪 Testing
 
-5. Start the development server:
-```bash
-npm run dev
-```
-
-## Configuration
-
-### Database Configuration
-
-The system uses PostgreSQL with connection pooling. Configure the following in `.env`:
-
-- `DB_USER`: Database username
-- `DB_PASSWORD`: Database password
-- `DB_HOST`: Database host
-- `DB_PORT`: Database port
-- `DB_NAME`: Database name
-- `DB_SSL`: Enable/disable SSL
-- `DB_POOL_MAX`: Maximum pool connections
-- `DB_IDLE_TIMEOUT`: Connection idle timeout
-- `DB_CONNECTION_TIMEOUT`: Connection timeout
-
-### JWT Configuration
-
-JWT settings for authentication:
-
-- `JWT_ACCESS_SECRET`: Secret for access tokens
-- `JWT_REFRESH_SECRET`: Secret for refresh tokens
-- `JWT_ACCESS_EXPIRATION`: Access token expiration
-- `JWT_REFRESH_EXPIRATION`: Refresh token expiration
-
-## API Documentation
-
-### Authentication Endpoints
-
-#### Register User
-```http
-POST /api/v1/auth/register
-Content-Type: application/json
-
-{
-  "first_name": "string",
-  "last_name": "string",
-  "email": "string",
-  "password": "string",
-  "roles": ["string"]
-}
-```
-
-#### Login
-```http
-POST /api/v1/auth/login
-Content-Type: application/json
-
-{
-  "email": "string",
-  "password": "string"
-}
-```
-
-#### Get Profile
-```http
-GET /api/v1/auth/profile
-Authorization: Bearer <token>
-```
-
-#### Update Profile
-```http
-PUT /api/v1/auth/profile
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "first_name": "string",
-  "last_name": "string",
-  "email": "string"
-}
-```
-
-## Error Handling
-
-The system implements a comprehensive error handling system:
-
-- `AppError`: Base error class
-- `ValidationError`: Input validation errors
-- `AuthenticationError`: Authentication failures
-- `AuthorizationError`: Permission issues
-- `NotFoundError`: Resource not found
-- `ConflictError`: Data conflicts
-- `DatabaseError`: Database operation failures
-
-## Database
-
-### Transaction Management
-
-The system implements a robust transaction management system:
-
-- Connection pooling for optimal performance
-- Transaction isolation levels
-- Automatic rollback on errors
-- Connection lifecycle management
-
-### Repositories
-
-Each entity has its own repository implementing:
-
-- CRUD operations
-- Custom queries
-- Transaction support
-- Error handling
-
-## Authentication
-
-The system uses a JWT-based authentication system:
-
-- Access tokens for API authentication
-- Refresh tokens for token renewal
-- Role-based authorization
-- Token blacklisting
-- Secure password hashing
-
-### Security Features
-
-- Password hashing with bcrypt
-- JWT token encryption
-- CORS protection
-- Rate limiting
-- Input validation
-- SQL injection protection
-
-## Testing
-
-Run tests using:
+Run almost 0-config unit tests with Jest:
 
 ```bash
-npm run test
+npm test
 ```
 
-### Test Categories
+## 📖 Documentation
 
-- Unit tests for business logic
-- Integration tests for APIs
-- Repository tests
-- Authentication tests
-- Error handling tests
+Detailed documentation is available in the [`docs/`](./docs) directory:
 
-## Scripts
+- [**Quick Start Guide**](./docs/api/QUICK_START.md): Step-by-step API usage.
+- [**Architecture Guide**](./docs/ARCHITECTURE.md): Deep dive into the design patterns.
+- [**Authentication**](./docs/AUTH.md): How the auth flows work.
 
-- `npm run dev`: Start development server
-- `npm run build`: Build production version
-- `npm start`: Start production server
-- `npm test`: Run tests
-- `npm run lint`: Run linter
-- `npm run lint:fix`: Fix linting issues
+## 🤝 Contributing
 
-## Development Guidelines
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-1. Follow TypeScript best practices
-2. Use dependency injection
-3. Write unit tests for business logic
-4. Document API endpoints
-5. Handle errors appropriately
-6. Use proper typing
-7. Follow clean code principles
+## 📄 License
 
-## Production Deployment
-
-1. Build the application:
-```bash
-npm run build
-```
-
-2. Set production environment variables
-3. Start the server:
-```bash
-npm start
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+Distributed under the MIT License. See `LICENSE` for more information.

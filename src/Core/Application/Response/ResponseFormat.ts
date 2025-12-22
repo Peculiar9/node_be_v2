@@ -47,6 +47,7 @@ export class ResponseMessage {
   static readonly INVALID_VERIFICATION = 'The verification is invalid or expired, please contact admin';
   static readonly INVALID_OTP = 'The OTP is invalid';
   static readonly VERIFICATION_FAILED = 'Verification failed!!!';
+  static readonly EMAIL_VERIFICATION_FAILED = 'Email verification failed. Please try again.';
   static readonly RATE_LIMIT_ERROR = "Too many requests - try again later.";
   static readonly VERIFICATION_ALREADY_COMPLETED = 'Verification already completed';
   static readonly BOOKMARK_SUCCESS = 'Successfully bookmarked station';
@@ -59,6 +60,55 @@ export class ResponseMessage {
   static readonly PASSWORD_SETUP_SUCCESS = 'Password setup successful';
   static readonly USER_PASSWORD_SETUP_FAILED = 'User password setup failed';
   static readonly CHECKIN_SUCCESS = 'Successfully checked in';
-  static readonly USER_YOURE_TRYING_TO_VERIFY_DOES_NOT_EXIST = 'You are trying to verify a number that does not exist';
+  static readonly USER_YOURE_TRYING_TO_VERIFY_DOES_NOT_EXIST = 'You are trying to verify a user that does not exist';
   static readonly SUCCESSFUL_REGISTRATION = 'User registration completed successfully';
+  static readonly USER_PASSWORD_RESET_SUCCESS = 'User password reset successfully';
+  static readonly USER_PASSWORD_RESET_FAILED = 'User password reset failed';
+  static readonly PHONE_VERIFICATION_FAILED = 'Phone verification failed';
+  static readonly USER_VALIDATION_FAILED = 'System could not validate user';
+  static readonly EMAIL_VERIFICATION_ALREADY_COMPLETED = 'Email verification already completed';
+  static readonly INVALID_REFRESH_TOKEN = 'Invalid refresh token';
+  static readonly PASSWORD_RESET_REQUEST_FAILED = 'Password reset request failed';
+  static readonly PROFILE_IMAGE_UPDATE_FAILED = 'Profile image update failed';
+  static readonly INVALID_VERIFICATION_CODE = 'Invalid or expired verification code';
+  static readonly INVALID_VIN = 'Invalid VIN';
+  
+  
+  // Additional error messages from controllers
+  static readonly REVIEW_UPDATED_SUCCESS = 'Review updated successfully';
+  static readonly REVIEW_DELETED_SUCCESS = 'Review deleted successfully';
+  static readonly SERVICE_RUNNING = 'The service is running!!!';
+  static readonly BOOKMARK_REMOVED_SUCCESS = 'Bookmark removed successfully';
+  static readonly STATIONS_RETRIEVED_SUCCESS = 'Successfully retrieved charging stations';
+  static readonly STATION_RETRIEVED_SUCCESS = 'Successfully retrieved station';
+  static readonly BOOKMARKS_RETRIEVED_SUCCESS = 'Successfully retrieved bookmarked stations';
+  static readonly STATION_REVIEWS_RETRIEVED_SUCCESS = 'Successfully retrieved station reviews';
+  static readonly NREL_STATIONS_SYNCED = 'Successfully Synced NREL stations';
+  
+  // Method not implemented messages
+  static readonly METHOD_NOT_IMPLEMENTED = 'Method not implemented';
+  
+  // Database related messages
+  static readonly UNABLE_TO_EXTRACT_TABLE_SCHEMA = 'Unable to extract table schema';
+  static readonly FAILED_TO_INITIALIZE_TABLES = 'Failed to initialize/update tables';
+  
+  // AWS related messages
+  static readonly FAILED_TO_SEND_SMS = 'Failed to send SMS';
+  static readonly INVALID_EMAIL_TYPE = 'Invalid email type';
+  static readonly FAILED_TO_GET_EMAIL_TEMPLATE = 'Failed to get email template';
+  static readonly FAILED_TO_UPLOAD_TO_S3 = 'Failed to upload to S3';
+  
+  // Authentication related messages
+  static readonly VERIFICATION_RESTART_ERROR = 'An unexpected error occurred while restarting verification. Please try again later.';
+  
+  // Station related messages
+  static readonly STATION_WITH_ID_NOT_FOUND = 'Station with ID {0} not found';
+  static readonly USER_NOT_AUTHORIZED_TO_UPDATE_REVIEW = 'User not authorized to update this review';
+  static readonly REVIEW_WITH_ID_NOT_FOUND = 'Review with ID {0} not found';
+  // Payment related messages
+  static readonly PAYMENT_METHOD_ADDED_SUCCESS = 'Payment method added successfully';
+  static readonly PAYMENT_METHOD_REMOVED_SUCCESS = 'Payment method removed successfully';
+  static readonly DEFAULT_PAYMENT_METHOD_SET_SUCCESS = 'Default payment method set successfully';
+  static readonly PAYMENT_METHODS_RETRIEVED_SUCCESS = 'Payment methods retrieved successfully';
+  static readonly SETUP_INTENT_CREATED_SUCCESS = 'Setup intent created successfully';
 }

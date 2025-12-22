@@ -6,4 +6,8 @@ export interface EmailData {
     token?: string;
     validity?: number;
     verificationUrl?: string;
+    userName?: string;
+    otpCode?: string;
+    otpExpiry?: number;
+    CompanyName?: string;
 }

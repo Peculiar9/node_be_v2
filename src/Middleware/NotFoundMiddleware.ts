@@ -9,7 +9,9 @@ export class NotFoundMiddleware {
         Console.warn(`Route not found: ${req.method} ${req.originalUrl}`, {
             method: req.method,
             url: req.originalUrl,
-            ip: req.ip
+            ip: req.ip,
+            headers: req.headers,
+            time: new Date().toISOString()
         });
         
         return res.status(404).json({

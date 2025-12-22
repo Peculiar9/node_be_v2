@@ -33,7 +33,8 @@
     "sourceRoot": "/"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "extensions/**/*"
   ],
   "exclude": [
     "node_modules",

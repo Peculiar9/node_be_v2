@@ -92,7 +92,7 @@ export function ForeignKey(options: ForeignKeyOptions) {
 
 export function Index(options?: { 
     unique?: boolean, 
-    type?: 'BTREE' | 'HASH' | 'GIST' 
+    type?: IndexType 
   }) {
     return function (target: any, propertyKey: string) {
       const indexes = Reflect.getMetadata('indexes', target.constructor) || [];
@@ -112,3 +112,11 @@ export function CompositeIndex(columns: string[]) {
       Reflect.defineMetadata('compositeIndexes', compositeIndexes, target);
     };
 }
+export enum IndexType {
+  BTREE = 'BTREE',
+  HASH = 'HASH',
+  GIST = 'GIST',
+  SPGIST = 'SPGIST',
+  GIN = 'GIN',
+  BRIN = 'BRIN'
+} 

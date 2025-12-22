@@ -5,6 +5,8 @@ import { DatabaseError, InternalServerError } from "../../../Core/Application/Er
 import { TableNames } from "../../../Core/Application/Enums/TableNames";
 import { getEntityMetadata } from "../../../extensions/decorators";
 import { UtilityService } from "../../../Core/Services/UtilityService";
+import { Console, LogLevel } from "../../Utils/Console";
+import { DatabaseConnectionError, DatabaseConstraintError, DatabaseQueryError } from "../../../Core/Application/Error/DatabaseErrors";
 
 
 
@@ -34,11 +36,54 @@ export abstract class BaseRepository<T> implements IRepository<T> {
      * @throws DatabaseError if query execution fails
      */
     protected async executeQuery<R = any>(query: string, params: any[] = []): Promise<QueryResult<QueryResult>> {
+        const startTime = Date.now();
         try {
             const client = this.transactionManager.getClient();
-            return await client.query(query, params);
+            const result = await client.query(query, params);
+            
+            // Log successful query execution with timing
+            Console.info('Query executed successfully', {
+                operation: 'query',
+                table: this.tableName,
+                duration: Date.now() - startTime,
+                rowCount: result.rowCount,
+                transactionId: this.transactionManager.getTransactionId()
+            });
+            
+            return result;
         } catch (error: any) {
-            throw new DatabaseError(`Query execution failed: ${error.message}`);
+            // Log detailed error information
+            Console.error(error, {
+                operation: 'query',
+                table: this.tableName,
+                query: query.replace(/\s+/g, ' ').trim(),
+                params,
+                duration: Date.now() - startTime,
+                transactionId: this.transactionManager.getTransactionId(),
+                errorCode: error.code,
+                detail: error.detail,
+                hint: error.hint,
+                position: error.position
+            });
+
+            // Map database errors to specific error types
+            switch (error.code) {
+                case '23505': // unique_violation
+                    throw new DatabaseConstraintError('Unique constraint violation', error.constraint);
+                case '23503': // foreign_key_violation
+                    throw new DatabaseConstraintError('Foreign key constraint violation', error.constraint);
+                case '23502': // not_null_violation
+                    throw new DatabaseConstraintError('Not null constraint violation', error.constraint);
+                case '42P01': // undefined_table
+                case '42703': // undefined_column
+                    throw new DatabaseQueryError('Invalid query structure', query, params);
+                case '08006': // connection_failure
+                case '08001': // sqlclient_unable_to_establish_sqlconnection
+                    throw new DatabaseConnectionError(error.message, { code: error.code });
+                default:
+                    // For unknown database errors, log but don't expose details
+                    throw new InternalServerError('An unexpected database error occurred');
+            }
         }
     }
 
@@ -264,7 +309,7 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     abstract findByCondition(condition: Partial<T>): Promise<T[]>;
     abstract create(entity: T): Promise<T>;
     abstract update(id: string, entity: Partial<T>): Promise<T | null>;
-    abstract delete(id: string): Promise<boolean>;
+    abstract delete(id: string, deletedBy?: string): Promise<boolean>;
     abstract executeRawQuery(query: string, params: any[]): Promise<any>;
     abstract count(condition?: Partial<T>): Promise<number>;
     abstract bulkCreate(entities: T[]): Promise<T[]>;

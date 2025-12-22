@@ -18,6 +18,15 @@ export class CryptoService {
         const hashedInput = this.hashString(input, salt);
         return hashedInput === hashedValue;
     }
+    
+    public static generateRandomString(length: number): string {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        return result;
+    }
 }
 
 export default CryptoService;

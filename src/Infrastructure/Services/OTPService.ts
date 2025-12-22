@@ -1,25 +1,25 @@
 import { inject, injectable } from "inversify";
 import { IOTPService } from "../../Core/Application/Interface/Services/IOTPService";
 import { TYPES } from "../../Core/Types/Constants";
-import { Verification } from "../../Core/Application/Entities/Verification";
-import  CryptoService from "../../Core/Services/CryptoService";
+import { IVerification } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
+import CryptoService from "../../Core/Services/CryptoService";
 import { UtilityService } from "../../Core/Services/UtilityService";
 import { VerificationRepository } from "../Repository/SQL/auth/VerificationRepository";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
 import { DatabaseIsolationLevel } from "../../Core/Application/Enums/DatabaseIsolationLevel";
-import { AuthenticationError } from "../../Core/Application/Error/AppError";
+import { AppError, AuthenticationError } from "../../Core/Application/Error/AppError";
 import { VerificationStatus } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
 import { ResponseMessage } from "../../Core/Application/Response/ResponseFormat";
 
 @injectable()
 export class OTPService implements IOTPService {
-  constructor(
-    @inject(TYPES.VerificationRepository) private readonly _verificationRepository: VerificationRepository,
-    @inject(TYPES.TransactionManager) private readonly _transactionManager: TransactionManager,
-  ) {}
+    constructor(
+        @inject(TYPES.VerificationRepository) private readonly _verificationRepository: VerificationRepository,
+        @inject(TYPES.TransactionManager) private readonly _transactionManager: TransactionManager,
+    ) { }
 
 
-    public async createOtpInstance(otp: string, salt: string): Promise<Verification> {
+    public async createOtpInstance(otp: string, salt: string): Promise<IVerification> {
         try {
 
             await this._transactionManager.beginTransaction({
@@ -36,47 +36,28 @@ export class OTPService implements IOTPService {
                 reference: UtilityService.generateUUID()
             }
             console.log("OTPService::createOtpInstance() => Verification: ", verification);
-            const result: Verification = await this._verificationRepository.create({
+            const result: IVerification = await this._verificationRepository.create({
                 user_id: undefined,
                 otp: {
-                    code: CryptoService.hashString(otp, salt),
+                    code: await CryptoService.hashString(otp, salt),
                     expiry: UtilityService.dateToUnix(new Date(Date.now() + 10 * 60 * 1000)), //expires in 10mins
                     attempts: 0,
                     last_attempt: UtilityService.dateToUnix(new Date()) || null,
                     verified: false
                 },
                 reference: UtilityService.generateUUID()
-            }) as Verification;
+            }) as IVerification;
             await this._transactionManager.commit();
             return result;
         } catch (error: any) {
-            //TODO: Handle error differently using as it was in the other services
             console.log("OTPService::createOtpInstance() => Error: ", error.message);
-            throw new Error(error.message);
+            throw new AppError("Failed to create OTP instance");
         }
     }
 
-public async updateOtpInstance(verificationId: string, otp: string, salt: string): Promise<Verification> {
-    // try {
-    //     await this._transactionManager.beginTransaction({
-    //         isolationLevel: DatabaseIsolationLevel.READ_COMMITTED,
-    //     });
-    //     console.log("OTP Code: ", otp);
-    //     // Get the current verification record to check attempts
-    //     const currentVerification = await this._verificationRepository.findById(verificationId);
-    //     if (!currentVerification) {
-    //         throw new Error('Verification record not found');
-    //     }
-    //     const code = CryptoService.hashString(otp, salt);
-    //     const result: Verification = await this._verificationRepository.updateOtpInstance(verificationId, otp, salt, code) as Verification;   
-    //     await this._transactionManager.commit();
-    //     return result;
-    // } catch (error: any) {
-    //     await this._transactionManager.rollback();
-    //     throw new Error(error.message);
-    //     }
+    public async updateOtpInstance(verificationId: string, otp: string, salt: string): Promise<IVerification> {
         throw new Error("Method not implemented.");
-    }       
+    }
 
     public async validOTP(code: string, token: string, salt: string): Promise<any> {
         try {
@@ -86,7 +67,7 @@ public async updateOtpInstance(verificationId: string, otp: string, salt: string
 
             // Get verification record by token
             const verification = await this._verificationRepository.findByToken(token);
-            
+
             if (!verification) {
                 await this._transactionManager.rollback();
                 throw new AuthenticationError("Verification not found");
@@ -94,7 +75,7 @@ public async updateOtpInstance(verificationId: string, otp: string, salt: string
 
             // Hash the provided code with salt for comparison
             const hashedToken = CryptoService.hashString(code, salt);
-            
+
             // Get stored OTP code and expiry
             const storedOTPCode = verification.otp?.code;
             const expiryTime = verification.otp?.expiry;
@@ -133,7 +114,7 @@ public async updateOtpInstance(verificationId: string, otp: string, salt: string
                     verified: true
                 }
             });
-            
+
             await this._transactionManager.commit();
             return true;
         } catch (error) {
