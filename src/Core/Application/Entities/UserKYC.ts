@@ -30,4 +30,4 @@ export class UserKYC implements IUserKYC {
   constructor(data?: Partial<UserKYC>) {
     if (data) Object.assign(this, data);
   }
-}
+} 

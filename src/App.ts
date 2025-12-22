@@ -9,11 +9,7 @@ import { getRouteInfo } from 'inversify-express-utils';
 import './Controllers/InitController';
 import './Controllers/auth/AccountController';
 import './Controllers/auth/AuthController';
-
-//===============PAYMENT STUFF===================//
-import './Controllers/payment/PaymentController';
-import './Controllers/payment/StripeWebhookController';
-//===============PAYMENT STUFF===================//
+import './Controllers/media/MediaController';
 
 
 import { DIContainer } from './Core/DIContainer';

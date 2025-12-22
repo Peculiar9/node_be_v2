@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../Core/Types/Constants';
-import { AuthService } from '../Infrastructure/Services/AuthService';
 import { AuthenticationError, ForbiddenError } from '../Core/Application/Error/AppError';
 import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
 import { DIContainer } from '../Core/DIContainer';
-import { IAuthService } from '../Core/Application/Interface/Services/IAuthService';
 import { IUser } from '../Core/Application/Interface/Entities/auth-and-user/IUser';
 import { UserRole } from '../Core/Application/Enums/UserRole';
 import { AuthenticationService } from '../Infrastructure/Services/AuthenticationService';
@@ -17,13 +15,12 @@ export class AuthMiddleware {
   //   return DIContainer.getInstance().get<TransactionManager>(TYPES.TransactionManager);
   // }
   constructor(
-    @inject(TYPES.AuthService) private authService: IAuthService,
     @inject(TYPES.AuthenticationService) private authenticationService: IAuthenticationService,
   ) {
     // this.transactionManager = AuthMiddleware.getTransactionManager();
     // console.log('it got here auth middleware constructor', this.transactionManager);
   }
-  
+
   public static authenticate() {
     const middleware = AuthMiddleware.createInstance();
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -31,20 +28,15 @@ export class AuthMiddleware {
     };
   }
 
-  
+
   public static authenticateAdmin() {
     const middleware = AuthMiddleware.createInstance();
     return async (req: Request, res: Response, next: NextFunction) => {
-      await middleware.authenticateAdminInstance(req, res, next);
+      await middleware.authenticateOperatorInstance(req, res, next);
     };
   }
 
-  public static authenticateSuperAdmin() {
-    const middleware = AuthMiddleware.createInstance();
-    return async (req: Request, res: Response, next: NextFunction) => {
-      await middleware.authenticateSuperAdminInstance(req, res, next);
-    };
-  }
+
 
   public static authenticateOptional() {
     const middleware = AuthMiddleware.createInstance();
@@ -55,11 +47,10 @@ export class AuthMiddleware {
 
   private static createInstance(): AuthMiddleware {
     const container = DIContainer.getInstance();
-    const authService = container.get<AuthService>(TYPES.AuthService);
     const authenticationService = container.get<AuthenticationService>(TYPES.AuthenticationService);
-    return new AuthMiddleware(authService, authenticationService);
+    return new AuthMiddleware(authenticationService);
   }
-  
+
   private authenticateInstance = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = this.extractToken(req);
@@ -71,13 +62,13 @@ export class AuthMiddleware {
     }
   };
 
-  private authenticateAdminInstance = async (req: Request, res: Response, next: NextFunction) => {
+  private authenticateOperatorInstance = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = this.extractToken(req);
-      if(token === 'undefined' || token === null || token === '' || !token) {
+      if (token === 'undefined' || token === null || token === '' || !token) {
         throw new AuthenticationError(ResponseMessage.INVALID_TOKEN_MESSAGE);
       }
-      const user = await this.validateTokenAndUser(token, UserRole.ADMIN);
+      const user = await this.validateTokenAndUser(token, UserRole.OPERATOR);
       console.log('user', user);
       req.user = user;
       next();
@@ -86,20 +77,7 @@ export class AuthMiddleware {
     }
   };
 
-  private authenticateSuperAdminInstance = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const token = this.extractToken(req);
-      if(token === 'undefined' || token === null || token === '' || !token) {
-        throw new AuthenticationError(ResponseMessage.INVALID_TOKEN_MESSAGE);
-      }
-      const user = await this.validateTokenAndUser(token, UserRole.SUPER_ADMIN);
-      console.log('user', user);
-      req.user = user;
-      next();
-    } catch (error: any) {
-      this.handleAuthError(res, error);
-    }
-  };
+
 
   private authenticateOptionalInstance = async (req: Request, res: Response, next: NextFunction) => {
     try {

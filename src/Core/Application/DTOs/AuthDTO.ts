@@ -310,3 +310,52 @@ export interface IEmailVerificationResponse {
   expiry: number;
   email?: string;
 }
+
+@Expose()
+export class ForgotPasswordDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Email is required' })
+    @IsString({ message: 'Email must be a string' })
+    @IsEmail({}, { message: 'Email must be a valid email address' })
+    email: string;
+}
+
+@Expose()
+export class ResetPasswordDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Token is required' })
+    @IsString({ message: 'Token must be a string' })
+    token: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Password is required' })
+    @IsString({ message: 'Password must be a string' })
+    @Length(8, 255, { message: 'Password must be between 8 and 255 characters long' })
+    password: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Password confirmation is required' })
+    @IsString({ message: 'Password confirmation must be a string' })
+    @Length(8, 255, { message: 'Password confirmation must be between 8 and 255 characters long' })
+    confirmPassword: string;
+}
+
+@Expose()
+export class ChangePasswordDTO {
+    @Expose()
+    @IsNotEmpty({ message: 'Current password is required' })
+    @IsString({ message: 'Current password must be a string' })
+    currentPassword: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'New password is required' })
+    @IsString({ message: 'New password must be a string' })
+    @Length(8, 255, { message: 'New password must be between 8 and 255 characters long' })
+    newPassword: string;
+
+    @Expose()
+    @IsNotEmpty({ message: 'Password confirmation is required' })
+    @IsString({ message: 'Password confirmation must be a string' })
+    @Length(8, 255, { message: 'Password confirmation must be between 8 and 255 characters long' })
+    confirmPassword: string;
+}

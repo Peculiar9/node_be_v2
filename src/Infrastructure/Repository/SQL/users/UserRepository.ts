@@ -12,20 +12,17 @@ export class UserRepository extends BaseRepository<IUser> {
     constructor(
         @inject(TYPES.TransactionManager) transactionManager: TransactionManager
     ) {
-        // console.log("UserRepository::constructor -> ", {transactionManager});
         super(transactionManager, TableNames.USERS);
     }
 
-    // async findById(id: number): Promise<IUser | null> {
     async findById(id: string): Promise<any> {
-        try{
-
+        try {
             const result = await this.executeQuery<IUser>(
                 `SELECT * FROM ${this.tableName} WHERE _id = $1`,
                 [id]
             );
             return result.rows[0] || null;
-        }catch(error: any){
+        } catch (error: any) {
             console.error('UserRepository::findById(): ', {
                 message: error.message,
                 stack: error.stack
@@ -40,7 +37,7 @@ export class UserRepository extends BaseRepository<IUser> {
                 [phone]
             );
             return (result.rows[0] as unknown as IUser) || null;
-        } catch(error: any) {
+        } catch (error: any) {
             console.error('UserRepository::findByPhone(): ', {
                 message: error.message,
                 stack: error.stack
@@ -49,7 +46,6 @@ export class UserRepository extends BaseRepository<IUser> {
         }
     }
 
-    // async findAll(): Promise<IUser[]> {
     async findAll(): Promise<any> {
         const result = await this.executeQuery<IUser>(
             `SELECT * FROM ${this.tableName} ORDER BY created_at DESC`
@@ -59,18 +55,16 @@ export class UserRepository extends BaseRepository<IUser> {
 
     // async create(entity: IUser): Promise<IUser> {
     async create(entity: IUser): Promise<any> {
-        try{
+        try {
             const { columns, values, placeholders } = this.getEntityColumns(entity);
             const query = `INSERT INTO ${this.tableName} (${columns.join(', ')})
             VALUES (${placeholders.join(', ')})
             RETURNING *
             `;
-            
-            console.log({query});
-            console.log({values});
+
             const result = await this.executeQuery<IUser>(query, values);
             return result.rows[0];
-        }catch(error: any){
+        } catch (error: any) {
             console.error('UserRepository::create(): ', {
                 message: error.message,
                 stack: error.stack
@@ -78,7 +72,6 @@ export class UserRepository extends BaseRepository<IUser> {
         }
     }
 
-    // async findByCondition(condition: Partial<IUser>): Promise<IUser[]> {
     async findByCondition(condition: Partial<IUser>): Promise<any> {
         const { whereClause, values } = this.buildWhereClause(condition);
         const result = await this.executeQuery<IUser>(
@@ -88,13 +81,8 @@ export class UserRepository extends BaseRepository<IUser> {
         return result.rows;
     }
 
-    // async update(id: number, entity: Partial<IUser>): Promise<IUser | null> {
     async update(id: string, entity: Partial<IUser>): Promise<any> {
-        
-
-        
         const { setClause, values } = this.buildUpdateSet(entity);
-        console.log({setClause});
         const result = await this.executeQuery<IUser>(
             `UPDATE ${this.tableName} 
             SET ${setClause}, updated_at = NOW()
@@ -105,10 +93,8 @@ export class UserRepository extends BaseRepository<IUser> {
         return result.rows[0] || null;
     }
 
-    // async update(id: number, entity: Partial<IUser>): Promise<IUser | null> {
     async updateByPhone(phone: string, entity: Partial<IUser>): Promise<any> {
         const { setClause, values } = this.buildUpdateSet(entity);
-        console.log({setClause});
         const result = await this.executeQuery<IUser>(
             `UPDATE ${this.tableName} 
             SET ${setClause}, updated_at = NOW()
@@ -119,7 +105,6 @@ export class UserRepository extends BaseRepository<IUser> {
         return result.rows[0] || null;
     }
 
-    // async delete(id: number): Promise<boolean> {
     async delete(id: string): Promise<boolean> {
         const result = await this.executeQuery(
             `DELETE FROM ${this.tableName} WHERE _id = $1`,
@@ -136,13 +121,11 @@ export class UserRepository extends BaseRepository<IUser> {
         return result.rowCount as number > 0;
     }
 
-    // async executeRawQuery(query: string, params: any[]): Promise<any> {
     async executeRawQuery(query: string, params: any[]): Promise<any> {
         const result = await this.executeQuery(query, params);
         return result.rows;
     }
 
-    // async count(condition?: Partial<IUser>): Promise<number> {
     async count(condition?: Partial<IUser>): Promise<number> {
         if (condition) {
             const { whereClause, values } = this.buildWhereClause(condition);
@@ -159,15 +142,12 @@ export class UserRepository extends BaseRepository<IUser> {
         return parseInt((result.rows[0] as any).count);
     }
 
-    // async findByEmail(email: string): Promise<IUser | null> {
     async findByEmail(email: string): Promise<IUser | null> {
         const query = `SELECT * FROM ${this.tableName} WHERE email = $1`;
-        console.log({query})
         const result = await this.executeQuery<IUser>(
             query,
             [email.toLowerCase()]
         );
-        console.log({result})
         return result.rows[0] as any || null;
     }
 
@@ -180,7 +160,7 @@ export class UserRepository extends BaseRepository<IUser> {
      */
     async bulkCreate(users: IUser[]): Promise<any> {
         const { valuesClause, values, columns } = this.buildBulkInsertClause(users);
-        
+
         if (users.length === 0) {
             return [];
         }

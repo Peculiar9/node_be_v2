@@ -18,10 +18,6 @@ export class PaymentTransaction implements IPaymentTransaction {
     @Column('UUID NOT NULL')
     public user_id: string;
 
-    @Index({ unique: false })
-    @Column('UUID NOT NULL')
-    public session_id: string;
-
     @Column('DECIMAL(10,2) NOT NULL')
     public amount: number;
 
@@ -42,14 +38,6 @@ export class PaymentTransaction implements IPaymentTransaction {
 
     @Column('VARCHAR(255) DEFAULT NULL')
     public payment_intent_id?: string;
-
-    @Column('VARCHAR(255) DEFAULT NULL')
-    @ForeignKey({
-        table: TableNames.PAYMENT_METHOD,
-        field: '_id',
-        constraint: 'fk_payment_transaction_payment_method_id'
-    })
-    public payment_method_id?: string;
 
     @Column('TEXT DEFAULT NULL')
     public failure_reason?: string;

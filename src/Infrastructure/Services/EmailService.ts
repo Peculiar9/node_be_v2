@@ -1,4 +1,4 @@
-import { TYPES } from "../../Core/Types/Constants";
+import { APP_NAME, TYPES } from "../../Core/Types/Constants";
 import crypto from 'crypto';
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
 import { IEmailService } from "../../Core/Application/Interface/Services/IEmailService";
@@ -16,62 +16,45 @@ export class EmailService implements IEmailService {
         @inject(TYPES.AWSHelper) private readonly _awsHelper: IAWSHelper,
         @inject(TYPES.VerificationRepository) private readonly verificationRepository: VerificationRepository,
         @inject(TYPES.TransactionManager) private readonly transactionManager: TransactionManager
-    ) {}
+    ) { }
 
     async sendOTPEmail(data: EmailOTPDTO): Promise<EmailVerificationResponse> {
-        let transactionStarted = false;
         try {
-            // await this.transactionManager.beginTransaction();
-            // transactionStarted = true;
-            // Validate email format
             if (!UtilityService.isValidEmail(data.email)) {
                 throw new ValidationError('Invalid email format');
             }
 
-            // Generate OTP
             const otp = data.otpCode as string;
             const expiry = Date.now() + (15 * 60 * 1000); // 15 minutes
 
-            // Generate UUID for reference
             const reference = UtilityService.generateUUID();
 
-            // Create verification record
-            const verification = await this.verificationRepository.create({
-                identifier: data.email,
-                type: VerificationType.EMAIL,
-                otp: {
-                    code: await UtilityService.hashOTP(otp),
-                    attempts: 0,
-                    expiry,
-                    last_attempt: null,
-                    verified: false
-                },
-                user_id: data.userId,
-                expiry,
-                reference
-            });
+            // NOTE: OTP verification data is stored in onboarding_progress.stage_data
+            // NOT in the verifications table
 
-            // Send email with OTP
-            const userName = data.email.split('@')[0]; // Extract username from email
+            const userName = data.firstName || data.email.split('@')[0];
             const emailData = {
                 recipient: data.firstName || data.email,
                 ...data,
                 otpCode: otp,
                 otpExpiry: 15, // minutes
-                userName // Add userName for template
+                userName
             };
             await this._awsHelper.sendOTPEmail(data.email, emailData);
 
-            // await this.transactionManager.commit();
-            
             return {
                 success: true,
                 message: 'OTP sent successfully',
-                reference: verification.reference,
+                reference: reference,
                 expiry,
-                remainingAttempts: 3
+                remainingAttempts: 3,
+                code: otp // Return the OTP code so caller can store it
             };
         } catch (error: any) {
+            console.error('EmailService::sendOTPEmail -> Failed', {
+                error: error.message,
+                email: data.email
+            });
             throw new Error(error.message);
         }
     }
@@ -79,19 +62,15 @@ export class EmailService implements IEmailService {
     async sendPasswordResetOTPEmail(data: EmailOTPDTO): Promise<EmailVerificationResponse> {
         let transactionStarted = false;
         try {
-            // Validate email format
             if (!UtilityService.isValidEmail(data.email)) {
                 throw new ValidationError('Invalid email format');
             }
 
-            // Generate OTP
             const otp = data.otpCode as string;
             const expiry = Date.now() + (15 * 60 * 1000); // 15 minutes
 
-            // Generate UUID for reference
             const reference = UtilityService.generateUUID();
 
-            // Create verification record
             const verification = await this.verificationRepository.create({
                 identifier: data.email,
                 type: VerificationType.EMAIL,
@@ -107,19 +86,18 @@ export class EmailService implements IEmailService {
                 reference
             });
 
-            // Send email with OTP
-            const userName = data.firstName || data.email.split('@')[0]; // Use provided userName or extract from email
+            const userName = data.firstName || data.email.split('@')[0];
             const emailData = {
                 recipient: data.email,
                 ...data,
                 otpCode: otp,
                 otpExpiry: 15, // minutes
-                userName, // Add userName for template
-                CompanyName: 'Gr33nWh33lz' // Add company name
+                userName,
+                CompanyName: APP_NAME
             };
-            
+
             await this._awsHelper.sendPasswordResetOTPEmail(data.email, emailData);
-            
+
             return {
                 success: true,
                 message: 'Password reset OTP sent successfully',
@@ -134,13 +112,11 @@ export class EmailService implements IEmailService {
 
     async resendOTPEmail(email: string, reference: string): Promise<EmailVerificationResponse> {
         try {
-            // Get existing verification
             const verification = await this.verificationRepository.findByReference(reference);
             if (!verification || verification.identifier !== email) {
                 throw new ValidationError('Invalid verification reference');
             }
 
-            // Check rate limiting
             if (verification.otp?.last_attempt) {
                 const timeSinceLastAttempt = Date.now() - verification.otp.last_attempt;
                 if (timeSinceLastAttempt < 60000) { // 1 minute
@@ -148,11 +124,9 @@ export class EmailService implements IEmailService {
                 }
             }
 
-            // Generate new OTP
             const otp = UtilityService.generateOTP();
             const expiry = Date.now() + (15 * 60 * 1000);
 
-            // Update verification
             await this.verificationRepository.update(verification._id!, {
                 otp: {
                     code: await UtilityService.hashOTP(otp),
@@ -164,7 +138,6 @@ export class EmailService implements IEmailService {
                 expiry
             });
 
-            // Send email
             await this._awsHelper.sendOTPEmail(email, {
                 recipient: email,
                 email,
@@ -186,26 +159,21 @@ export class EmailService implements IEmailService {
 
     async verifyOTPEmail(email: string, otp: string, reference: string): Promise<EmailVerificationResponse> {
         try {
-            // Get verification
             const verification = await this.verificationRepository.findByReference(reference);
             if (!verification || verification.identifier !== email) {
                 throw new ValidationError('Invalid verification reference');
             }
 
-            // Check expiry
             if (verification.expiry! < Date.now()) {
                 throw new ValidationError('OTP has expired');
             }
 
-            // Check attempts
             if (verification.otp!.attempts >= 3) {
                 throw new ValidationError('Maximum attempts exceeded');
             }
 
-            // Verify OTP
             const isValid = await UtilityService.verifyOTP(otp, verification.otp!.code);
-            
-            // Update attempts
+
             const attempts = verification.otp!.attempts + 1;
             await this.verificationRepository.update(verification._id!, {
                 otp: {
@@ -246,7 +214,7 @@ export class EmailService implements IEmailService {
                 otpCode: data.otpCode,
                 otpExpiry: 15,
                 userName: data.firstName || data.email.split('@')[0],
-                CompanyName: 'Gr33nWh33lz'
+                CompanyName: APP_NAME
             };
             const emailResult = await this._awsHelper.sendForgotPasswordEmail(data.email, emailData);
             return emailResult;

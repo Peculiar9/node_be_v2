@@ -1,5 +1,6 @@
 import { LoginResponseDTO } from '../../DTOs/AuthDTO';
 import { IUser } from '../Entities/auth-and-user/IUser';
+import { RefreshTokenResultDTO } from '../../DTOs/AuthenticationDTO';
 
 /**
  * Interface for authentication-related operations
@@ -34,7 +35,7 @@ export interface IAuthenticationService {
      * @param refreshToken Refresh token
      * @returns New access token and user data
      */
-    refreshAccessToken(refreshToken: string): Promise<{ user: IUser; accessToken: string, refreshToken: string }>;
+    refreshAccessToken(refreshToken: string): Promise<RefreshTokenResultDTO>;
     
     /**
      * Revokes a user's refresh token
@@ -78,11 +79,4 @@ export interface IAuthenticationService {
      * @returns User object if found
      */
     validateUser(userId: string): Promise<IUser>;
-    
-    /**
-     * Handles OAuth authentication
-     * @param data User data from OAuth provider
-     * @returns Login response with tokens and user data
-     */
-    oauth(data: any): Promise<LoginResponseDTO | undefined>;
 }

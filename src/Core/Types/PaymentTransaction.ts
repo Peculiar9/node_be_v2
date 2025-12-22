@@ -14,7 +14,6 @@ export enum PaymentTransactionType {
 export interface PaymentTransaction {
   _id?: string;
   user_id: string;
-  session_id: string;
   amount: number;
   currency: string;
   status: PaymentTransactionStatus | string;

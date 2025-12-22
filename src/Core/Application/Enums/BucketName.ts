@@ -1,4 +1,5 @@
-const APP_NAME = "gr33nwh33lz";
+import { APP_NAME } from "../../../Core/Types/Constants";
+
 export enum BucketName {
     DEFAULT = "default",
     IMAGES = `${APP_NAME}-images`,

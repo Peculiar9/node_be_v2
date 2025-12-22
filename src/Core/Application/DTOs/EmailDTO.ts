@@ -15,4 +15,5 @@ export interface EmailVerificationResponse {
     reference?: string;
     expiry?: number;
     remainingAttempts?: number;
+    code?: string; // The actual OTP code (for storing in onboarding_progress)
 }

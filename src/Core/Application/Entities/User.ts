@@ -3,9 +3,10 @@ import { CreateUserDTO, UpdateUserDTO } from '../DTOs/UserDTO';
 import {  ValidationError } from '../Error/AppError';
 import { UtilityService } from '../../Services/UtilityService';
 import { UserRole } from '../Enums/UserRole';
-import { Column, CompositeIndex,  Index } from '../../../extensions/decorators';
+import { Column, CompositeIndex,  Index, IndexType } from '../../../extensions/decorators';
 import { UserStatus } from '../Enums/UserStatus';
-import { RegisterUserDTOV2 } from '../DTOs/AuthDTOV2';
+import { UserRegistrationDTO } from '../DTOs/AuthDTOV2';
+import CryptoService from '../../Services/CryptoService';
 
 
 @CompositeIndex(['first_name', 'last_name'])
@@ -19,7 +20,7 @@ export class User implements IUser {
     @Column('VARCHAR(255) NOT NULL')
     public last_name: string;
 
-    @Index({ unique: true, type: 'BTREE' })
+    @Index({ unique: true, type: IndexType.BTREE })
     @Column('VARCHAR(255) UNIQUE DEFAULT NULL')
     public email: string;
 
@@ -213,7 +214,7 @@ export class User implements IUser {
             throw error;
         }
     }
-    static async createFromRegisterUserDTO(dto: RegisterUserDTOV2): Promise<User | undefined> {
+    static async createFromRegisterUserDTO(dto: UserRegistrationDTO): Promise<User | undefined> {
         try{
             let email;
 
@@ -223,17 +224,24 @@ export class User implements IUser {
                 email = dto.email.toLowerCase();
             }
 
+            const first_name = dto.full_name.split(" ")[0];
+            const last_name = dto.full_name.split(" ")[1];
+            const salt = CryptoService.generateValidSalt();
+
             console.log("Email: ", {email});
             const user_secret = UtilityService.generateUserSecret();
+            const password = CryptoService.hashString(dto.password, salt);
             const userData: Partial<IUser> = {
                 // _id: UtilityService.generateUUID(),
-                first_name: dto.first_name,
-                last_name: dto.last_name,
+                first_name,
+                last_name,
                 email,
-                password: dto.password,
+                password,
                 user_secret,
+                salt,
                 status: UserStatus.INACTIVE,
                 is_active: true,
+                auth_method: AuthMethod.PASSWORD,
                 refresh_token: '',  // Initialize with empty string
                 roles: [dto.role],
             };
@@ -250,104 +258,6 @@ export class User implements IUser {
         }
     }
 
-    static async createFromPhone(phoneNumber: string): Promise<User | undefined> {
-        try{
-            const user_secret = UtilityService.generateUserSecret();
-
-
-            const userData: Partial<IUser> = {
-                // _id: UtilityService.generateUUID(),
-                first_name: '',
-                last_name: '',
-                email: null,
-                phone: phoneNumber,
-                password: '',
-                country_code: '',
-                international_phone: '',
-                drivers_license: '',
-                auth_method: '',
-
-                last_login: null,
-                user_secret,
-                profile_image: '',
-                status: UserStatus.INACTIVE,
-                is_active: true,
-                // refresh_token: '',  // Initialize with empty string
-                roles: [UserRole.USER],
-                __v: 0
-            };
-
-            const user = new User(userData);
-            return user;
-        }catch(error: any){
-            console.error('User Object creation: ', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
-        }
-    }
-
-    static async createFromEmail(email: string): Promise<User | undefined> {
-        try{
-            const user_secret = UtilityService.generateUserSecret();
-            const userData: Partial<IUser> = {
-                // _id: UtilityService.generateUUID(),
-                phone: UtilityService.generateUUID(),
-                email,
-                // Required NOT NULL fields with UUIDs instead of empty strings
-                first_name: UtilityService.generateUUID(),
-                last_name: UtilityService.generateUUID(),
-                password: UtilityService.generateUUID(),
-                // Other fields
-                auth_method: AuthMethod.PASSWORD,
-
-                last_login: null,
-                user_secret,
-                status: UserStatus.INACTIVE,
-                is_active: true,
-                roles: [UserRole.USER],
-                __v: 0
-            };
-
-            const user = new User(userData);
-            return user;
-        }catch(error: any){
-            console.error('User Object creation: ', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
-        }
-    }
-
-    static async createFromOAuth(dto: CreateUserDTO): Promise<User | undefined> {
-        try{
-            const user_secret = UtilityService.generateUserSecret();
-            const userData: Partial<IUser> = {
-                // _id: UtilityService.generateUUID(),
-                first_name: dto.first_name,
-                last_name: dto.last_name,
-                email: dto.email,
-                phone: dto.phone || '',
-                password: '',
-                user_secret,
-                profile_image: dto.profile_image || '',
-                status: UserStatus.ACTIVE,
-                is_active: true,
-                refresh_token: '',  // Initialize with empty string
-                roles: [UserRole.USER],
-                auth_method: 'oauth',
-            };
-            return new User(userData);
-        }catch(error: any){
-            console.error('User Object creation: ', {
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
-        }
-    }
     static async updateFromDTO(existingUser: IUser, dto: UpdateUserDTO): Promise<Partial<IUser>> {
         try {
             // Only include fields that are actually being updated

@@ -309,7 +309,7 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     abstract findByCondition(condition: Partial<T>): Promise<T[]>;
     abstract create(entity: T): Promise<T>;
     abstract update(id: string, entity: Partial<T>): Promise<T | null>;
-    abstract delete(id: string): Promise<boolean>;
+    abstract delete(id: string, deletedBy?: string): Promise<boolean>;
     abstract executeRawQuery(query: string, params: any[]): Promise<any>;
     abstract count(condition?: Partial<T>): Promise<number>;
     abstract bulkCreate(entities: T[]): Promise<T[]>;

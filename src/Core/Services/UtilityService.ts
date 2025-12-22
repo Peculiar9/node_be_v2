@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import CryptoService from '../Services/CryptoService';
 import { EnvironmentConfig } from '../../Infrastructure/Config/EnvironmentConfig';
@@ -38,30 +38,30 @@ export class UtilityService {
         return await bcrypt.compare(plainOTP, hashedOTP);
     }
 
-    static generate4Digit(): string {   
+    static generate4Digit(): string {
         let token = '';
         const digits = '0123456789';
-    
+
         for (let i = 0; i < 4; i++) {
-          const index = Math.floor(Math.random() * digits.length);
-          token += digits[index];
+            const index = Math.floor(Math.random() * digits.length);
+            token += digits[index];
         }
-    
+
         return token;
     }
 
     static generate6Digit(): string {
         let token = '';
         const digits = '0123456789';
-    
+
         for (let i = 0; i < 6; i++) {
-          const index = Math.floor(Math.random() * digits.length);
-          token += digits[index];
+            const index = Math.floor(Math.random() * digits.length);
+            token += digits[index];
         }
-    
+
         return token;
     }
-    
+
     static validateUUID(uuid: string): boolean {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         return uuidRegex.test(uuid);
@@ -92,7 +92,7 @@ export class UtilityService {
         return key.replace(/([A-Z])/g, letter => `_${letter.toLowerCase()}`);
     }
 
-    static async hashPassword(password: string): Promise<{ hash: string; salt: string;}> {
+    static async hashPassword(password: string): Promise<{ hash: string; salt: string; }> {
         if (password.length < this.MIN_PASSWORD_LENGTH) {
             throw new Error('Password is too short');
         }

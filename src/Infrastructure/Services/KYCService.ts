@@ -7,28 +7,20 @@ import { RegistrationError, ValidationError } from "../../Core/Application/Error
 import { DocumentValidationError, DocumentExpiryError, DocumentDataMismatchError, ImageProcessingError } from "../../Core/Application/Error/KYCError";
 import { IAWSHelper } from "../../Core/Application/Interface/Services/IAWSHelper";
 import { BucketName } from "../../Core/Application/Enums/BucketName";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import { IUser } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
 import { BaseService } from "./base/BaseService";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
 import { IUserKYC, KYCStatus, KYCStage } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
 import { UserKYCRepository } from "../Repository/SQL/auth/UserKYCRepository";
+import { UtilityService } from "../../Core/Services/UtilityService";
 
 @injectable()
 export class KYCService extends BaseService implements IKYCService {
   private readonly kycDirectory: string = 'kyc-documents';
-  private readonly carImagesDirectory: string = 'car-images';
   private readonly urlExpirationSeconds: number = 300; // 5 minutes
-  private readonly minVehicleConfidence: number = 80.0;
   
-  // A more robust list of vehicle labels for Rekognition
-  private readonly vehicleLabels: Record<VehicleType, string[]> = {
-    [VehicleType.CAR]: ['Car', 'Automobile', 'Vehicle', 'Transportation', 'Sports Car', 'Sedan', 'SUV', 'Convertible'],
-    [VehicleType.TRUCK]: ['Truck', 'Pickup Truck', 'Lorry'],
-    [VehicleType.VAN]: ['Van', 'Minivan', 'Cargo Van'],
-    [VehicleType.MOTORCYCLE]: ['Motorcycle', 'Motorbike', 'Scooter'],
-    [VehicleType.BICYCLE]: ['Bicycle', 'Bike', 'Cyclist']
-  };
+
   
   constructor(
     @inject(TYPES.UserRepository) private readonly userRepository: UserRepository,
@@ -84,7 +76,7 @@ export class KYCService extends BaseService implements IKYCService {
    */
   public async getSecureUploadUrl(userId: string): Promise<{ uploadUrl: string; key: string }> {
     await this.validateUserExists(userId);
-    const key = `${this.kycDirectory}/${userId}/${uuidv4()}`;
+    const key = `${this.kycDirectory}/${userId}/${UtilityService.generateUUID()}`;
     const uploadUrl = await this.awsHelper.generatePresignedUploadUrl(
       BucketName.VERIFICATION,
       key,
@@ -118,47 +110,7 @@ export class KYCService extends BaseService implements IKYCService {
     }
   }
 
-  /**
-   * Generates a secure URL for a client to upload a vehicle image.
-   */
-  public async getVehicleImageUploadUrl(userId: string, vehicleType: VehicleType): Promise<{ uploadUrl: string; key: string }> {
-    await this.validateUserExists(userId);
-    const key = `${this.carImagesDirectory}/${userId}/${vehicleType.toLowerCase()}/${uuidv4()}`;
-    const uploadUrl = await this.awsHelper.generatePresignedUploadUrl(
-      BucketName.VERIFICATION,
-      key,
-      'image/jpeg',
-      this.urlExpirationSeconds
-    );
-    return { uploadUrl, key };
-  }
-
-  /**
-   * Validates if an uploaded image contains the expected vehicle type.
-   */
-  public async validateVehicleImage(userId: string, s3Key: string, expectedVehicleType: VehicleType): Promise<IVehicleImageData> {
-    await this.validateUserExists(userId);
-    this.validateKeyOwnership(userId, s3Key, this.carImagesDirectory);
-    try {
-      const isValid = await this.awsHelper.detectImageObject(s3Key, this.vehicleLabels[expectedVehicleType]);
-      if (!isValid) {
-        throw new ImageProcessingError('The uploaded image does not appear to contain a valid vehicle.');
-      }
-      return {
-        isValidVehicle: true,
-        vehicleType: expectedVehicleType,
-        confidence: this.minVehicleConfidence,
-        detectedLabels: this.vehicleLabels[expectedVehicleType].map(label => ({ name: label, confidence: this.minVehicleConfidence })),
-        color: '',
-        make: '',
-        model: '',
-        additionalAttributes: {},
-      };
-    } catch (error) {
-      console.error(`Error validating vehicle image for user ${userId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      throw new ImageProcessingError('Failed to validate the vehicle image.');
-    }
-  }
+  
 
   // =================================================================
   // PRIVATE HELPER METHODS
@@ -238,35 +190,4 @@ export class KYCService extends BaseService implements IKYCService {
     // You could add a similar check for Date of Birth if you store that on your user model.
   }
 
-  private processVehicleLabels(labels: any[]): IVehicleImageData {
-    const result: IVehicleImageData = {
-      isValidVehicle: false,
-      vehicleType: '',
-      confidence: 0,
-      detectedLabels: [],
-      color: '',
-      make: '',
-      model: '',
-      additionalAttributes: {},
-    };
-    let highestConfidence = 0;
-    let detectedType: VehicleType | '' = '';
-    for (const label of labels) {
-      for (const [vehicleType, validLabels] of Object.entries(this.vehicleLabels)) {
-        if (label.Name && validLabels.includes(label.Name) && label.Confidence && label.Confidence > highestConfidence) {
-          highestConfidence = label.Confidence;
-          detectedType = vehicleType as VehicleType;
-        }
-      }
-      if (label.Name && label.Confidence) {
-        result.detectedLabels.push({ name: label.Name, confidence: label.Confidence });
-      }
-    }
-    if (detectedType && highestConfidence >= this.minVehicleConfidence) {
-      result.isValidVehicle = true;
-      result.vehicleType = detectedType;
-      result.confidence = highestConfidence;
-    }
-    return result;
-  }
 }

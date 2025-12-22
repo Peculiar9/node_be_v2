@@ -31,7 +31,7 @@ export class AWSBaseServices {
     constructor() {
         const region = EnvironmentConfig.get('AWS_REGION', 'us-east-1');
         // Set default from email
-        process.env.AWS_SES_FROM_EMAIL = EnvironmentConfig.get('AWS_SES_FROM_EMAIL', 'no-reply@gr33nwh33lz.com');
+        process.env.AWS_SES_FROM_EMAIL = EnvironmentConfig.get('AWS_SES_FROM_EMAIL', `no-reply@${APP_NAME}.com`);
         
         const credentials = {
             accessKeyId: EnvironmentConfig.get('AWS_ACCESS_KEY_ID_EMAIL'), //TODO: Change to AWS_ACCESS_KEY_ID_KYC if it does not work with S3Client

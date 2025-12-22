@@ -60,7 +60,7 @@ export const getDatabaseConfig = (): DatabaseConfig => {
     port: EnvironmentConfig.getNumber('DB_PORT', 5432),
     database: EnvironmentConfig.get('DB_NAME', 'postgres'),
     max: EnvironmentConfig.getNumber('DB_POOL_MAX', 5), // Conservative pool size for free-tier RDS
-    idleTimeoutMillis: EnvironmentConfig.getNumber('DB_IDLE_TIMEOUT', 10000), // 10 seconds idle timeout
+    idleTimeoutMillis: EnvironmentConfig.getNumber('DB_IDLE_TIMEOUT', 20000), // 10 seconds idle timeout
     connectionTimeoutMillis: EnvironmentConfig.getNumber('DB_CONNECTION_TIMEOUT', 8000), // 8 seconds connection timeout
     ssl: getSSLConfig(nodeEnv)
   };

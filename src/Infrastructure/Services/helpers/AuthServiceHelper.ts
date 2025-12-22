@@ -84,25 +84,7 @@ export class AuthServiceHelper extends BaseAuthHelper {
      * @returns The newly created user object.
      */
     public async createUser(identifier: string, salt: string): Promise<IUser> {
-        const isEmail = UtilityService.isValidEmail(identifier);
-
-        // This version is chosen for its completeness and use of enums.
-        const newUserPayload: Partial<IUser> = {
-            [isEmail ? 'email' : 'phone']: identifier,
-
-            auth_method: AuthMethod.PASSWORD,
-            roles: [UserRole.USER],
-            status: UserStatus.INACTIVE,
-            is_active: true, 
-            first_name: '',
-            last_name: '',
-            password: '', 
-            salt,
-            profile_image: '',
-            email_verified: false
-        };
-        
-        return await this.userRepository.create(newUserPayload as IUser); // Cast might be needed depending on IUser and create method signature
+     throw new Error("Not implemented yet");
     }
 
     public async generateTokens(user: IUser): Promise<{ accessToken: string; refreshToken: string }> {
@@ -120,7 +102,7 @@ export class AuthServiceHelper extends BaseAuthHelper {
                 payload,
                 secret,
                 {
-                    expiresIn: process.env.JWT_ACCESS_EXPIRATION || '15m',
+                    expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn'],
                     jwtid: UtilityService.generateUUID(),
                 }
             );
@@ -129,7 +111,7 @@ export class AuthServiceHelper extends BaseAuthHelper {
                 { ...payload, type: 'refresh' },
                 process.env.JWT_REFRESH_SECRET!,
                 {
-                    expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
+                    expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as jwt.SignOptions['expiresIn'],
                     jwtid: UtilityService.generateUUID(),
                 }
             );

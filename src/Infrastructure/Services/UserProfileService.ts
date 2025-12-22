@@ -32,19 +32,14 @@ export class UserProfileService extends BaseService implements IUserProfileServi
         let transactionSuccessfullyStarted = false;
         try {
             transactionSuccessfullyStarted = await this.beginTransaction();
-
-            // Ensure user exists
             const user = existingUser || await this.userRepository.findById(userId);
             if (!user) {
                 throw new ValidationError(ResponseMessage.USER_NOT_FOUND_MESSAGE);
             }
 
-            // Check if email is being updated and ensure it's unique
             if (dto.email && dto.email !== user.email) {
                 await this.authHelpers.ensureUserDoesNotExistByEmail(dto.email);
             }
-
-            // Check if phone is being updated and ensure it's unique
             if (dto.phone && dto.phone !== user.phone) {
                 await this.authHelpers.ensureUserDoesNotExistByPhone(dto.phone);
             }

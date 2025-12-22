@@ -5,11 +5,21 @@ export enum TableNames {
     PROFILES = 'profiles',
     SESSIONS = 'sessions',
     VERIFICATIONS = 'verifications',
+    AUDITS = 'audits',
+    CHECKINS = "checkins",
+    REVIEWS = "reviews",
+    RATINGS = "ratings",
+    ACTIVITIES = "activities",
     LINKED_ACCOUNTS = "linkedaccounts",
     FILE_MANAGER = "filemanager",
     AUDIT_LOGS = "auditlogs",
     PAYMENTS = "payments",
-    PAYMENT_METHOD = "paymentmethod",
-    USER_KYC ="userkyc",
-    PAYMENT_TRANSACTIONS = "paymenttransactions"
+    USER_KYC = "userkyc",
+    PAYMENT_TRANSACTIONS = "paymenttransactions",
+    CERTIFICATES = "certificates",
+    DOCUMENTS = "documents",
+    CONTACT_MESSAGES = 'contact_messages',
+    NEWSLETTER_SUBSCRIPTIONS = 'newsletter_subscriptions',
+
+
 }

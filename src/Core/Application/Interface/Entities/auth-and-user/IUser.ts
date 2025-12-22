@@ -21,7 +21,6 @@ export interface IUser{
     last_login: string | null | undefined;
     roles: string[] | UserRole[];
     age: number;
-    // type: string | USER;
     dob: Date | string;
     gender?: string;
     drivers_license: string;

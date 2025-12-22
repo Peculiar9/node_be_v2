@@ -3,10 +3,10 @@ export const TYPES = {
     AWSFileFormatterHelper: Symbol.for('AWSFileFormatterHelper'),
     ConnectionPoolManager: Symbol.for("ConnectionPoolManager"),
     UserRepository: Symbol.for('UserRepository'),
+
     AccountUseCase: Symbol.for('AccountUseCae'),
-    VehicleListingUseCase: Symbol.for('VehicleListingUseCase'),
     AuthUseCase: Symbol.for('AuthUseCase'),
-    ChargingSessionUseCase: Symbol.for('ChargingSessionUseCase'),
+
     AuthService: Symbol.for('AuthService'),
     AuthenticationService: Symbol.for('AuthenticationService'),
     RegistrationService: Symbol.for('RegistrationService'),
@@ -14,13 +14,11 @@ export const TYPES = {
     TransactionManager: Symbol.for('TransactionManager'),
     AuthMiddleware: Symbol.for('AuthMiddleware'),
     UserService: Symbol.for('UserService'),
-    CarFeatureService: Symbol.for('CarFeatureService'),
-    ChargerConnectorService: Symbol.for('ChargerConnectorService'),
+
     SMSService: Symbol.for('SMSService'),
     OTPService: Symbol.for('OTPService'),
     FileService: Symbol.for('FileService'),
-    ReviewService: Symbol.for('ReviewService'),
-    VehicleListingService: Symbol.for('VehicleListingService'),
+
     AWSHelper: Symbol.for('AWSHelper'),
     AuthServiceHelper: Symbol.for('AuthServiceHelper'),
     TokenService: Symbol.for('TokenService'),
@@ -28,85 +26,76 @@ export const TYPES = {
     AuthHelpers: Symbol.for('AuthHelpers'),
     EmailService: Symbol.for('EmailService'),
     DatabaseInitializer: Symbol.for('DatanaseInitializer'),
-    HttpClientFactory: Symbol.for('HttpClientFactory'),
-    UserController: Symbol.for('UserController'),
+
     VerificationRepository: Symbol.for('VerificationRepository'),
-    EVCarModelRepository: Symbol.for('EVCarModelRepository'),
-    ChargerConnectorRepository: Symbol.for('ChargerConnectorRepository'),
-    CarFeatureRepository: Symbol.for('CarFeatureRepository'),
-    VehicleRepository: Symbol.for('VehicleRepository'),
-    StationRepository: Symbol.for('StationRepository'),
-    AuditRepository: Symbol.for('AuditRepository'),
-    BookmarkRepository: Symbol.for('BookmarkRepository'),
-    ActivitiesRepository: Symbol.for('ActivitiesRepository'),
     FileManagerRepository: Symbol.for('FileManagerRepository'),
-    CheckinRepository: Symbol.for('CheckinRepository'),
-    ReviewsRepository: Symbol.for('ReviewsRepository'),
-    RatingsRepository: Symbol.for('RatingsRepository'),
     LinkedAccountsRepository: Symbol.for('LinkedAccountsRepository'),
     UserKYCRepository: Symbol.for('UserKYCRepository'),
-    CheckInRepository: Symbol.for('CheckInRepository'),
-    KYCService: Symbol.for('KYCService'),
-    CheckInUseCase: Symbol.for('CheckInUseCase'),
-    CheckInService: Symbol.for('CheckInService'),
-    EVCarModelService: Symbol.for('EVCarModelService'),
+
     PaymentController: Symbol.for('PaymentController'),
-    MockPaymentController: Symbol.for('MockPaymentController'),
-    StripeWebhookService: Symbol.for('StripeWebhookService'),
     StripeWebhookController: Symbol.for('StripeWebhookController'),
-    NRELService: Symbol.for('NRELService'),
-    OpenChargeMapService: Symbol.for('OpenChargeMapService'),
-    ChargetripService: Symbol.for('ChargetripService'),
-    TomTomService: Symbol.for('TomTomService'),
-    NHTSAVehicleService: Symbol.for('NHTSAVehicleService'),
-    StationService: Symbol.for('StationService'),
-    VehicleServices: Symbol.for('VehicleService'),
-    VehicleUseCase: Symbol.for('VehicleUseCase'),
-    ChargingStationUseCase: Symbol.for('ChargingStationUseCase'),
-    NREL_API_BASE_URL: Symbol.for('NREL_API_BASE_URL'),
-    NREL_API_KEY: Symbol.for('NREL_API_KEY'),
-    OPEN_CHARGE_MAP_API_BASE_URL: Symbol.for('OPEN_CHARGE_MAP_API_BASE_URL'),
-    OPEN_CHARGE_MAP_API_KEY: Symbol.for('OPEN_CHARGE_MAP_API_KEY'),
-    TOMTOM_API_KEY: Symbol.for('TOMTOM_API_KEY'),
-    CHARGETRIP_CLIENT_ID: Symbol.for('CHARGETRIP_CLIENT_ID'),
-    CHARGETRIP_APP_ID: Symbol.for('CHARGETRIP_APP_ID'),
-    NHTSA_API_BASE_URL: Symbol.for('NHTSA_API_BASE_URL'),
+
     GOOGLE_CLIENT_ID: Symbol.for('GoogleClientId'),
     GOOGLE_CLIENT_SECRET: Symbol.for('GoogleClientSecret'),
     GOOGLE_REDIRECT_URI: Symbol.for('GoogleRedirectUri'),
-    GoogleService: Symbol.for('GoogleService'),
-    ChargingStationRepository: Symbol.for('ChargingStationRepository'),
-    ReviewReadQueryRepository: Symbol.for('ReviewReadQueryRepository'),
-    CryptoService: Symbol.for('CryptoService'),
-    // SmartCar API
-    SmartCarService: Symbol.for('SmartCarService'),
-    SMARTCAR_API_BASE_URL: Symbol.for('SMARTCAR_API_BASE_URL'),
-    SMARTCAR_CLIENT_ID: Symbol.for('SMARTCAR_CLIENT_ID'),
-    SMARTCAR_CLIENT_SECRET: Symbol.for('SMARTCAR_CLIENT_SECRET'),
 
-    //MAPBOX API 
-    MAPBOX_API_BASE_URL: Symbol.for('MAPBOX_API_BASE_URL'),
-    MAPBOX_API_KEY: Symbol.for('MAPBOX_API_KEY'),
-    MAPBOX_ACCESS_TOKEN: Symbol.for('MAPBOX_ACCESS_TOKEN'),
-    // OCPP Service
-    OCPPService: Symbol.for('OCPPService'),
-    CsmsService: Symbol.for('CsmsService'),
+    CryptoService: Symbol.for('CryptoService'),
+
     // Payment Service
     PaymentService: Symbol.for('PaymentService'),
     STRIPE_SECRET_KEY: Symbol.for('STRIPE_SECRET_KEY'),
     STRIPE_PRE_AUTH_AMOUNT: Symbol.for('STRIPE_PRE_AUTH_AMOUNT'),
-    // Charging Session
-    ChargingSessionService: Symbol.for('ChargingSessionService'),
-    ChargingSessionRepository: Symbol.for('ChargingSessionRepository'),
-    PaymentTransactionRepository: Symbol.for('PaymentTransactionRepository'),
-    
-    // KYC Service
+
+    // Verification and Credentials Repositories
+    CertificateRepository: Symbol.for('CertificateRepository'),
+    DocumentRepository: Symbol.for('DocumentRepository'),
+
+    // Media Services
+    MediaService: Symbol.for('MediaService'),
+    CloudinaryService: Symbol.for('CloudinaryService'),
+    CLOUDINARY_CLOUD_NAME: Symbol.for('CLOUDINARY_CLOUD_NAME'),
+    CLOUDINARY_API_KEY: Symbol.for('CLOUDINARY_API_KEY'),
+    CLOUDINARY_API_SECRET: Symbol.for('CLOUDINARY_API_SECRET'),
+
+    // Twilio Services
+    TwilioService: Symbol.for('TwilioService'),
+    TWILIO_ACCOUNT_SID: Symbol.for('TWILIO_ACCOUNT_SID'),
+    TWILIO_AUTH_TOKEN: Symbol.for('TWILIO_AUTH_TOKEN'),
+    TWILIO_VERIFY_SERVICE_SID: Symbol.for('TWILIO_VERIFY_SERVICE_SID'),
+    TWILIO_PHONE_NUMBER: Symbol.for('TWILIO_PHONE_NUMBER'),
+    TWILIO_WHATSAPP_NUMBER: Symbol.for('TWILIO_WHATSAPP_NUMBER'),
+
+    // Twilio SendGrid Services
+    TwilioEmailService: Symbol.for('TwilioEmailService'),
+    SENDGRID_API_KEY: Symbol.for('SENDGRID_API_KEY'),
+    SENDGRID_FROM_EMAIL: Symbol.for('SENDGRID_FROM_EMAIL'),
+
+    // Contact
+    ContactMessageRepository: Symbol.for('ContactMessageRepository'),
+    ContactService: Symbol.for('ContactService'),
+
+    // Services
+    HttpClientFactory: Symbol.for('HttpClientFactory'),
+
+    // Webhooks
+    StripeWebhookService: Symbol.for('StripeWebhookService'),
+
+    // File
+    FileUseCase: Symbol.for('FileUseCase'),
+
+    // Repositories
+    NewsletterSubscriptionRepository: Symbol.for('NewsletterSubscriptionRepository'),
+
+
+    // KYC
+    QuickVerifyService: Symbol.for('QuickVerifyService'),
+    VerifyMeService: Symbol.for('VerifyMeService'),
 } as const;
 
 export const APP_VERSION = 'v1';
-export const API_PATH = `api/${APP_VERSION}/charger`;
+export const API_PATH = `api/${APP_VERSION}`;
 export const BASE_PATH = `api/${APP_VERSION}`;
-export const APP_NAME = 'gr33nwh33lz_charging_station';
+export const APP_NAME = 'clean_architecture_backend';
 export const API_DOC_URL = '/';
 
 export const delimeter = {
@@ -115,39 +104,39 @@ export const delimeter = {
 }
 
 export const FileFormat: { [key: string]: string } = {
-    JPEG : 'image/jpeg',
-    JPG : 'image/jpg',
-    PNG : 'image/png',
-    GIF : 'image/gif',
-    WEBP : 'image/webp',
-    BMP : 'image/bmp',
+    JPEG: 'image/jpeg',
+    JPG: 'image/jpg',
+    PNG: 'image/png',
+    GIF: 'image/gif',
+    WEBP: 'image/webp',
+    BMP: 'image/bmp',
     TIFF: 'image/tiff',
-    ICO : 'image/ico',
-    SVG : 'image/svg+xml',
+    ICO: 'image/ico',
+    SVG: 'image/svg+xml',
     HTML: 'text/html',
-    MP4 : 'video/mp4',
-    MOV : 'video/quicktime',
-    AVI : 'video/x-msvideo',
-    WMV : 'video/x-ms-wmv',
-    FLV : 'video/x-flv',
-    MPEG : 'video/mpeg',
-    MP3 : 'audio/mpeg',
-    WAV : 'audio/wav',
-    AAC : 'audio/aac',
-    FLAC : 'audio/flac',
-    OGG : 'audio/ogg',
-    PDF : 'application/pdf',
-    DOC : 'application/msword',
-    DOCX : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  
-    XLS : 'application/vnd.ms-excel',
-    XLSX : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  
-    PPT : 'application/vnd.ms-powerpoint',
-    PPTX : 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    TXT : 'text/plain',  
-    CSV : 'text/csv',
-    ZIP : 'application/zip',
-    RAR : 'application/x-rar-compressed',
-    TAR : 'application/x-tar',
-    GZ : 'application/gzip',
-    SEVENZ : 'application/x-7z-compressed',
+    MP4: 'video/mp4',
+    MOV: 'video/quicktime',
+    AVI: 'video/x-msvideo',
+    WMV: 'video/x-ms-wmv',
+    FLV: 'video/x-flv',
+    MPEG: 'video/mpeg',
+    MP3: 'audio/mpeg',
+    WAV: 'audio/wav',
+    AAC: 'audio/aac',
+    FLAC: 'audio/flac',
+    OGG: 'audio/ogg',
+    PDF: 'application/pdf',
+    DOC: 'application/msword',
+    DOCX: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    XLS: 'application/vnd.ms-excel',
+    XLSX: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    PPT: 'application/vnd.ms-powerpoint',
+    PPTX: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    TXT: 'text/plain',
+    CSV: 'text/csv',
+    ZIP: 'application/zip',
+    RAR: 'application/x-rar-compressed',
+    TAR: 'application/x-tar',
+    GZ: 'application/gzip',
+    SEVENZ: 'application/x-7z-compressed',
 }

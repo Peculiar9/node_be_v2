@@ -49,7 +49,7 @@ export class TokenService implements ITokenService {
             payload,
             accessSecret,
             {
-                expiresIn: process.env.JWT_ACCESS_EXPIRATION || '15m',
+                expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn'],
                 jwtid: UtilityService.generateUUID(),
             }
         );
@@ -58,7 +58,7 @@ export class TokenService implements ITokenService {
             { ...payload, type: 'refresh' },
             refreshSecret,
             {
-                expiresIn: process.env.JWT_REFRESH_EXPIRATION || '7d',
+                expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as jwt.SignOptions['expiresIn'],
                 jwtid: UtilityService.generateUUID(),
             }
         );
@@ -145,22 +145,15 @@ export class TokenService implements ITokenService {
     public async verifyToken(token: string): Promise<any> {
         try {
             const secret = process.env.JWT_ACCESS_SECRET;
-            // console.log("JWT_ACCESS_SECRET: ", secret);
-            
-            // Debug: Log token parts and secret characteristics
-            // console.log("Secret length:", secret?.length);
-            // console.log("Secret char codes:", secret?.split('').map(c => c.charCodeAt(0)));
             
             const tokenParts = token.split('.');
             if (tokenParts.length === 3) {
                 try {
                     const header = JSON.parse(Buffer.from(tokenParts[0], 'base64url').toString());
-                    // console.log("Token header:", header);
-                    // console.log("Token algorithm:", header.alg);
+                    
                     
                     // Try to decode without verification to see payload
                     const decodedPayload = jwt.decode(token);
-                    // console.log("Decoded payload (without verification):", decodedPayload);
                 } catch (e) {
                     console.log("Could not parse token parts for debugging:", e);
                 }
@@ -220,7 +213,7 @@ export class TokenService implements ITokenService {
 
         // Password reset tokens typically have a shorter expiration
         return jwt.sign(payload, secret, {
-            expiresIn: process.env.JWT_RESET_EXPIRATION || '1h'
+            expiresIn: (process.env.JWT_RESET_EXPIRATION || '1h') as jwt.SignOptions['expiresIn']
         });
     }
 

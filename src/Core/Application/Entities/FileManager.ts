@@ -2,6 +2,7 @@ import { Column, ForeignKey, Index } from "../../../extensions/decorators";
 import { IFileManager } from "../Interface/Entities/file-manager/IFileManager";
 import { CreateFileManagerDTO } from "../DTOs/FileManagerDTO";
 import { Console, LogLevel } from "../../../Infrastructure/Utils/Console";
+import { TableNames } from "../Enums/TableNames";
 
 export class FileManager implements IFileManager {
     constructor(data?: Partial<FileManager>) {
@@ -23,7 +24,7 @@ export class FileManager implements IFileManager {
     file_type: string;
     
     @Index({unique: false})
-    @ForeignKey({table: "users", field: "_id"})
+    @ForeignKey({table: TableNames.USERS, field: "_id"})
     @Column("UUID NOT NULL")
     user_id: string;
 
@@ -42,7 +43,7 @@ export class FileManager implements IFileManager {
     @Column("TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
     updated_at?: Date | string;
 
-    private static constructS3Url(fileName: string, bucketName: string = 'gr33nwh33lz-media-archives'): string {
+    private static constructS3Url(fileName: string, bucketName: string): string {
         const region = process.env.AWS_REGION || 'us-east-1';
         return `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`;
     }
@@ -57,7 +58,7 @@ export class FileManager implements IFileManager {
             const fileKey = `${dto.file_name}.${extension}`;
             
             // Construct the full S3 URL
-            const fileUrl = FileManager.constructS3Url(fileKey);
+            const fileUrl = "";
             
             const fileManagerData: Omit<FileManager, '_id' | 'created_at' | 'updated_at'> = {
                 file_key: fileKey,

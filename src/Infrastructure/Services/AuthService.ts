@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import bcrypt from "bcryptjs";
-import { TYPES } from '../../Core/Types/Constants';
+import { APP_NAME, TYPES } from '../../Core/Types/Constants';
 import { IAuthService } from '../../Core/Application/Interface/Services/IAuthService';
 import { TransactionManager } from '../Repository/SQL/Abstractions/TransactionManager';
 import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
@@ -362,7 +362,7 @@ export class AuthService implements IAuthService {
 
             // Update user status
             const updatedUser = await this.userRepository.update(user._id as string, {
-                status: UserStatus.VERIFIED,
+                status: UserStatus.ACTIVE,
                 email_verified: true
             }) as IUser;
 
@@ -1091,7 +1091,7 @@ export class AuthService implements IAuthService {
                 payload,
                 process.env.JWT_ACCESS_SECRET!,
                 {
-                    expiresIn: process.env.JWT_ACCESS_EXPIRATION || '15m',
+                    expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn'],
                     jwtid: UtilityService.generateUUID(),
                 }
             );
@@ -1155,10 +1155,7 @@ export class AuthService implements IAuthService {
                 return;
             }
             
-            // Generate a 6-digit OTP
             const otp = await UtilityService.generate4Digit();
-            
-            // Create verification record for the Password reset verification record
             const verification = await this._createEmailVerificationRecord(
                 user._id as string, 
                 email, 
@@ -1166,29 +1163,25 @@ export class AuthService implements IAuthService {
                 user.salt as string
             );
             
-            // Prepare data for email template
             const otpCodeObject: EmailOTPDTO = {
-                email: user.email as string, // Ensure email is treated as string
+                email: user.email as string,
                 otpCode: otp,
-                otpExpiry: 15, // 15 minutes expiry
+                otpExpiry: 15,
                 userId: user._id as string,
-                purpose: 'password reset', // Indicate this is for password reset
-                firstName: user.first_name || user.email?.split('@')[0] // Use first name if available, otherwise use email username
+                purpose: 'password reset',
+                firstName: user.first_name || user.email?.split('@')[0]
             };
             
-            // Send OTP email
             await this.emailService.sendPasswordResetOTPEmail(otpCodeObject);
             
-            // Update user with reset token reference
             await this.userRepository.update(user._id as string, { 
-                reset_token: verification.reference || UtilityService.generateUUID(), // Store reference to verification record
+                reset_token: verification.reference || UtilityService.generateUUID(),
                 reset_token_expires: verification.otp?.expiry || UtilityService.dateToUnix(new Date(Date.now() + 15 * 60 * 1000)) // Use the same expiry as the OTP
             });
 
             await this.transactionManager.commit();
             Console.info(`Password reset OTP requested for email: ${email}`);
         } catch (error: any) {
-            // Log the error
             Console.error(error, {message: `Error in requestPasswordResetOTP: ${error.message}`, stack: error.stack });
             
             if (transactionSuccessfullyStarted) {
@@ -1215,47 +1208,37 @@ export class AuthService implements IAuthService {
             });
             transactionSuccessfullyStarted = true;
             
-            // Find user by email
             const user = await this.userRepository.findByEmail(email);
             if (!user) {
                 throw new ValidationError(ResponseMessage.USER_NOT_FOUND_MESSAGE);
             }
             
-            // Find verification record by reference stored in reset_token
             const verification = await this.verificationRepository.findByReference(user.reset_token as string);
             if (!verification) {
                 throw new ValidationError('No password reset request found or it has expired');
             }
             
-            // Validate verification type and identifier
             if (verification.type !== VerificationType.EMAIL || verification.identifier !== email) {
                 throw new ValidationError('Invalid verification record');
             }
             
-            // Check verification status
             if (verification.status === VerificationStatus.EXPIRED) {
                 throw new ValidationError('Password reset request has expired. Please request a new code');
             }
             
-            // Check OTP expiry
             const currentTime = UtilityService.dateToUnix(new Date());
             if (!verification.otp || verification.otp.expiry < currentTime) {
                 throw new ValidationError('OTP has expired. Please request a new code');
             }
             
-            // Check attempts
             if (verification.otp.attempts >= 3) {
                 throw new ValidationError('Maximum verification attempts exceeded. Please request a new code');
             }
             
-            // Verify OTP
             const hashedOtp = await CryptoService.hashString(otp, user.salt as string);
             
-            // In non-production environments, '1234' is always valid
             if (!EnvironmentConfig.isProduction() && otp === '1234') {
-                // Code is valid, continue with verification
             } else if (hashedOtp !== verification.otp.code) {
-                // Increment attempts
                 await this.verificationRepository.update(verification._id as string, {
                     otp: {
                         ...verification.otp,
@@ -1266,7 +1249,6 @@ export class AuthService implements IAuthService {
                 throw new ValidationError('Invalid OTP code');
             }
             
-            // Update verification status
             await this.verificationRepository.update(verification._id as string, {
                 status: VerificationStatus.COMPLETED,
                 otp: {
@@ -1276,10 +1258,8 @@ export class AuthService implements IAuthService {
                 }
             });
             
-            // Hash the new password
             const passwordHash = await CryptoService.hashString(newPassword, user.salt as string);
             
-            // Update user password and clear reset token data
             await this.userRepository.update(user._id as string, {
                 password: passwordHash,
                 reset_token: null,
@@ -1354,7 +1334,7 @@ export class AuthService implements IAuthService {
                 userName: user.first_name || user.email,
                 resetLink,
                 recipient: user.email,
-                CompanyName: 'Gr33nWh33lz'
+                CompanyName: APP_NAME
             };
 
             // Send password reset email
@@ -1457,79 +1437,80 @@ export class AuthService implements IAuthService {
     }
 
     async oauth(data: CreateUserDTO): Promise<LoginResponseDTO> {
-        try {
-            if (!data.email || !data.provider) {
-                throw new ValidationError(ResponseMessage.MISSING_REQUIRED_FIELDS);
-            }
+        throw new Error('Not implemented');
+        // try {
+        //     if (!data.email || !data.provider) {
+        //         throw new ValidationError(ResponseMessage.MISSING_REQUIRED_FIELDS);
+        //     }
 
-            await this.transactionManager.beginTransaction({
-                isolationLevel: DatabaseIsolationLevel.READ_COMMITTED,
-            });
+        //     await this.transactionManager.beginTransaction({
+        //         isolationLevel: DatabaseIsolationLevel.READ_COMMITTED,
+        //     });
 
-            // Find user by email
-            let user = await this.userRepository.findByEmail(data.email) as IUser;
-            const now = new Date().toISOString();
-            let isNewUser = false;
+        //     // Find user by email
+        //     let user = await this.userRepository.findByEmail(data.email) as IUser;
+        //     const now = new Date().toISOString();
+        //     let isNewUser = false;
 
-            // Check if user exists but is not active
-            if (user && user.status !== UserStatus.ACTIVE) {
-                throw new AuthenticationError('User is not active or verified');
-            }
+        //     // Check if user exists but is not active
+        //     if (user && user.status !== UserStatus.ACTIVE) {
+        //         throw new AuthenticationError('User is not active or verified');
+        //     }
 
-            // If user doesn't exist, create a new one
-            if (!user) {
-                isNewUser = true;
-                const userObject = await User.createFromOAuth(data) as User;
-                userObject.last_login = now;
-                user = await this.userRepository.create(userObject);
-                Console.write("New user created", LogLevel.INFO, { userId: user._id });
-            }
+        //     // If user doesn't exist, create a new one
+        //     if (!user) {
+        //         isNewUser = true;
+        //         const userObject = await User.createFromOAuth(data) as User;
+        //         userObject.last_login = now;
+        //         user = await this.userRepository.create(userObject);
+        //         Console.write("New user created", LogLevel.INFO, { userId: user._id });
+        //     }
 
-            // Check if this OAuth provider is already linked to this user
-            const linkedAccount = await this.linkedAccountsRepository.findByCondition({
-                user_id: user._id as string,
-                auth_method: AuthMethod.OAUTH,
-                oauth_provider: data.provider,
-                is_active: true
-            });
+        //     // Check if this OAuth provider is already linked to this user
+        //     const linkedAccount = await this.linkedAccountsRepository.findByCondition({
+        //         user_id: user._id as string,
+        //         auth_method: AuthMethod.OAUTH,
+        //         oauth_provider: data.provider,
+        //         is_active: true
+        //     });
 
-            // If no linked account exists for this provider, create one
-            if (linkedAccount.length === 0) {
-                await this.linkedAccountsRepository.create({
-                    user_id: user._id as string,
-                    auth_method: AuthMethod.OAUTH,
-                    oauth_provider: data.provider,
-                    email: data.email,
-                    is_active: true
-                });
-                Console.write("Linked account created", LogLevel.INFO, { userId: user._id, provider: data.provider });
-            }
+        //     // If no linked account exists for this provider, create one
+        //     if (linkedAccount.length === 0) {
+        //         await this.linkedAccountsRepository.create({
+        //             user_id: user._id as string,
+        //             auth_method: AuthMethod.OAUTH,
+        //             oauth_provider: data.provider,
+        //             email: data.email,
+        //             is_active: true
+        //         });
+        //         Console.write("Linked account created", LogLevel.INFO, { userId: user._id, provider: data.provider });
+        //     }
 
-            // Generate tokens
-            const { accessToken, refreshToken } = await this.authHelper.generateTokens(user);
+        //     // Generate tokens
+        //     const { accessToken, refreshToken } = await this.authHelper.generateTokens(user);
 
-            // Update user data
-            const updateData: Partial<IUser> = {
-                refresh_token: await UtilityService.hashToken(refreshToken),
-                last_login: now
-            };
+        //     // Update user data
+        //     const updateData: Partial<IUser> = {
+        //         refresh_token: await UtilityService.hashToken(refreshToken),
+        //         last_login: now
+        //     };
 
-            await this.userRepository.update(user._id as string, updateData);
-            await this.transactionManager.commit();
+        //     await this.userRepository.update(user._id as string, updateData);
+        //     await this.transactionManager.commit();
 
-            return {
-                accessToken,
-                refreshToken,
-                user: this.constructUserObject(user),
-            };
-        } catch (error: any) {
-            await this.transactionManager.rollback();
-            Console.write('OAuth login error', LogLevel.ERROR, { error: error.message, stack: error.stack });
-            if (['AuthenticationError', 'UnprocessedEntityError', 'ConflictError', 'ValidationError', 'AuthorizationError'].includes(error.name)) {
-                throw error;
-            }
-            throw new AuthenticationError('An unexpected error occurred during google authentication. Please try again later.');
-        }
+        //     return {
+        //         accessToken,
+        //         refreshToken,
+        //         user: this.constructUserObject(user),
+        //     };
+        // } catch (error: any) {
+        //     await this.transactionManager.rollback();
+        //     Console.write('OAuth login error', LogLevel.ERROR, { error: error.message, stack: error.stack });
+        //     if (['AuthenticationError', 'UnprocessedEntityError', 'ConflictError', 'ValidationError', 'AuthorizationError'].includes(error.name)) {
+        //         throw error;
+        //     }
+        //     throw new AuthenticationError('An unexpected error occurred during google authentication. Please try again later.');
+        // }
     }
 
 }

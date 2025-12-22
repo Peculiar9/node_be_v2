@@ -3,8 +3,6 @@ import {  inject } from 'inversify';
 import { controller, httpGet, httpPost, httpDelete, httpPut, request, response } from 'inversify-express-utils';
 import { API_PATH, TYPES } from '../../Core/Types/Constants';
 import { IPaymentService } from '../../Core/Application/Interface/Services/IPaymentService';
-import { validationMiddleware } from '../../Middleware/ValidationMiddleware';
-import { SetDefaultPaymentMethodDTO } from '../../Core/Application/DTOs/PaymentDTO';
 import AuthMiddleware from '../../Middleware/AuthMiddleware';
 import { BaseController } from '../BaseController';
 import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
@@ -80,7 +78,7 @@ export class PaymentController extends BaseController{
     /**
      * Set a payment method as default
      */
-    @httpPut('/methods/default', AuthMiddleware.authenticate(), validationMiddleware(SetDefaultPaymentMethodDTO))
+    @httpPut('/methods/default', AuthMiddleware.authenticate())
     async setDefaultPaymentMethod(req: Request, res: Response) {
         try {
             const { paymentMethodId } = req.body;

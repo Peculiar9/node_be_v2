@@ -62,7 +62,7 @@ export class AWSFileFormatterHelper {
         });
 
         // Add any additional common variables
-        variables.CompanyName = variables.CompanyName || 'Gr33nWh33lz';
+        variables.CompanyName = variables.CompanyName;
         
         return variables;
     }
