@@ -6,7 +6,7 @@ A robust, production-ready Node.js backend starter kit built with TypeScript, fo
 
 - **Clean Architecture**: Separation of concerns logic (Core/Application, Infrastructure, Interface Adapters).
 - **Dependency Injection**: Powered by InversifyJS for loose coupling and testability.
-- **Repository Pattern**: Abstracted data access layer using generic repositories with TypeORM (or custom generic SQL implementation).
+- **Repository Pattern**: Abstracted data access layer using generic repositories with a Pseudo-ORM -> Not an ORM just near raw SQL query generator (or custom generic SQL implementation).
 - **Authentication**: Complete JWT-based auth flow (Login, Register, OTP Verification, Password Reset).
 - **Security**: 
   - `bcryptjs` for password hashing.
