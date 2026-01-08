@@ -1,6 +1,7 @@
 {
   "name": "clean-architecture-backend",
   "version": "1.0.0",
+  "author": "Peculiar9",
   "private": true,
   "scripts": {
     "start": "node dist/index.js",
