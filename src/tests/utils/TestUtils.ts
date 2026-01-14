@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import { TYPES } from '../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { Mock } from 'jest-mock';
 import { AuthMiddleware } from '../../Middleware/AuthMiddleware';
 

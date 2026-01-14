@@ -1,7 +1,7 @@
-import { Column, ForeignKey, Index } from "../../../extensions/decorators";
+import { Column, ForeignKey, Index } from "@extensions/decorators";
 import { IFileManager } from "../Interface/Entities/file-manager/IFileManager";
 import { CreateFileManagerDTO } from "../DTOs/FileManagerDTO";
-import { Console, LogLevel } from "../../../Infrastructure/Utils/Console";
+import { Console, LogLevel } from "@Infrastructure/Utils/Console";
 import { TableNames } from "../Enums/TableNames";
 
 export class FileManager implements IFileManager {

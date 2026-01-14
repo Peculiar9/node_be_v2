@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { TransactionManager } from "../../Repository/SQL/Abstractions/TransactionManager";
-import { DatabaseIsolationLevel } from "../../../Core/Application/Enums/DatabaseIsolationLevel";
+import { DatabaseIsolationLevel } from "@Core/Application/Enums/DatabaseIsolationLevel";
 import { Console, LogLevel } from "../../Utils/Console";
 
 /**

@@ -1,9 +1,9 @@
 // import { Container } from 'inversify';
-// import { CloudinaryService } from '../../Infrastructure/Services/media/CloudinaryService';
-// import { TYPES } from '../../Core/Types/Constants';
+// import { CloudinaryService } from '@Infrastructure/Services/media/CloudinaryService';
+// import { TYPES } from '@Core/Types/Constants';
 // import { TestUtils } from '../utils/TestUtils';
-// import { TransactionManager } from '../../Infrastructure/Repository/SQL/Abstractions/TransactionManager';
-// import { IMediaService } from '../../Core/Application/Interface/Services/IMediaService';
+// import { TransactionManager } from '@Infrastructure/Repository/SQL/Abstractions/TransactionManager';
+// import { IMediaService } from '@Core/Application/Interface/Services/IMediaService';
 // import * as fs from 'fs';
 // import * as path from 'path';
 

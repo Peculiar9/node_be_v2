@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 // @ts-ignore
 import cloudinary from 'cloudinary';
-import { TYPES } from '../../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { 
     IMediaService, 
     MediaUploadOptions, 
@@ -9,8 +9,8 @@ import {
     MediaDeletionResult, 
     ImageTransformation,
     MediaFileDetails
-} from '../../../Core/Application/Interface/Services/IMediaService';
-import { ValidationError } from '../../../Core/Application/Error/AppError';
+} from '@Core/Application/Interface/Services/IMediaService';
+import { ValidationError } from '@Core/Application/Error/AppError';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';

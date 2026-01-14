@@ -1,12 +1,12 @@
 // import 'reflect-metadata';
 // import { Container } from 'inversify';
-// import { TYPES } from '../../Core/Types/Constants';
-// import { SMSService } from '../../Infrastructure/Services/SMSService';
-// import { ISMSService } from '../../Core/Application/Interface/Services/ISMSService';
-// import { IAWSHelper } from '../../Core/Application/Interface/Services/IAWSHelper';
-// import { ITwilioService } from '../../Core/Application/Interface/Services/ITwilioService';
-// import { SMSData } from '../../Infrastructure/Services/data/SMSData';
-// import { SMSType } from '../../Core/Application/Enums/SMSType';
+// import { TYPES } from '@Core/Types/Constants';
+// import { SMSService } from '@Infrastructure/Services/SMSService';
+// import { ISMSService } from '@Core/Application/Interface/Services/ISMSService';
+// import { IAWSHelper } from '@Core/Application/Interface/Services/IAWSHelper';
+// import { ITwilioService } from '@Core/Application/Interface/Services/ITwilioService';
+// import { SMSData } from '@Infrastructure/Services/data/SMSData';
+// import { SMSType } from '@Core/Application/Enums/SMSType';
 
 // describe('SMSService', () => {
 //   let container: Container;

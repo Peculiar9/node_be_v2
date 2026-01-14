@@ -1,4 +1,4 @@
-import { Column, CompositeIndex, ForeignKey, Index } from "../../../extensions/decorators";
+import { Column, CompositeIndex, ForeignKey, Index } from "@extensions/decorators";
 import { ValidationError } from "../Error/AppError";
 import { TableNames } from "../Enums/TableNames";
 import { ITransaction } from "../Interface/Entities/payments/IPayment";

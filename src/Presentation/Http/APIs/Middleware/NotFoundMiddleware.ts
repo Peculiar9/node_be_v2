@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable } from 'inversify';
-import { Console } from '../Infrastructure/Utils/Console';
+import { Console } from '@Infrastructure/Utils/Console';
 
 @injectable()
 export class NotFoundMiddleware {

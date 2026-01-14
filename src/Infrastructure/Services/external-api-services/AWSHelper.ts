@@ -1,13 +1,13 @@
 import { injectable } from "inversify";
 import { EmailData } from "../data/EmailData";
-import { EmailType } from "../../../Core/Application/Enums/EmailType";
+import { EmailType } from "@Core/Application/Enums/EmailType";
 import { SMSData } from "../data/SMSData";
-import { BucketName } from "../../../Core/Application/Enums/BucketName";
+import { BucketName } from "@Core/Application/Enums/BucketName";
 import { AWSBaseServices } from "./AWSBaseServices";
 import { PublishCommand } from "@aws-sdk/client-sns";
-import { IAWSHelper } from "../../../Core/Application/Interface/Services/IAWSHelper";
+import { IAWSHelper } from "@Core/Application/Interface/Services/IAWSHelper";
 import { ComparedFace, CompareFacesCommandOutput } from "@aws-sdk/client-rekognition";
-import { FileFormat } from "../../../Core/Application/Enums/FileFormat";
+import { FileFormat } from "@Core/Application/Enums/FileFormat";
 
 @injectable()
 export class AWSHelper extends AWSBaseServices implements IAWSHelper {

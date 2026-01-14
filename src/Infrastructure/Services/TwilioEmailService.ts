@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { APP_NAME, TYPES } from '../../Core/Types/Constants';
+import { APP_NAME, TYPES } from '@Core/Types/Constants';
 import { 
     ITwilioEmailService, 
     EmailVerificationResult, 
     SendEmailOptions 
-} from '../../Core/Application/Interface/Services/ITwilioEmailService';
-import { ValidationError, ServiceError } from '../../Core/Application/Error/AppError';
-import CryptoService from '../../Core/Services/CryptoService';
+} from '@Core/Application/Interface/Services/ITwilioEmailService';
+import { ValidationError, ServiceError } from '@Core/Application/Error/AppError';
+import CryptoService from '@Core/Services/CryptoService';
 
 // Import SendGrid
 const sgMail = require('@sendgrid/mail');

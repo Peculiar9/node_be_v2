@@ -1,15 +1,15 @@
-import { BASE_PATH } from "../../Core/Types/Constants";
+import { BASE_PATH } from "@Core/Types/Constants";
 import { controller, httpGet, httpPost, httpPut, request, requestBody, response } from "inversify-express-utils";
 import { BaseController } from "../BaseController";
-import { ResponseMessage } from "../../Core/Application/Response/ResponseFormat";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
 import { Request, Response } from "express";
-import { UserRegistrationDTO } from "../../Core/Application/DTOs/AuthDTOV2";
+import { UserRegistrationDTO } from "@Core/Application/DTOs/AuthDTOV2";
 import { inject } from "inversify";
-import { TYPES } from "../../Core/Types/Constants";
-import { IAuthUseCase } from "../../Core/Application/Interface/UseCases/IAuthUseCase";
-import { ForgotPasswordDTO, ResetPasswordDTO, ChangePasswordDTO, RefreshTokenDTO, VerifyEmailDTO, LoginDTO } from "../../Core/Application/DTOs/AuthDTO";
+import { TYPES } from "@Core/Types/Constants";
+import { IAuthUseCase } from "@Core/Application/Interface/UseCases/IAuthUseCase";
+import { ForgotPasswordDTO, ResetPasswordDTO, ChangePasswordDTO, RefreshTokenDTO, VerifyEmailDTO, LoginDTO } from "@Core/Application/DTOs/AuthDTO";
 import AuthMiddleware from "../../Middleware/AuthMiddleware";
-import { IUser } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
+import { IUser } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
 import { uploadSingle } from "../../Middleware/MulterMiddleware";
 import { validationMiddleware } from "../../Middleware/ValidationMiddleware";
 
@@ -73,7 +73,11 @@ export class AuthController extends BaseController {
     @httpPost("/profile-image-upload", AuthMiddleware.authenticate(), uploadSingle('profile_image'))
     async profileImageUpload(@request() req: Request, @response() res: Response) {
         try {
-            const result = await this.authUseCase.updateProfileImage(req.file as Express.Multer.File, req.user as IUser);
+            const user = res.locals.user as IUser;
+            if (!req.file) {
+                return this.error(res, "No file uploaded", 400);
+            }
+            const result = await this.authUseCase.updateProfileImage(req.file as Express.Multer.File, user);
             return this.success(res, result, ResponseMessage.SUCCESSFUL_REQUEST_MESSAGE);
         } catch (error: any) {
             return this.error(res, error.message, error.statusCode);
@@ -142,7 +146,8 @@ export class AuthController extends BaseController {
         try {
             this.HandleEmptyReqBody(req);
             console.log('AuthController::changePassword -> request received');
-            const result = await this.authUseCase.changePassword(dto, req.user as IUser);
+            const user = res.locals.user as IUser;
+            const result = await this.authUseCase.changePassword(dto, user);
             return this.success(res, result, "Password has been changed successfully");
         } catch (error: any) {
             return this.error(res, error.message, error.statusCode);
@@ -157,7 +162,8 @@ export class AuthController extends BaseController {
     async getCurrentUser(@request() req: Request, @response() res: Response) {
         try {
             console.log('AuthController::getCurrentUser -> request received');
-            const result = await this.authUseCase.getCurrentUser(req.user as IUser);
+            const user = res.locals.user as IUser;
+            const result = await this.authUseCase.getCurrentUser(user);
             return this.success(res, result, ResponseMessage.SUCCESSFUL_REQUEST_MESSAGE);
         } catch (error: any) {
             return this.error(res, error.message, error.statusCode);

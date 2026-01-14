@@ -1,16 +1,16 @@
 // import { Request, Response, NextFunction } from 'express';
 // import { injectable, inject } from 'inversify';
-// import { TYPES } from '../Core/Types/Constants';
-// import { AuthService } from '../Infrastructure/Services/AuthService';
-// import { AuthenticationError, ForbiddenError } from '../Core/Application/Error/AppError';
-// import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
-// import { UserRepository } from '../Infrastructure/Repository/SQL/users/UserRepository';
-// import { DIContainer } from '../Core/DIContainer';
-// import { IAuthService } from '../Core/Application/Interface/Services/IAuthService';
-// import { TransactionManager } from '../Infrastructure/Repository/SQL/Abstractions/TransactionManager';
-// import { IUser } from '../Core/Application/Interface/Entities/auth-and-user/IUser';
-// import { UserRole } from '../Core/Application/Enums/UserRole';
-// import { ITokenService } from '../Core/Application/Interface/Services/ITokenService';
+// import { TYPES } from '@Core/Types/Constants';
+// import { AuthService } from '@Infrastructure/Services/AuthService';
+// import { AuthenticationError, ForbiddenError } from '@Core/Application/Error/AppError';
+// import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
+// import { UserRepository } from '@Infrastructure/Repository/SQL/users/UserRepository';
+// import { DIContainer } from '@Core/DIContainer';
+// import { IAuthService } from '@Core/Application/Interface/Services/IAuthService';
+// import { TransactionManager } from '@Infrastructure/Repository/SQL/Abstractions/TransactionManager';
+// import { IUser } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
+// import { UserRole } from '@Core/Application/Enums/UserRole';
+// import { ITokenService } from '@Core/Application/Interface/Services/ITokenService';
 // import { IAuthenticationService } from '@/Core/Application/Interface/Services/IAuthenticationService';
 
 // @injectable()
@@ -69,7 +69,7 @@
 //     try {
 //       const token = this.extractToken(req);
 //       const user = await this.validateTokenAndUser(token);
-//       req.user = user;
+//       res.locals.user = user;
 //       next();
 //     } catch (error: any) {
 //       this.handleAuthError(res, error);
@@ -84,7 +84,7 @@
 //       }
 //       const user = await this.validateTokenAndUser(token, UserRole.ADMIN);
 //       console.log('user', user);
-//       req.user = user;
+//       res.locals.user = user;
 //       next();
 //     } catch (error: any) {
 //       this.handleAuthError(res, error);
@@ -99,7 +99,7 @@
 //       }
 //       const user = await this.validateTokenAndUser(token, UserRole.SUPER_ADMIN);
 //       console.log('user', user);
-//       req.user = user;
+//       res.locals.user = user;
 //       next();
 //     } catch (error: any) {
 //       this.handleAuthError(res, error);
@@ -111,7 +111,7 @@
 //       const token = this.extractTokenOptional(req);
 //       if (token) {
 //         const user = await this.validateTokenAndUser(token);
-//         req.user = user;
+//         res.locals.user = user;
 //       }
 //       next();
 //     } catch (error: any) {

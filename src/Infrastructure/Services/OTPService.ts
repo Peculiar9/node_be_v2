@@ -1,15 +1,15 @@
 import { inject, injectable } from "inversify";
-import { IOTPService } from "../../Core/Application/Interface/Services/IOTPService";
-import { TYPES } from "../../Core/Types/Constants";
-import { IVerification } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
-import CryptoService from "../../Core/Services/CryptoService";
-import { UtilityService } from "../../Core/Services/UtilityService";
+import { IOTPService } from "@Core/Application/Interface/Services/IOTPService";
+import { TYPES } from "@Core/Types/Constants";
+import { IVerification } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
+import CryptoService from "@Core/Services/CryptoService";
+import { UtilityService } from "@Core/Services/UtilityService";
 import { VerificationRepository } from "../Repository/SQL/auth/VerificationRepository";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
-import { DatabaseIsolationLevel } from "../../Core/Application/Enums/DatabaseIsolationLevel";
-import { AppError, AuthenticationError } from "../../Core/Application/Error/AppError";
-import { VerificationStatus } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
-import { ResponseMessage } from "../../Core/Application/Response/ResponseFormat";
+import { DatabaseIsolationLevel } from "@Core/Application/Enums/DatabaseIsolationLevel";
+import { AppError, AuthenticationError } from "@Core/Application/Error/AppError";
+import { VerificationStatus } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
 
 @injectable()
 export class OTPService implements IOTPService {

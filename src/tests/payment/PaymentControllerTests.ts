@@ -2,9 +2,9 @@
 // import { expect } from 'chai';
 // import { Container } from 'inversify';
 // import { Request, Response } from 'express';
-// import { MockPaymentController } from '../../Controllers/payment/MockPaymentController';
-// import { PaymentMethod } from '../../Core/Application/Interface/Services/IPaymentService';
-// import { AddPaymentMethodDTO, SetDefaultPaymentMethodDTO } from '../../Core/Application/DTOs/PaymentDTO';
+// import { MockPaymentController } from '@Presentation/Http/APIs/Controllers/payment/MockPaymentController';
+// import { PaymentMethod } from '@Core/Application/Interface/Services/IPaymentService';
+// import { AddPaymentMethodDTO, SetDefaultPaymentMethodDTO } from '@Core/Application/DTOs/PaymentDTO';
 
 // describe('PaymentController Tests', () => {
 //     let mockPaymentController: MockPaymentController;

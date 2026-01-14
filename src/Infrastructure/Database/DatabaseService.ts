@@ -1,7 +1,7 @@
 import { Container, injectable } from 'inversify';
 import { ConnectionPoolManager } from '../Repository/SQL/Abstractions/ConnectionPoolManager';
-import { DatabaseError } from '../../Core/Application/Error/AppError';
-import { TYPES } from '../../Core/Types/Constants';
+import { DatabaseError } from '@Core/Application/Error/AppError';
+import { TYPES } from '@Core/Types/Constants';
 import { DatabaseInitializer } from '../Config/DatabaseInitializer';
 import { Console } from '../Utils/Console';
 

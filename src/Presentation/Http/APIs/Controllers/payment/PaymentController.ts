@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import {  inject } from 'inversify';
 import { controller, httpGet, httpPost, httpDelete, httpPut, request, response } from 'inversify-express-utils';
-import { API_PATH, TYPES } from '../../Core/Types/Constants';
-import { IPaymentService } from '../../Core/Application/Interface/Services/IPaymentService';
+import { API_PATH, TYPES } from '@Core/Types/Constants';
+import { IPaymentService } from '@Core/Application/Interface/Services/IPaymentService';
 import AuthMiddleware from '../../Middleware/AuthMiddleware';
 import { BaseController } from '../BaseController';
-import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
+import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
 
 @controller(`/${API_PATH}/payment`)
 export class PaymentController extends BaseController{
@@ -22,7 +22,7 @@ export class PaymentController extends BaseController{
     async createSetupIntent(@request() req: Request, @response() res: Response) {
         try {
 
-            const userId = req.user._id as string;
+            const userId = res.locals.user._id as string;
             
             // Get user from database to ensure they have a Stripe customer ID
             // If not, one will be created in the service
@@ -44,7 +44,7 @@ export class PaymentController extends BaseController{
     async addPaymentMethod(@request() req: Request, @response() res: Response) {
         try {
             const { paymentMethodId, setAsDefault } = req.body;
-            const userId = req.user._id as string;
+            const userId = res.locals.user._id as string;
             
             const paymentMethod = await this.paymentService.addPaymentMethod(
                 userId, 
@@ -65,7 +65,7 @@ export class PaymentController extends BaseController{
     @httpGet('/methods', AuthMiddleware.authenticate())
     async getPaymentMethods(req: Request, res: Response) {
         try {
-            const userId = req.user._id as string;
+            const userId = res.locals.user._id as string;
             const methods = await this.paymentService.getPaymentMethods(userId);
             
             return this.success(res, methods, ResponseMessage.PAYMENT_METHODS_RETRIEVED_SUCCESS);
@@ -82,7 +82,7 @@ export class PaymentController extends BaseController{
     async setDefaultPaymentMethod(req: Request, res: Response) {
         try {
             const { paymentMethodId } = req.body;
-            const userId = req.user._id as string;
+            const userId = res.locals.user._id as string;
             
             await this.paymentService.setDefaultPaymentMethod(userId, paymentMethodId);
             
@@ -100,7 +100,7 @@ export class PaymentController extends BaseController{
     async removePaymentMethod(req: Request, res: Response) {
         try {
             const { paymentMethodId } = req.params;
-            const userId = req.user._id as string;
+            const userId = res.locals.user._id as string;
             
             await this.paymentService.removePaymentMethod(userId, paymentMethodId);
             

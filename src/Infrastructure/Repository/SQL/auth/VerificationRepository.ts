@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { BaseRepository } from '../BaseRepository';
 import { TransactionManager } from '../Abstractions/TransactionManager';
-import { IVerification } from '../../../../Core/Application/Interface/Entities/auth-and-user/IVerification';
-import { TableNames } from '../../../../Core/Application/Enums/TableNames';
-import { TYPES } from '../../../../Core/Types/Constants';
-import { DatabaseError } from '../../../../Core/Application/Error/AppError';
-import { VerificationStatus } from '../../../../Core/Application/Interface/Entities/auth-and-user/IUser';
-import { OTP } from '../../../../Core/Application/Types/OTP';
+import { IVerification } from '@Core/Application/Interface/Entities/auth-and-user/IVerification';
+import { TableNames } from '@Core/Application/Enums/TableNames';
+import { TYPES } from '@Core/Types/Constants';
+import { DatabaseError } from '@Core/Application/Error/AppError';
+import { VerificationStatus } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
+import { OTP } from '@Core/Application/Types/OTP';
 
 @injectable()
 export class VerificationRepository extends BaseRepository<IVerification> {

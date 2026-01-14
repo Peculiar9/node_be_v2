@@ -1,31 +1,31 @@
 import { inject, injectable } from 'inversify';
 import bcrypt from "bcryptjs";
-import { APP_NAME, TYPES } from '../../Core/Types/Constants';
-import { IAuthService } from '../../Core/Application/Interface/Services/IAuthService';
+import { APP_NAME, TYPES } from '@Core/Types/Constants';
+import { IAuthService } from '@Core/Application/Interface/Services/IAuthService';
 import { TransactionManager } from '../Repository/SQL/Abstractions/TransactionManager';
-import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
-import { AuthenticationError, ConflictError, UnprocessableEntityError, ValidationError } from '../../Core/Application/Error/AppError';
-import { EmailSignUpDTO, IEmailVerificationResponse, IPhoneVerificationResponse, LoginResponseDTO, VerifyEmailDTO } from '../../Core/Application/DTOs/AuthDTO';
-import { UtilityService } from '../../Core/Services/UtilityService';
-import { DatabaseIsolationLevel } from '../../Core/Application/Enums/DatabaseIsolationLevel';
+import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
+import { AuthenticationError, ConflictError, UnprocessableEntityError, ValidationError } from '@Core/Application/Error/AppError';
+import { EmailSignUpDTO, IEmailVerificationResponse, IPhoneVerificationResponse, LoginResponseDTO, VerifyEmailDTO } from '@Core/Application/DTOs/AuthDTO';
+import { UtilityService } from '@Core/Services/UtilityService';
+import { DatabaseIsolationLevel } from '@Core/Application/Enums/DatabaseIsolationLevel';
 import * as jwt from 'jsonwebtoken';
-import { AuthMethod, IUser, OAuthProvider, VerificationStatus } from '../../Core/Application/Interface/Entities/auth-and-user/IUser';
-import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../../Core/Application/DTOs/UserDTO';
-import { UserRole } from '../../Core/Application/Enums/UserRole';
+import { AuthMethod, IUser, OAuthProvider, VerificationStatus } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
+import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '@Core/Application/DTOs/UserDTO';
+import { UserRole } from '@Core/Application/Enums/UserRole';
 import { UserRepository } from '../Repository/SQL/users/UserRepository';
 import { VerificationRepository } from '../Repository/SQL/auth/VerificationRepository';
-import { CryptoService } from '../../Core/Services/CryptoService';
-import { IVerification, VerificationType } from '../../Core/Application/Interface/Entities/auth-and-user/IVerification';
-import { UserStatus } from '../../Core/Application/Enums/UserStatus';
-import { User } from '../../Core/Application/Entities/User';
+import { CryptoService } from '@Core/Services/CryptoService';
+import { IVerification, VerificationType } from '@Core/Application/Interface/Entities/auth-and-user/IVerification';
+import { UserStatus } from '@Core/Application/Enums/UserStatus';
+import { User } from '@Core/Application/Entities/User';
 import { Console, LogLevel } from '../Utils/Console';
 import { LinkedAccountsRepository } from '../Repository/SQL/auth/LinkedAccountsRepository';
 import { FileService } from '../Services/FileService';
-import { IEmailService } from '../../Core/Application/Interface/Services/IEmailService';
+import { IEmailService } from '@Core/Application/Interface/Services/IEmailService';
 import { AuthServiceHelper } from './helpers/AuthServiceHelper';
-import { EmailOTPDTO } from '../../Core/Application/DTOs/EmailDTO';
+import { EmailOTPDTO } from '@Core/Application/DTOs/EmailDTO';
 import { EnvironmentConfig } from '../Config/EnvironmentConfig';
-import { TableNames } from '../../Core/Application/Enums/TableNames';
+import { TableNames } from '@Core/Application/Enums/TableNames';
 
 @injectable()
 export class AuthService implements IAuthService {

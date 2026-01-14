@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { 
     ITwilioService, 
     TwilioMessageOptions, 
     TwilioMessageResponse, 
     TwilioVerificationOptions 
-} from '../../Core/Application/Interface/Services/ITwilioService';
-import { ValidationError } from '../../Core/Application/Error/AppError';
+} from '@Core/Application/Interface/Services/ITwilioService';
+import { ValidationError } from '@Core/Application/Error/AppError';
 
 import { Twilio as twilio} from 'twilio';
 // @ts-ignore - Using require for Twilio to avoid potential import issues

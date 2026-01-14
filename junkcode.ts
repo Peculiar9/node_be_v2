@@ -3,13 +3,13 @@
 // import bodyParser from 'body-parser';
 // import { Container } from 'inversify';
 // import { InversifyExpressServer } from 'inversify-express-utils';
-// import { DatabaseService } from './Infrastructure/Database/DatabaseService';
+// import { DatabaseService } from '@Infrastructure/Database/DatabaseService';
 // import { getRouteInfo } from 'inversify-express-utils';
 
-// import './Controllers/InitController';
-// import './Controllers/auth/AccountController';
+// import '@Presentation/Http/APIs/Controllers/InitController';
+// import '@Presentation/Http/APIs/Controllers/auth/AccountController';
 
-// import { DIContainer } from './Core/DIContainer';
+// import { DIContainer } from '@Core/DIContainer';
 
 // import express, { Response, Request, NextFunction } from 'express';
 // import path from 'path';
@@ -159,7 +159,7 @@
 // import 'reflect-metadata';
 // import dotenv from 'dotenv';
 // import App from './App';
-// import { APP_NAME } from './Core/Types/Constants';
+// import { APP_NAME } from '@Core/Types/Constants';
 
 // dotenv.config();
 
@@ -214,12 +214,12 @@
             /// Auth Service, Will test later
 
             // import { Container } from 'inversify';
-// import { AuthService } from '../../Infrastructure/Services/AuthService';
-// import { TYPES } from '../../Core/Types/Constants';
+// import { AuthService } from '@Infrastructure/Services/AuthService';
+// import { TYPES } from '@Core/Types/Constants';
 // import { TestUtils } from '../utils/TestUtils';
 // import { mockUserData } from '../mocks/MockData';
-// import { ValidationError } from '../../Core/Application/Error/AppError';
-// import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
+// import { ValidationError } from '@Core/Application/Error/AppError';
+// import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
 
 // describe('AuthService', () => {
 //     let container: Container;
@@ -299,11 +299,11 @@
 
 
 
-// import { IRepository } from "../../../Core/Application/Interface/Persistence/Repository/IRepository";
+// import { IRepository } from "@Core/Application/Interface/Persistence/Repository/IRepository";
 // import { TransactionManager } from "./Abstractions/TransactionManager";
 // import { QueryResult } from 'pg';
-// import { DatabaseError } from "../../../Core/Application/Error/AppError";
-// import { TableNames } from "../../../Core/Application/Enums/TableNames";
+// import { DatabaseError } from "@Core/Application/Error/AppError";
+// import { TableNames } from "@Core/Application/Enums/TableNames";
 
 
 
