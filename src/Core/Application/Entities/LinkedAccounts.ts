@@ -1,4 +1,4 @@
-import { Column, CompositeIndex, ForeignKey, Index } from '../../../extensions/decorators';
+import { Column, CompositeIndex, ForeignKey, Index } from '@extensions/decorators';
 import { ILinkedAccounts } from '../Interface/Entities/auth-and-user/ILinkedAcounts';
 import { AuthMethod, OAuthProvider } from '../Interface/Entities/auth-and-user/IUser';
 import { ValidationError } from '../Error/AppError';

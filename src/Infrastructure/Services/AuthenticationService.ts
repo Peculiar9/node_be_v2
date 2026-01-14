@@ -1,28 +1,28 @@
 import { injectable, inject } from "inversify";
-import { TYPES } from "../../Core/Types/Constants";
-import { IAuthenticationService } from "../../Core/Application/Interface/Services/IAuthenticationService";
-import { LoginResponseDTO } from "../../Core/Application/DTOs/AuthDTO";
-import { AuthMethod, IUser, VerificationStatus } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
-import { VerificationType, IVerification } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
+import { TYPES } from "@Core/Types/Constants";
+import { IAuthenticationService } from "@Core/Application/Interface/Services/IAuthenticationService";
+import { LoginResponseDTO } from "@Core/Application/DTOs/AuthDTO";
+import { AuthMethod, IUser, VerificationStatus } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+import { VerificationType, IVerification } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
 import { UserRepository } from "../Repository/SQL/users/UserRepository";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
 import { Console, LogLevel } from "../Utils/Console";
-import { AppError, AuthenticationError, ValidationError } from "../../Core/Application/Error/AppError";
-import { ResponseMessage } from "../../Core/Application/Response/ResponseFormat";
-import CryptoService from "../../Core/Services/CryptoService";
+import { AppError, AuthenticationError, ValidationError } from "@Core/Application/Error/AppError";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
+import CryptoService from "@Core/Services/CryptoService";
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { LinkedAccountsRepository } from "../Repository/SQL/auth/LinkedAccountsRepository";
 import { EmailService } from "./EmailService";
 import { SMSService } from "./SMSService";
-import { UtilityService } from "../../Core/Services/UtilityService";
+import { UtilityService } from "@Core/Services/UtilityService";
 import { VerificationRepository } from "../Repository/SQL/auth/VerificationRepository";
-import { EmailOTPDTO } from "../../Core/Application/DTOs/EmailDTO";
+import { EmailOTPDTO } from "@Core/Application/DTOs/EmailDTO";
 import { BaseService } from "./base/BaseService";
 import { AuthHelpers } from "./helpers/AuthHelpers";
 import { TokenService } from "./TokenService";
 import { EnvironmentConfig } from "../Config/EnvironmentConfig";
-import { User } from "../../Core/Application/Entities/User";
+import { User } from "@Core/Application/Entities/User";
 
 
 @injectable()

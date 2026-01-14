@@ -1,10 +1,10 @@
 import { PoolClient } from 'pg';
 import { ConnectionPoolManager } from './ConnectionPoolManager';
-import { InternalServerError } from '../../../../Core/Application/Error/AppError';
-import { DatabaseIsolationLevel } from '../../../../Core/Application/Enums/DatabaseIsolationLevel';
+import { InternalServerError } from '@Core/Application/Error/AppError';
+import { DatabaseIsolationLevel } from '@Core/Application/Enums/DatabaseIsolationLevel';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../../../Core/Types/Constants';
-import { Console, LogLevel } from '../../../../Infrastructure/Utils/Console';
+import { TYPES } from '@Core/Types/Constants';
+import { Console, LogLevel } from '@Infrastructure/Utils/Console';
 
 interface TransactionOptions {
   isolationLevel?: DatabaseIsolationLevel;

@@ -7,7 +7,7 @@ import { ResponseMessage } from '../Response/ResponseFormat';
 import { LoginResponseDTO } from '../DTOs/AuthDTO';
 import { IUser } from '../Interface/Entities/auth-and-user/IUser';
 import { AppError, ValidationError, UnprocessableEntityError, ServiceError } from '../Error/AppError';
-import { Console } from '../../../Infrastructure/Utils/Console';
+import { Console } from '@Infrastructure/Utils/Console';
 import { IRegistrationService } from '../Interface/Services/IRegistrationService';
 import { IUserProfileService } from '../Interface/Services/IUserProfileService';
 

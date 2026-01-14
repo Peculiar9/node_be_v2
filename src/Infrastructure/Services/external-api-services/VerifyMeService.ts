@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { TYPES } from '../../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { BaseApiService } from '../../API/BaseApiService';
 import { HttpClientFactory } from '../../Http/HttpClientFactory';
 import { 
@@ -9,8 +9,8 @@ import {
     TINVerificationResult,
     NINVerificationData,
     BVNVerificationData
-} from '../../../Core/Application/Interface/Services/IVerifyMeService';
-import { ServiceError } from '../../../Core/Application/Error/AppError';
+} from '@Core/Application/Interface/Services/IVerifyMeService';
+import { ServiceError } from '@Core/Application/Error/AppError';
 
 @injectable()
 export class VerifyMeService extends BaseApiService implements IVerifyMeService {

@@ -1,19 +1,19 @@
 import { inject, injectable } from "inversify";
-import { IKYCService } from "../../Core/Application/Interface/Services/IKYCService";
-import { IDriversLicenseData, IVehicleImageData, VehicleType } from "../../Core/Application/Types/KYCTypes";
-import { TYPES } from "../../Core/Types/Constants";
-import { UserRepository } from "../../Infrastructure/Repository/SQL/users/UserRepository";
-import { RegistrationError, ValidationError } from "../../Core/Application/Error/AppError";
-import { DocumentValidationError, DocumentExpiryError, DocumentDataMismatchError, ImageProcessingError } from "../../Core/Application/Error/KYCError";
-import { IAWSHelper } from "../../Core/Application/Interface/Services/IAWSHelper";
-import { BucketName } from "../../Core/Application/Enums/BucketName";
+import { IKYCService } from "@Core/Application/Interface/Services/IKYCService";
+import { IDriversLicenseData, IVehicleImageData, VehicleType } from "@Core/Application/Types/KYCTypes";
+import { TYPES } from "@Core/Types/Constants";
+import { UserRepository } from "@Infrastructure/Repository/SQL/users/UserRepository";
+import { RegistrationError, ValidationError } from "@Core/Application/Error/AppError";
+import { DocumentValidationError, DocumentExpiryError, DocumentDataMismatchError, ImageProcessingError } from "@Core/Application/Error/KYCError";
+import { IAWSHelper } from "@Core/Application/Interface/Services/IAWSHelper";
+import { BucketName } from "@Core/Application/Enums/BucketName";
 // import { v4 as uuidv4 } from 'uuid';
-import { IUser } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
+import { IUser } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
 import { BaseService } from "./base/BaseService";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
-import { IUserKYC, KYCStatus, KYCStage } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
+import { IUserKYC, KYCStatus, KYCStage } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
 import { UserKYCRepository } from "../Repository/SQL/auth/UserKYCRepository";
-import { UtilityService } from "../../Core/Services/UtilityService";
+import { UtilityService } from "@Core/Services/UtilityService";
 
 @injectable()
 export class KYCService extends BaseService implements IKYCService {

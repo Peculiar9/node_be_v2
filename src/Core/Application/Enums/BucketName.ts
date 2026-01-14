@@ -1,4 +1,4 @@
-import { APP_NAME } from "../../../Core/Types/Constants";
+import { APP_NAME } from "@Core/Types/Constants";
 
 export enum BucketName {
     DEFAULT = "default",

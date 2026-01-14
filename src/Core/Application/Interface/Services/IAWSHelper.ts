@@ -1,5 +1,5 @@
-import { EmailData } from "../../../../Infrastructure/Services/data/EmailData";
-import { SMSData } from "../../../../Infrastructure/Services/data/SMSData";
+import { EmailData } from "@Infrastructure/Services/data/EmailData";
+import { SMSData } from "@Infrastructure/Services/data/SMSData";
 import { BucketName } from "../../Enums/BucketName";
 import { ComparedFace } from "@aws-sdk/client-rekognition";
 import { PublishCommandOutput } from "@aws-sdk/client-sns";

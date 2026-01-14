@@ -1,4 +1,4 @@
-import { SMSData } from ".../../Infrastructure/Services/data/SMSData";
+import { SMSData } from "@Infrastructure/Services/data/SMSData";
 
 export interface ISMSService {
     sendVerificationSMS(data: SMSData): Promise<any>;

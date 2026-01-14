@@ -1,9 +1,9 @@
 import { Pool, PoolClient, PoolConfig } from 'pg'; // Using PoolConfig from 'pg' for better type safety
 import { EventEmitter } from 'events';
-import { DatabaseError } from '../../../../Core/Application/Error/AppError'; // Assuming path
-import { DatabaseConnectionError } from '../../../../Core/Application/Error/DatabaseErrors'; // Assuming path
+import { DatabaseError } from '@Core/Application/Error/AppError'; // Assuming path
+import { DatabaseConnectionError } from '@Core/Application/Error/DatabaseErrors'; // Assuming path
 import { injectable } from 'inversify';
-import { Console, LogLevel } from '../../../../Infrastructure/Utils/Console'; // Assuming path
+import { Console, LogLevel } from '@Infrastructure/Utils/Console'; // Assuming path
 
 // Interface for options passed to getConnection
 interface ConnectionOptions {

@@ -1,10 +1,10 @@
-import { TYPES } from "../../Core/Types/Constants";
-import { ISMSService } from "../../Core/Application/Interface/Services/ISMSService";
+import { TYPES } from "@Core/Types/Constants";
+import { ISMSService } from "@Core/Application/Interface/Services/ISMSService";
 import { SMSData } from "./data/SMSData";
 import { inject, injectable } from "inversify";
-import { SMSType } from "../../Core/Application/Enums/SMSType";
-import { IAWSHelper } from "../../Core/Application/Interface/Services/IAWSHelper";
-import { ITwilioService, TwilioVerificationOptions } from "../../Core/Application/Interface/Services/ITwilioService";
+import { SMSType } from "@Core/Application/Enums/SMSType";
+import { IAWSHelper } from "@Core/Application/Interface/Services/IAWSHelper";
+import { ITwilioService, TwilioVerificationOptions } from "@Core/Application/Interface/Services/ITwilioService";
 
 @injectable()
 export class SMSService implements ISMSService {

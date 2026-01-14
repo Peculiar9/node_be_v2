@@ -1,12 +1,12 @@
 import { VerificationRepository } from "../../Repository/SQL/auth/VerificationRepository";
 import { UserRepository } from "../../Repository/SQL/users/UserRepository";
-import { IVerification, VerificationType } from "../../../Core/Application/Interface/Entities/auth-and-user/IVerification";
-import { ConflictError, ValidationError } from "../../../Core/Application/Error/AppError";
+import { IVerification, VerificationType } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
+import { ConflictError, ValidationError } from "@Core/Application/Error/AppError";
 import { Console, LogLevel } from "../../Utils/Console";
-import { ResponseMessage } from "../../../Core/Application/Response/ResponseFormat";
-import { IUser, VerificationStatus } from "../../../Core/Application/Interface/Entities/auth-and-user/IUser";
-import { UtilityService } from "../../../Core/Services/UtilityService";
-import { User } from "../../../Core/Application/Entities/User";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
+import { IUser, VerificationStatus } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+import { UtilityService } from "@Core/Services/UtilityService";
+import { User } from "@Core/Application/Entities/User";
 
 export abstract class BaseAuthHelper {
     constructor(

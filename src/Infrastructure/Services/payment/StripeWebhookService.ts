@@ -1,14 +1,14 @@
 // import { inject, injectable } from 'inversify';
-// import { TYPES } from '../../../Core/Types/Constants';
-// import { IStripeWebhookService } from '../../../Core/Application/Interface/Services/IStripeWebhookService';
+// import { TYPES } from '@Core/Types/Constants';
+// import { IStripeWebhookService } from '@Core/Application/Interface/Services/IStripeWebhookService';
 // import { PaymentTransactionRepository } from '../../Repository/SQL/auth/PaymentTransactionRepository';
 // import { TransactionManager } from '../../Repository/SQL/Abstractions/TransactionManager';
 // import { BaseService } from '../base/BaseService';
 // import { Console } from '../../Utils/Console';
 // import Stripe from 'stripe';
-// import { PaymentTransaction, PaymentTransactionStatus, PaymentTransactionType } from '../../../Core/Types/PaymentTransaction';
-// import { ValidationError } from '../../../Core/Application/Error/AppError';
-// import { IPaymentService } from '../../../Core/Application/Interface/Services/IPaymentService';
+// import { PaymentTransaction, PaymentTransactionStatus, PaymentTransactionType } from '@Core/Types/PaymentTransaction';
+// import { ValidationError } from '@Core/Application/Error/AppError';
+// import { IPaymentService } from '@Core/Application/Interface/Services/IPaymentService';
 
 // /**
 //  * Service for handling Stripe webhook events

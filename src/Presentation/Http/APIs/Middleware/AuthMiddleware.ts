@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
-import { TYPES } from '../Core/Types/Constants';
-import { AuthenticationError, ForbiddenError } from '../Core/Application/Error/AppError';
-import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
-import { DIContainer } from '../Core/DIContainer';
-import { IUser } from '../Core/Application/Interface/Entities/auth-and-user/IUser';
-import { UserRole } from '../Core/Application/Enums/UserRole';
-import { AuthenticationService } from '../Infrastructure/Services/AuthenticationService';
-import { IAuthenticationService } from '../Core/Application/Interface/Services/IAuthenticationService';
+import { TYPES } from '@Core/Types/Constants';
+import { AuthenticationError, ForbiddenError } from '@Core/Application/Error/AppError';
+import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
+import { DIContainer } from '@Core/DI/DIContainer';
+import { IUser } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
+import { UserRole } from '@Core/Application/Enums/UserRole';
+import { AuthenticationService } from '@Infrastructure/Services/AuthenticationService';
+import { IAuthenticationService } from '@Core/Application/Interface/Services/IAuthenticationService';
 
 @injectable()
 export class AuthMiddleware {
@@ -55,7 +55,7 @@ export class AuthMiddleware {
     try {
       const token = this.extractToken(req);
       const user = await this.validateTokenAndUser(token);
-      req.user = user;
+      res.locals.user = user;
       next();
     } catch (error: any) {
       this.handleAuthError(res, error);
@@ -70,7 +70,7 @@ export class AuthMiddleware {
       }
       const user = await this.validateTokenAndUser(token, UserRole.OPERATOR);
       console.log('user', user);
-      req.user = user;
+      res.locals.user = user;
       next();
     } catch (error: any) {
       this.handleAuthError(res, error);
@@ -84,7 +84,7 @@ export class AuthMiddleware {
       const token = this.extractTokenOptional(req);
       if (token) {
         const user = await this.validateTokenAndUser(token);
-        req.user = user;
+        res.locals.user = user;
       }
       next();
     } catch (error: any) {

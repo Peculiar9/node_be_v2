@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../Core/Types/Constants';
-import { IHttpClient } from '../../Core/Application/Interface/Infrastructure/IHttpClient';
+import { TYPES } from '@Core/Types/Constants';
+import { IHttpClient } from '@Core/Application/Interface/Infrastructure/IHttpClient';
 import { HttpClientFactory, ApiConfig } from '../Http/HttpClientFactory';
 
 @injectable()

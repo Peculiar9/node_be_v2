@@ -9,12 +9,12 @@ import { UserResponseDTO } from "../DTOs/UserDTO";
 import { IUser } from "../Interface/Entities/auth-and-user/IUser";
 import { IUserProfileService } from "../Interface/Services/IUserProfileService";
 import { IAuthenticationService } from "../Interface/Services/IAuthenticationService";
-import { AuthHelpers } from "../../../Infrastructure/Services/helpers/AuthHelpers";
+import { AuthHelpers } from "@Infrastructure/Services/helpers/AuthHelpers";
 import { ITwilioEmailService } from "../Interface/Services/ITwilioEmailService";
 import { ValidationError, ServiceError } from "../Error/AppError";
 import { UserStatus } from "../Enums/UserStatus";
 import { Console } from "console";
-import { UtilityService } from "../../../Core/Services/UtilityService";
+import { UtilityService } from "@Core/Services/UtilityService";
 
 export class AuthUseCase implements IAuthUseCase {
     constructor(

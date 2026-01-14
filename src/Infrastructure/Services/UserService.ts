@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { BaseApiService } from '../API/BaseApiService';
 import { HttpClientFactory } from '../Http/HttpClientFactory';
-import { UserResponseDTO } from '../../Core/Application/DTOs/UserDTO';
-import { IUser } from '../../Core/Application/Interface/Entities/auth-and-user/IUser';
+import { UserResponseDTO } from '@Core/Application/DTOs/UserDTO';
+import { IUser } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
 import { UserRepository } from '../Repository/SQL/users/UserRepository';
-import { UserRole } from '../../Core/Application/Enums/UserRole';
+import { UserRole } from '@Core/Application/Enums/UserRole';
 
 @injectable()
 export class UserService extends BaseApiService {

@@ -1,11 +1,11 @@
 // import { Container } from 'inversify';
-// import { AccountController } from '../../Controllers/auth/AccountController';
-// import { TYPES } from '../../Core/Types/Constants';
+// import { AccountController } from '@Presentation/Http/APIs/Controllers/auth/AccountController';
+// import { TYPES } from '@Core/Types/Constants';
 // import { mockUserData } from '../mocks/MockData';
 // import { Request, Response } from 'express';
-// import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
-// import { CreateUserDTO } from '../../Core/Application/DTOs/UserDTO';
-// import { UserRole } from '../../Core/Application/Enums/UserRole';
+// import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
+// import { CreateUserDTO } from '@Core/Application/DTOs/UserDTO';
+// import { UserRole } from '@Core/Application/Enums/UserRole';
 
 // describe('AccountController', () => {
 //     let container: Container;

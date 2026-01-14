@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable } from 'inversify';
-import { Console } from '../Infrastructure/Utils/Console';
-import { AppError, DatabaseError } from '../Core/Application/Error/AppError';
+import { Console } from '@Infrastructure/Utils/Console';
+import { AppError, DatabaseError } from '@Core/Application/Error/AppError';
 import * as Sentry from '@sentry/node';
 
 @injectable()

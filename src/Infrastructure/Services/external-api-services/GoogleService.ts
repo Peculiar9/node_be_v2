@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../../Core/Types/Constants";
+import { TYPES } from "@Core/Types/Constants";
 import { BaseApiService } from "../../API/BaseApiService";
 import { HttpClientFactory } from "../../Http/HttpClientFactory";
-import { IGoogleService, GoogleTokenResponse, GoogleUserProfile } from "../../../Core/Application/Interface/Services/IGoogleService";
-import { AuthorizationError } from "../../../Core/Application/Error/AppError";
+import { IGoogleService, GoogleTokenResponse, GoogleUserProfile } from "@Core/Application/Interface/Services/IGoogleService";
+import { AuthorizationError } from "@Core/Application/Error/AppError";
 
 @injectable()
 export class GoogleService extends BaseApiService implements IGoogleService {

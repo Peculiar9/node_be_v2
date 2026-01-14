@@ -1,5 +1,5 @@
 import { IPaymentMethod, PaymentMethodStatus, PaymentMethodType } from '../Interface/Entities/payment/IPaymentMethod';
-import { Column, CompositeIndex, ForeignKey, Index } from '../../../extensions/decorators';
+import { Column, CompositeIndex, ForeignKey, Index } from '@extensions/decorators';
 import { ValidationError } from '../Error/AppError';
 import { TableNames } from '../Enums/TableNames';
 

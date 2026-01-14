@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { AxiosHttpClient } from './AxiosHttpClient';
-import { IHttpClient } from '../../Core/Application/Interface/Infrastructure/IHttpClient';
+import { IHttpClient } from '@Core/Application/Interface/Infrastructure/IHttpClient';
 import { AxiosRequestConfig } from 'axios';
 
 export interface ApiConfig {

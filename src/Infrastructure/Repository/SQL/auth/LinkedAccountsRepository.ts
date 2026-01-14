@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { BaseRepository } from '../BaseRepository';
 import { TransactionManager } from '../Abstractions/TransactionManager';
-import { TYPES } from '../../../../Core/Types/Constants';
-import { TableNames } from '../../../../Core/Application/Enums/TableNames';
-import { ILinkedAccounts } from '../../../../Core/Application/Interface/Entities/auth-and-user/ILinkedAcounts';
-import { DatabaseError } from '../../../../Core/Application/Error/AppError';
-import { IRepository } from '../../../../Core/Application/Interface/Persistence/Repository/IRepository';
-import { AuthMethod, OAuthProvider } from '../../../../Core/Application/Interface/Entities/auth-and-user/IUser';
+import { TYPES } from '@Core/Types/Constants';
+import { TableNames } from '@Core/Application/Enums/TableNames';
+import { ILinkedAccounts } from '@Core/Application/Interface/Entities/auth-and-user/ILinkedAcounts';
+import { DatabaseError } from '@Core/Application/Error/AppError';
+import { IRepository } from '@Core/Application/Interface/Persistence/Repository/IRepository';
+import { AuthMethod, OAuthProvider } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
 import { QueryResult, QueryResultRow } from 'pg';
 
 export interface LinkedAccountsRow extends ILinkedAccounts, QueryResultRow {}

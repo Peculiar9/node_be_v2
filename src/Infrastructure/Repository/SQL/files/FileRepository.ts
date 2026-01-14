@@ -1,8 +1,8 @@
 // import { injectable } from 'inversify';
 // import { BaseRepository } from '../BaseRepository';
 // import { TransactionManager } from '../Abstractions/TransactionManager';
-// import { IFile } from '../../../../Core/Application/Interface/Entities/files/IFile';
-// import { TableNames } from '../../../../Core/Application/Enums/TableNames';
+// import { IFile } from '@Core/Application/Interface/Entities/files/IFile';
+// import { TableNames } from '@Core/Application/Enums/TableNames';
 
 // @injectable()
 // export class FileRepository extends BaseRepository<IFile> {
