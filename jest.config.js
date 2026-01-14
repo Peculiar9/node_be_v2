@@ -4,12 +4,18 @@ module.exports = {
     roots: ['<rootDir>/src'],
     testMatch: ['**/*.test.ts'],
     moduleNameMapper: {
+        '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
+        '^@Core/(.*)$': '<rootDir>/src/Core/$1',
+        '^@Infrastructure/(.*)$': '<rootDir>/src/Infrastructure/$1',
+        '^@Presentation/(.*)$': '<rootDir>/src/Presentation/$1',
+        '^@shared/(.*)$': '<rootDir>/src/shared/$1',
         '^@/(.*)$': '<rootDir>/src/$1'
     },
     collectCoverage: true,
     coverageDirectory: 'coverage',
     coveragePathIgnorePatterns: [
         '/node_modules/',
+        '/build/',
         '/dist/',
         '/tests/mocks/'
     ],
@@ -24,6 +30,7 @@ module.exports = {
     ],
     testPathIgnorePatterns: [
         '/node_modules/',
+        '/build/',
         '/dist/'
     ]
 };
