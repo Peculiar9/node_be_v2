@@ -36,3 +36,6 @@ out/
 coverage/
 .nyc_output/
 *.lcov
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
