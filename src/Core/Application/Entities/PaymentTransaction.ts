@@ -1,5 +1,5 @@
 import { PaymentTransaction as IPaymentTransaction, PaymentTransactionStatus, PaymentTransactionType } from "../../Types/PaymentTransaction";
-import { Column, CompositeIndex, ForeignKey, Index } from "../../../extensions/decorators";
+import { Column, CompositeIndex, ForeignKey, Index } from "@extensions/decorators";
 import { ValidationError } from "../Error/AppError";
 import { TableNames } from "../Enums/TableNames";
 // import { CreatePaymentTransactionDTO, UpdatePaymentTransactionDTO } from "../DTOs/PaymentTransactionDTO";

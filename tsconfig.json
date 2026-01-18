@@ -3,11 +3,11 @@
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
-    "outDir": "./dist",
+    "outDir": "./build",
     "rootDir": "./src",
     "strict": true,
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "baseUrl": "./src/",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -16,13 +16,15 @@
     "strictPropertyInitialization": false,
 
     "paths": {
+      "@extensions/*": ["extensions/*"],
+      "@Core/*": ["Core/*"],
+      "@Infrastructure/*": ["Infrastructure/*"],
+      "@Presentation/*": ["Presentation/*"],
+      "@shared/*": ["shared/*"],
       "@/*": ["*"]
     },
 
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
 
     "sourceMap": true,
     "inlineSources": true,
@@ -32,12 +34,6 @@
     // This improves issue grouping in Sentry.
     "sourceRoot": "/"
   },
-  "include": [
-    "src/**/*",
-    "extensions/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*", "extensions/**/*"],
+  "exclude": ["node_modules", "build", "dist"]
 }

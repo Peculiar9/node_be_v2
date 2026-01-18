@@ -1,13 +1,13 @@
 // import { injectable, inject } from 'inversify';
 // import Stripe from 'stripe';
-// import { TYPES } from '../../../Core/Types/Constants';
-// import { IPaymentService, PaymentMethod, CreatePaymentIntentParams, CapturePaymentParams, RefundParams } from '../../../Core/Application/Interface/Services/IPaymentService';
-// import { PaymentTransaction, PaymentTransactionStatus, PaymentTransactionType } from '../../../Core/Types/PaymentTransaction';
-// import { ITransactionManager } from '../../../Core/Application/Interface/Database/ITransactionManager';
+// import { TYPES } from '@Core/Types/Constants';
+// import { IPaymentService, PaymentMethod, CreatePaymentIntentParams, CapturePaymentParams, RefundParams } from '@Core/Application/Interface/Services/IPaymentService';
+// import { PaymentTransaction, PaymentTransactionStatus, PaymentTransactionType } from '@Core/Types/PaymentTransaction';
+// import { ITransactionManager } from '@Core/Application/Interface/Database/ITransactionManager';
 // import { UserRepository } from '../../Repository/SQL/users/UserRepository';
 // import { PaymentTransactionRepository } from '../../Repository/SQL/auth/PaymentTransactionRepository';
-// import { UtilityService } from '../../../Core/Services/UtilityService';
-// import { AuthorizationError, ValidationError } from '../../../Core/Application/Error/AppError';
+// import { UtilityService } from '@Core/Services/UtilityService';
+// import { AuthorizationError, ValidationError } from '@Core/Application/Error/AppError';
 // import { BaseService } from '../base/BaseService';
 // import { TransactionManager } from '../../Repository/SQL/Abstractions/TransactionManager';
 

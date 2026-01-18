@@ -1,14 +1,14 @@
-import { APP_NAME, TYPES } from "../../Core/Types/Constants";
+import { APP_NAME, TYPES } from "@Core/Types/Constants";
 import crypto from 'crypto';
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
-import { IEmailService } from "../../Core/Application/Interface/Services/IEmailService";
-import { IAWSHelper } from "../../Core/Application/Interface/Services/IAWSHelper";
+import { IEmailService } from "@Core/Application/Interface/Services/IEmailService";
+import { IAWSHelper } from "@Core/Application/Interface/Services/IAWSHelper";
 import { inject, injectable } from "inversify";
-import { EmailOTPDTO, EmailVerificationResponse } from "../../Core/Application/DTOs/EmailDTO";
-import { VerificationType } from "../../Core/Application/Interface/Entities/auth-and-user/IVerification";
+import { EmailOTPDTO, EmailVerificationResponse } from "@Core/Application/DTOs/EmailDTO";
+import { VerificationType } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
 import { VerificationRepository } from "../Repository/SQL/auth/VerificationRepository";
-import { UtilityService } from "../../Core/Services/UtilityService";
-import { ValidationError } from "../../Core/Application/Error/AppError";
+import { UtilityService } from "@Core/Services/UtilityService";
+import { ValidationError } from "@Core/Application/Error/AppError";
 
 @injectable()
 export class EmailService implements IEmailService {

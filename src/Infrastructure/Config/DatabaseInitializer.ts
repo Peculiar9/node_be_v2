@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../Core/Types/Constants';
-import { TableNames } from '../../Core/Application/Enums/TableNames';
+import { TYPES } from '@Core/Types/Constants';
+import { TableNames } from '@Core/Application/Enums/TableNames';
 import { TransactionManager } from '../Repository/SQL/Abstractions/TransactionManager';
-import { User } from '../../Core/Application/Entities/User';
-import { getEntityMetadata, getIndexMetadata } from '../../extensions/decorators';
-import { DatabaseError } from '../../Core/Application/Error/AppError';
+import { User } from '@Core/Application/Entities/User';
+import { getEntityMetadata, getIndexMetadata } from '@extensions/decorators';
+import { DatabaseError } from '@Core/Application/Error/AppError';
 import { Console } from '../Utils/Console';
-import { FileManager } from '../../Core/Application/Entities/FileManager';
-import { UserKYC } from '../../Core/Application/Entities/UserKYC';
+import { FileManager } from '@Core/Application/Entities/FileManager';
+import { UserKYC } from '@Core/Application/Entities/UserKYC';
 
 @injectable()
 export class DatabaseInitializer {

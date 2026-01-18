@@ -1,18 +1,18 @@
 // import { TransactionManager } from "../../Repository/SQL/Abstractions/TransactionManager";
-// import { DatabaseIsolationLevel } from "../../../Core/Application/Enums/DatabaseIsolationLevel";
+// import { DatabaseIsolationLevel } from "@Core/Application/Enums/DatabaseIsolationLevel";
 // import { Console, LogLevel } from "../../Utils/Console";
 // import { AuthServiceHelper } from "./AuthServiceHelper";
-// import { IUser, VerificationStatus } from "../../../Core/Application/Interface/Entities/auth-and-user/IUser";
-// import { UserResponseDTO } from "../../../Core/Application/DTOs/UserDTO";
-// import { UserRole } from "../../../Core/Application/Enums/UserRole";
+// import { IUser, VerificationStatus } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+// import { UserResponseDTO } from "@Core/Application/DTOs/UserDTO";
+// import { UserRole } from "@Core/Application/Enums/UserRole";
 // import * as jwt from "jsonwebtoken";
-// import { UtilityService } from "../../../Core/Services/UtilityService";
-// import { AuthenticationError } from "../../../Core/Application/Error/AppError";
-// import { ResponseMessage } from "../../../Core/Application/Response/ResponseFormat";
-// import CryptoService from "../../../Core/Services/CryptoService";
-// import { IVerification, VerificationType } from "../../../Core/Application/Interface/Entities/auth-and-user/IVerification";
+// import { UtilityService } from "@Core/Services/UtilityService";
+// import { AuthenticationError } from "@Core/Application/Error/AppError";
+// import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
+// import CryptoService from "@Core/Services/CryptoService";
+// import { IVerification, VerificationType } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
 // import { inject } from "inversify";
-// import { TYPES } from "../../../Core/Types/Constants";
+// import { TYPES } from "@Core/Types/Constants";
 // import { VerificationRepository } from "../../Repository/SQL/auth/VerificationRepository";
 
 // /**

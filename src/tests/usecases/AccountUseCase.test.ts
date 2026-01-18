@@ -1,10 +1,10 @@
 // import { Container } from 'inversify';
-// import { AccountUseCase } from '../../Core/Application/UseCases/AccountUseCase';
-// import { TYPES } from '../../Core/Types/Constants';
+// import { AccountUseCase } from '@Core/Application/UseCases/AccountUseCase';
+// import { TYPES } from '@Core/Types/Constants';
 // import { TestUtils } from '../utils/TestUtils';
 // import { mockUserData } from '../mocks/MockData';
-// import { ValidationError } from '../../Core/Application/Error/AppError';
-// import { ResponseMessage } from '../../Core/Application/Response/ResponseFormat';
+// import { ValidationError } from '@Core/Application/Error/AppError';
+// import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
 
 // describe('AccountUseCase', () => {
 //     let container: Container;

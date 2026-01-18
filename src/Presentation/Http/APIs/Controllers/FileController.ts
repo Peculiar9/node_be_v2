@@ -1,15 +1,15 @@
-import { BASE_PATH } from "../Core/Types/Constants";
+import { BASE_PATH } from "@Core/Types/Constants";
 import { controller, httpPost, request, response } from "inversify-express-utils";
 import { BaseController } from "./BaseController";
-import { ResponseMessage } from "../Core/Application/Response/ResponseFormat";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { TYPES } from "../Core/Types/Constants";
+import { TYPES } from "@Core/Types/Constants";
 import AuthMiddleware from "../Middleware/AuthMiddleware";
 import { uploadSingle } from "../Middleware/MulterMiddleware";
-import { ValidationError } from "../Core/Application/Error/AppError";
-import { IUser } from "../Core/Application/Interface/Entities/auth-and-user/IUser";
-import { IFileUseCase } from "../Core/Application/Interface/UseCases/IFileUseCase";
+import { ValidationError } from "@Core/Application/Error/AppError";
+import { IUser } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+import { IFileUseCase } from "@Core/Application/Interface/UseCases/IFileUseCase";
 
 @controller(`/${BASE_PATH}/files`)
 export class FileController extends BaseController {
@@ -26,8 +26,8 @@ export class FileController extends BaseController {
     @httpPost("/upload", AuthMiddleware.authenticate(), uploadSingle('file'))
     async uploadFile(@request() req: Request, @response() res: Response) {
         try {
-            const userId = req.user?._id;
-            const user = req.user as IUser;
+            const user = res.locals.user as IUser;
+            const userId = user?._id;
             
             if (!userId) {
                 return this.error(res, 'User authentication required', 401);

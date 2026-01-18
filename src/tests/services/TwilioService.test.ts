@@ -1,8 +1,8 @@
 // import 'reflect-metadata';
 // import { Container } from 'inversify';
-// import { TYPES } from '../../Core/Types/Constants';
-// import { TwilioService } from '../../Infrastructure/Services/TwilioService';
-// import { ITwilioService, TwilioVerificationOptions } from '../../Core/Application/Interface/Services/ITwilioService';
+// import { TYPES } from '@Core/Types/Constants';
+// import { TwilioService } from '@Infrastructure/Services/TwilioService';
+// import { ITwilioService, TwilioVerificationOptions } from '@Core/Application/Interface/Services/ITwilioService';
 
 // // Mock Twilio client
 // jest.mock('twilio', () => {

@@ -1,9 +1,9 @@
 import { controller, httpGet, httpPost, requestBody, response, request } from 'inversify-express-utils';
 import { Request, Response } from 'express';
 import { inject } from 'inversify';
-import { TYPES, BASE_PATH } from '../Core/Types/Constants';
+import { TYPES, BASE_PATH } from '@Core/Types/Constants';
 import { BaseController } from './BaseController';
-import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
+import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
 import { AuthMiddleware } from '../Middleware/AuthMiddleware';
 import { uploadSingle } from '../Middleware/MulterMiddleware';
 

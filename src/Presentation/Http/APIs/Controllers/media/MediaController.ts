@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { controller, httpPost, httpDelete, httpGet } from 'inversify-express-utils';
 import { BaseController } from '../BaseController';
-import { TYPES } from '../../Core/Types/Constants';
-import { IMediaService, ImageTransformation } from '../../Core/Application/Interface/Services/IMediaService';
+import { TYPES } from '@Core/Types/Constants';
+import { IMediaService, ImageTransformation } from '@Core/Application/Interface/Services/IMediaService';
 import { AuthMiddleware } from '../../Middleware/AuthMiddleware';
 import { uploadSingle, uploadMultiple, FieldName } from '../../Middleware/MulterMiddleware';
 

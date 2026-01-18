@@ -1,4 +1,4 @@
-// import { IRepository } from '../../../Core/Application/Interface/Persistence/Repository/IRepository';
+// import { IRepository } from '@Core/Application/Interface/Persistence/Repository/IRepository';
 
 // export abstract class BaseRepository<T> implements IRepository<T> {
 //     abstract searchKeyword(keyword: string): Promise<T[] | null | undefined>;

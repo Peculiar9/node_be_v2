@@ -1,8 +1,8 @@
 import { controller, httpGet } from "inversify-express-utils";
-import { UtilityService } from "../Core/Services/UtilityService";
-import { API_DOC_URL, API_PATH, APP_NAME, APP_VERSION } from "../Core/Types/Constants";
+import { UtilityService } from "@Core/Services/UtilityService";
+import { API_DOC_URL, API_PATH, APP_NAME, APP_VERSION } from "@Core/Types/Constants";
 import { BaseController } from "./BaseController";
-import { ResponseMessage } from "../Core/Application/Response/ResponseFormat";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
 
 @controller(``)
 export class InitController extends BaseController{

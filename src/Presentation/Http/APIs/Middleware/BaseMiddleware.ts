@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { ValidationError } from '../Core/Application/Error/AppError';
-import { ResponseMessage } from '../Core/Application/Response/ResponseFormat';
+import { ValidationError } from '@Core/Application/Error/AppError';
+import { ResponseMessage } from '@Core/Application/Response/ResponseFormat';
 import { injectable } from 'inversify';
 
 @injectable()

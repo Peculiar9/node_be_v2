@@ -2,16 +2,16 @@ import { VerificationRepository } from "../../Repository/SQL/auth/VerificationRe
 import { UserRepository } from "../../Repository/SQL/users/UserRepository";
 import { BaseAuthHelper } from "./BaseAuthHelper";
 import { inject, injectable } from 'inversify';
-import { TYPES } from "../../../Core/Types/Constants";
-import { IVerification, VerificationType } from "../../../Core/Application/Interface/Entities/auth-and-user/IVerification";
-import { IUser } from "../../../Core/Application/Interface/Entities/auth-and-user/IUser";
-import { ConflictError, NotFoundError, ValidationError } from "../../../Core/Application/Error/AppError"; // Assuming BadRequestError and NotFoundError exist
-import { ResponseMessage } from "../../../Core/Application/Response/ResponseFormat"; // Kept as it was in original, though not used in this helper
-import { UtilityService } from "../../../Core/Services/UtilityService";
-import { UserRole } from "../../../Core/Application/Enums/UserRole";
-import { AuthMethod } from "../../../Core/Application/Interface/Entities/auth-and-user/IUser"; // Added: Assuming path
-import { UserStatus } from "../../../Core/Application/Enums/UserStatus";   // Added: Assuming path
-import { VerificationStatus } from "../../../Core/Application/Interface/Entities/auth-and-user/IUser"; // Added: Assuming path
+import { TYPES } from "@Core/Types/Constants";
+import { IVerification, VerificationType } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
+import { IUser } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+import { ConflictError, NotFoundError, ValidationError } from "@Core/Application/Error/AppError"; // Assuming BadRequestError and NotFoundError exist
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat"; // Kept as it was in original, though not used in this helper
+import { UtilityService } from "@Core/Services/UtilityService";
+import { UserRole } from "@Core/Application/Enums/UserRole";
+import { AuthMethod } from "@Core/Application/Interface/Entities/auth-and-user/IUser"; // Added: Assuming path
+import { UserStatus } from "@Core/Application/Enums/UserStatus";   // Added: Assuming path
+import { VerificationStatus } from "@Core/Application/Interface/Entities/auth-and-user/IUser"; // Added: Assuming path
 import * as jwt from 'jsonwebtoken';
 
 @injectable()

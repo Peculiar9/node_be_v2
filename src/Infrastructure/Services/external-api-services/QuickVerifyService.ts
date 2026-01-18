@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { TYPES } from '../../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { BaseApiService } from '../../API/BaseApiService';
 import { HttpClientFactory } from '../../Http/HttpClientFactory';
 import { 
@@ -7,8 +7,8 @@ import {
     NINVerificationResult, 
     TINVerificationResult,
     DemographicData 
-} from '../../../Core/Application/Interface/Services/IQuickVerifyService';
-import { ServiceError } from '../../../Core/Application/Error/AppError';
+} from '@Core/Application/Interface/Services/IQuickVerifyService';
+import { ServiceError } from '@Core/Application/Error/AppError';
 
 @injectable()
 export class QuickVerifyService extends BaseApiService implements IQuickVerifyService {

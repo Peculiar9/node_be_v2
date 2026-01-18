@@ -1,15 +1,15 @@
 import { inject, injectable } from "inversify";
-import { UploadPurpose } from "../../Core/Application/Interface/Entities/file-manager/IFileManager";
-import { CreateFileManagerDTO } from "../../Core/Application/DTOs/FileManagerDTO";
+import { UploadPurpose } from "@Core/Application/Interface/Entities/file-manager/IFileManager";
+import { CreateFileManagerDTO } from "@Core/Application/DTOs/FileManagerDTO";
 import { TransactionManager } from "../Repository/SQL/Abstractions/TransactionManager";
-import { DatabaseIsolationLevel } from "../../Core/Application/Enums/DatabaseIsolationLevel";
-import { UtilityService } from "../../Core/Services/UtilityService";
+import { DatabaseIsolationLevel } from "@Core/Application/Enums/DatabaseIsolationLevel";
+import { UtilityService } from "@Core/Services/UtilityService";
 import { Console, LogLevel } from "../Utils/Console";
-import { TYPES } from "../../Core/Types/Constants";
-import { FileManager } from "../../Core/Application/Entities/FileManager";
+import { TYPES } from "@Core/Types/Constants";
+import { FileManager } from "@Core/Application/Entities/FileManager";
 import { FileManagerRepository } from "../Repository/SQL/files/FileManagerRepository";
 import { AWSHelper } from "../Services/external-api-services/AWSHelper";
-import { IFileService } from "../../Core/Application/Interface/Services/IFileService";
+import { IFileService } from "@Core/Application/Interface/Services/IFileService";
 import { Readable } from "stream";
 
 @injectable()

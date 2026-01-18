@@ -1,15 +1,15 @@
 import { injectable, inject } from "inversify";
-import { TYPES } from "../../../Core/Types/Constants";
-import { IUser, VerificationStatus } from "../../../Core/Application/Interface/Entities/auth-and-user/IUser";
-import { UserResponseDTO } from "../../../Core/Application/DTOs/UserDTO";
-import { UserRole } from "../../../Core/Application/Enums/UserRole";
+import { TYPES } from "@Core/Types/Constants";
+import { IUser, VerificationStatus } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
+import { UserResponseDTO } from "@Core/Application/DTOs/UserDTO";
+import { UserRole } from "@Core/Application/Enums/UserRole";
 import { VerificationRepository } from "../../Repository/SQL/auth/VerificationRepository";
-import { IVerification, VerificationType } from "../../../Core/Application/Interface/Entities/auth-and-user/IVerification";
-import { UtilityService } from "../../../Core/Services/UtilityService";
-import { CryptoService } from "../../../Core/Services/CryptoService";
-import { ValidationError, NotFoundError, ConflictError } from "../../../Core/Application/Error/AppError";
+import { IVerification, VerificationType } from "@Core/Application/Interface/Entities/auth-and-user/IVerification";
+import { UtilityService } from "@Core/Services/UtilityService";
+import { CryptoService } from "@Core/Services/CryptoService";
+import { ValidationError, NotFoundError, ConflictError } from "@Core/Application/Error/AppError";
 import { UserRepository } from "../../Repository/SQL/users/UserRepository";
-import { IEmailVerificationResponse, IPhoneVerificationResponse } from "../../../Core/Application/DTOs/AuthDTO";
+import { IEmailVerificationResponse, IPhoneVerificationResponse } from "@Core/Application/DTOs/AuthDTO";
 
 /**
  * Helper class for authentication-related operations

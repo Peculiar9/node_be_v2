@@ -1,12 +1,12 @@
-import { IRepository } from "../../../Core/Application/Interface/Persistence/Repository/IRepository";
+import { IRepository } from "@Core/Application/Interface/Persistence/Repository/IRepository";
 import { TransactionManager } from "./Abstractions/TransactionManager";
 import { QueryResult } from 'pg';
-import { DatabaseError, InternalServerError } from "../../../Core/Application/Error/AppError";
-import { TableNames } from "../../../Core/Application/Enums/TableNames";
-import { getEntityMetadata } from "../../../extensions/decorators";
-import { UtilityService } from "../../../Core/Services/UtilityService";
+import { DatabaseError, InternalServerError } from "@Core/Application/Error/AppError";
+import { TableNames } from "@Core/Application/Enums/TableNames";
+import { getEntityMetadata } from "@extensions/decorators";
+import { UtilityService } from "@Core/Services/UtilityService";
 import { Console, LogLevel } from "../../Utils/Console";
-import { DatabaseConnectionError, DatabaseConstraintError, DatabaseQueryError } from "../../../Core/Application/Error/DatabaseErrors";
+import { DatabaseConnectionError, DatabaseConstraintError, DatabaseQueryError } from "@Core/Application/Error/DatabaseErrors";
 
 
 

@@ -3,21 +3,21 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import { DatabaseService } from './Infrastructure/Database/DatabaseService';
+import { DatabaseService } from '@Infrastructure/Database/DatabaseService';
 import { getRouteInfo } from 'inversify-express-utils';
 
-import './Controllers/InitController';
-import './Controllers/auth/AccountController';
-import './Controllers/auth/AuthController';
-import './Controllers/media/MediaController';
+import '@Presentation/Http/APIs/Controllers/InitController';
+import '@Presentation/Http/APIs/Controllers/auth/AccountController';
+import '@Presentation/Http/APIs/Controllers/auth/AuthController';
+import '@Presentation/Http/APIs/Controllers/media/MediaController';
 
 
-import { DIContainer } from './Core/DIContainer';
+import { DIContainer } from '@Core/DI/DIContainer';
 
 import express, { Response, Request, NextFunction } from 'express';
 import path from 'path';
-import { Console } from './Infrastructure/Utils/Console';
-import { LoggingConfig } from './Infrastructure/Config/LoggingConfig';
+import { Console } from '@Infrastructure/Utils/Console';
+import { LoggingConfig } from '@Infrastructure/Config/LoggingConfig';
 
 class App {
     public app: express.Application;

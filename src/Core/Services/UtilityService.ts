@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import CryptoService from '../Services/CryptoService';
-import { EnvironmentConfig } from '../../Infrastructure/Config/EnvironmentConfig';
+import { EnvironmentConfig } from '@Infrastructure/Config/EnvironmentConfig';
 
 export class UtilityService {
     private static readonly OTP_LENGTH = 6;

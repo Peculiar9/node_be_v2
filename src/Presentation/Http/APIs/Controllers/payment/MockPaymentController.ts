@@ -1,9 +1,9 @@
 // import { Request, Response } from 'express';
 // import { controller, httpGet, httpPost, httpDelete, httpPut } from 'inversify-express-utils';
-// import { API_PATH } from '../../Core/Types/Constants';
-// import { PaymentMethod } from '../../Core/Application/Interface/Services/IPaymentService';
+// import { API_PATH } from '@Core/Types/Constants';
+// import { PaymentMethod } from '@Core/Application/Interface/Services/IPaymentService';
 // import { validationMiddleware } from '../../Middleware/ValidationMiddleware';
-// import { AddPaymentMethodDTO, SetDefaultPaymentMethodDTO } from '../../Core/Application/DTOs/PaymentDTO';
+// import { AddPaymentMethodDTO, SetDefaultPaymentMethodDTO } from '@Core/Application/DTOs/PaymentDTO';
 // import { AuthMiddleware } from '../../Middleware/AuthMiddleware';
 // import { BaseController } from '../BaseController';
 
@@ -28,7 +28,7 @@
 //     @httpPost('/setup-intent', AuthMiddleware.authenticate())
 //     async createSetupIntent(req: Request, res: Response) {
 //         try {
-//             const userId = req.user._id as string;
+//             const userId = res.locals.user._id as string;
 //             console.info(`Creating mock setup intent for user ${userId}`);
             
 //             // Generate a fake client secret
@@ -53,7 +53,7 @@
 //     async addPaymentMethod(req: Request, res: Response) {
 //         try {
 //             const { paymentMethodId, setAsDefault } = req.body;
-//             const userId = req.user._id as string;
+//             const userId = res.locals.user._id as string;
             
 //             console.info(`Adding mock payment method ${paymentMethodId} for user ${userId}`);
             
@@ -102,7 +102,7 @@
 //     @httpGet('/methods', AuthMiddleware.authenticate())
 //     async getPaymentMethods(req: Request, res: Response) {
 //         try {
-//             const userId = req.user._id as string;
+//             const userId = res.locals.user._id as string;
 //             console.info(`Getting mock payment methods for user ${userId}`);
             
 //             // Return the stored payment methods or an empty array
@@ -125,7 +125,7 @@
 //     async setDefaultPaymentMethod(req: Request, res: Response) {
 //         try {
 //             const { paymentMethodId } = req.body;
-//             const userId = req.user._id as string;
+//             const userId = res.locals.user._id as string;
             
 //             console.info(`Setting mock payment method ${paymentMethodId} as default for user ${userId}`);
             
@@ -165,7 +165,7 @@
 //     async removePaymentMethod(req: Request, res: Response) {
 //         try {
 //             const { paymentMethodId } = req.params;
-//             const userId = req.user._id as string;
+//             const userId = res.locals.user._id as string;
             
 //             console.info(`Removing mock payment method ${paymentMethodId} for user ${userId}`);
             

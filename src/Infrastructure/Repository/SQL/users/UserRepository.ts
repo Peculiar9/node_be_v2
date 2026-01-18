@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { BaseRepository } from '../BaseRepository';
 import { TransactionManager } from '../Abstractions/TransactionManager';
-import { IUser } from '../../../../Core/Application/Interface/Entities/auth-and-user/IUser';
-import { TableNames } from '../../../../Core/Application/Enums/TableNames';
-import { TYPES } from '../../../../Core/Types/Constants';
-import { DatabaseError } from '../../../../Core/Application/Error/AppError';
+import { IUser } from '@Core/Application/Interface/Entities/auth-and-user/IUser';
+import { TableNames } from '@Core/Application/Enums/TableNames';
+import { TYPES } from '@Core/Types/Constants';
+import { DatabaseError } from '@Core/Application/Error/AppError';
 
 @injectable()
 export class UserRepository extends BaseRepository<IUser> {

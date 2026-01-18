@@ -1,12 +1,12 @@
 import { controller, httpPost, request, response } from 'inversify-express-utils';
 import { Request, Response } from 'express';
 import { inject } from 'inversify';
-import { TYPES } from '../../Core/Types/Constants';
-import { API_PATH } from '../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
+import { API_PATH } from '@Core/Types/Constants';
 import { BaseController } from '../BaseController';
 import { CallbackMiddleware } from '../../Middleware/CallbackMiddleware';
-import { IStripeWebhookService } from '../../Core/Application/Interface/Services/IStripeWebhookService';
-import { Console } from '../../Infrastructure/Utils/Console';
+import { IStripeWebhookService } from '@Core/Application/Interface/Services/IStripeWebhookService';
+import { Console } from '@Infrastructure/Utils/Console';
 import Stripe from 'stripe';
 
 /**

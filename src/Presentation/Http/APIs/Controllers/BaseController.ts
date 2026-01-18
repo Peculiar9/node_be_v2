@@ -1,7 +1,7 @@
 import { Response, Request } from 'express';
 import { injectable } from 'inversify';
 import { BaseMiddleware } from '../Middleware/BaseMiddleware';
-import { AppError } from '../Core/Application/Error/AppError';
+import { AppError } from '@Core/Application/Error/AppError';
 
 @injectable()
 export class BaseController extends BaseMiddleware {

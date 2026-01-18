@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
-import { ITokenService } from "../../Core/Application/Interface/Services/ITokenService";
-import { IUser } from "../../Core/Application/Interface/Entities/auth-and-user/IUser";
+import { ITokenService } from "@Core/Application/Interface/Services/ITokenService";
+import { IUser } from "@Core/Application/Interface/Entities/auth-and-user/IUser";
 import * as jwt from "jsonwebtoken";
-import { UtilityService } from "../../Core/Services/UtilityService";
-import { AuthenticationError } from "../../Core/Application/Error/AppError";
-import { ResponseMessage } from "../../Core/Application/Response/ResponseFormat";
+import { UtilityService } from "@Core/Services/UtilityService";
+import { AuthenticationError } from "@Core/Application/Error/AppError";
+import { ResponseMessage } from "@Core/Application/Response/ResponseFormat";
 import * as bcrypt from "bcryptjs";
 import { Console, LogLevel } from "../Utils/Console";
 

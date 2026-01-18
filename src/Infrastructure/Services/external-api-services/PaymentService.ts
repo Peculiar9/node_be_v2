@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { TYPES } from '../../../Core/Types/Constants';
+import { TYPES } from '@Core/Types/Constants';
 import { BaseApiService } from '../../API/BaseApiService';
 import { HttpClientFactory } from '../../Http/HttpClientFactory';
 

@@ -1,5 +1,5 @@
-import { UserRole } from '../../Core/Application/Enums/UserRole';
-import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../../Core/Application/DTOs/UserDTO';
+import { UserRole } from '@Core/Application/Enums/UserRole';
+import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '@Core/Application/DTOs/UserDTO';
 
 export const mockUserData = {
     createUserDTO: {
