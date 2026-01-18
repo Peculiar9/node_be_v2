@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify';
 import { APP_NAME, TYPES } from '@Core/Types/Constants';
-import { 
-    ITwilioEmailService, 
-    EmailVerificationResult, 
-    SendEmailOptions 
+import {
+    ITwilioEmailService,
+    EmailVerificationResult,
+    SendEmailOptions
 } from '@Core/Application/Interface/Services/ITwilioEmailService';
 import { ValidationError, ServiceError } from '@Core/Application/Error/AppError';
 import CryptoService from '@Core/Services/CryptoService';
@@ -22,28 +22,38 @@ export class TwilioEmailService implements ITwilioEmailService {
 
     constructor() {
         this.apiKey = process.env.SENDGRID_API_KEY || '';
-        this.fromEmail = `noreply@${APP_NAME}.com`; // Fixed: Use correct from email
-        
-        if (!this.apiKey) {
-            throw new Error('SENDGRID_API_KEY environment variable is required');
+        this.fromEmail = `noreply@${APP_NAME}.com`;
+
+        if (this.apiKey) {
+            sgMail.setApiKey(this.apiKey);
+            console.info('TwilioEmailService initialized with SendGrid', {
+                fromEmail: this.fromEmail
+            });
+        } else {
+            console.warn('TwilioEmailService initialized without SendGrid API key. Email sending will be disabled.');
         }
-        
-        sgMail.setApiKey(this.apiKey);
-        
-        console.info('TwilioEmailService initialized with SendGrid', {
-            fromEmail: this.fromEmail
-        });
     }
 
     /**
      * Send email verification using Twilio SendGrid Dynamic Template
      */
     async sendEmailVerification(
-        email: string, 
+        email: string,
         firstName: string
     ): Promise<EmailVerificationResult> {
         try {
             console.info(`TwilioEmailService::sendEmailVerification -> Starting email verification for: ${email}`);
+
+            if (!this.apiKey) {
+                console.warn(`TwilioEmailService::sendEmailVerification -> Skipped: No SendGrid API key configured`);
+                return {
+                    success: false,
+                    messageId: '',
+                    verificationToken: '',
+                    expiresAt: new Date(),
+                    error: 'Email service not configured (missing SENDGRID_API_KEY)'
+                };
+            }
 
             if (!email || !firstName) {
                 throw new ValidationError('Email and first name are required');
@@ -61,7 +71,7 @@ export class TwilioEmailService implements ITwilioEmailService {
 
             // Generate 6-digit verification code
             const verificationCode = verificationToken.substring(0, 6).toUpperCase();
-            
+
             // Create verification URL
             const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`;
 
@@ -113,9 +123,9 @@ export class TwilioEmailService implements ITwilioEmailService {
             });
 
             const response = await sgMail.send(msg);
-            
+
             const messageId = response[0].headers['x-message-id'] || 'unknown';
-            
+
             console.info(`TwilioEmailService::sendEmailVerification -> Email sent successfully:`, {
                 email: email,
                 messageId: messageId,
@@ -146,14 +156,14 @@ export class TwilioEmailService implements ITwilioEmailService {
                 templateId: process.env.SENDGRID_TEMPLATE_ID,
                 timestamp: new Date().toISOString()
             });
-            
+
             // Extract more specific error message from SendGrid response
             let errorMessage = error.message;
             if (error.response?.body?.errors && Array.isArray(error.response.body.errors)) {
                 const sendGridErrors = error.response.body.errors.map((err: any) => err.message || err).join(', ');
                 errorMessage = `SendGrid Error: ${sendGridErrors}`;
             }
-            
+
             return {
                 success: false,
                 messageId: '',
@@ -189,7 +199,7 @@ export class TwilioEmailService implements ITwilioEmailService {
 
             // Get stored token
             const storedData = this.verificationTokens.get(email);
-            
+
             console.info(`TwilioEmailService::verifyEmailToken -> Token lookup result:`, {
                 email: email,
                 tokenFound: !!storedData,
@@ -197,7 +207,7 @@ export class TwilioEmailService implements ITwilioEmailService {
                 expiresAt: storedData?.expiresAt?.toISOString(),
                 currentTime: new Date().toISOString()
             });
-            
+
             if (!storedData) {
                 console.warn(`TwilioEmailService::verifyEmailToken -> No token found for email: ${email}`);
                 return {
@@ -278,6 +288,14 @@ export class TwilioEmailService implements ITwilioEmailService {
         try {
             console.info(`Sending email to ${options.to}`);
 
+            if (!this.apiKey) {
+                console.warn(`TwilioEmailService::sendEmail -> Skipped: No SendGrid API key configured`);
+                return {
+                    success: false,
+                    error: 'Email service not configured (missing SENDGRID_API_KEY)'
+                };
+            }
+
             const msg: any = {
                 to: options.to,
                 from: {
@@ -298,7 +316,7 @@ export class TwilioEmailService implements ITwilioEmailService {
             }
 
             const response = await sgMail.send(msg);
-            
+
             console.info(`Email sent successfully to ${options.to}, MessageID: ${response[0].headers['x-message-id']}`);
 
             return {
@@ -308,7 +326,7 @@ export class TwilioEmailService implements ITwilioEmailService {
 
         } catch (error: any) {
             console.error(`Failed to send email to ${options.to}:`, error);
-            
+
             return {
                 success: false,
                 error: `Failed to send email: ${error.message}`

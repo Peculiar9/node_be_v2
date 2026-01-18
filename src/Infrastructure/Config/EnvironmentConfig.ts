@@ -26,7 +26,7 @@ export class EnvironmentConfig {
         } else {
             // For test/staging, try multiple env files in order
             const envFilesToTry = this.envFiles[nodeEnv as keyof typeof this.envFiles] || ['.env'];
-            
+
             let loaded = false;
             for (const envFile of envFilesToTry) {
                 if (this.loadEnvFile(envFile)) {
@@ -49,16 +49,16 @@ export class EnvironmentConfig {
 
     private static loadEnvFile(filename: string): boolean {
         const envPath = path.resolve(process.cwd(), filename);
-        
+
         try {
             if (fs.existsSync(envPath)) {
                 const result = dotenv.config({ path: envPath });
-                
+
                 if (result.error) {
                     console.error(`[Environment] Error loading ${filename}:`, result.error);
                     return false;
                 }
-                
+
                 // Validate required environment variables
                 this.validateRequiredVariables();
                 return true;
@@ -66,7 +66,7 @@ export class EnvironmentConfig {
         } catch (error) {
             console.error(`[Environment] Error checking/loading ${filename}:`, error);
         }
-        
+
         return false;
     }
 
@@ -79,7 +79,27 @@ export class EnvironmentConfig {
             'DB_PASSWORD',
             'JWT_ACCESS_SECRET',
             'AWS_REGION',
-            // Add other required variables
+
+            // Google
+            'GOOGLE_CLIENT_ID',
+            'GOOGLE_CLIENT_SECRET',
+            'GOOGLE_REDIRECT_URI',
+
+            // Cloudinary
+            'CLOUDINARY_CLOUD_NAME',
+            'CLOUDINARY_API_KEY',
+            'CLOUDINARY_API_SECRET',
+
+            // Twilio
+            'TWILIO_ACCOUNT_SID',
+            'TWILIO_AUTH_TOKEN',
+            'TWILIO_VERIFY_SERVICE_SID',
+            'TWILIO_PHONE_NUMBER',
+            'TWILIO_WHATSAPP_NUMBER',
+
+            // SendGrid
+            'SENDGRID_API_KEY',
+            'SENDGRID_FROM_EMAIL'
         ];
 
         const missingVariables = requiredVariables.filter(variable => !process.env[variable]);
@@ -91,11 +111,11 @@ export class EnvironmentConfig {
 
     static get(key: string, defaultValue?: string): string {
         const value = process.env[key];
-        
+
         if (value === undefined && defaultValue === undefined) {
             console.warn(`[Environment] Environment variable ${key} is not set and no default value provided`);
         }
-        
+
         return value || defaultValue || '';
     }
 
@@ -104,28 +124,28 @@ export class EnvironmentConfig {
         if (value === undefined) {
             return defaultValue;
         }
-        
+
         const numValue = parseInt(value, 10);
         if (isNaN(numValue)) {
             console.warn(`[Environment] Environment variable ${key} is not a valid number, using default:`, defaultValue);
             return defaultValue;
         }
-        
+
         return numValue;
     }
 
     static getBoolean(key: string, defaultValue: boolean): boolean {
         const value = process.env[key]?.toLowerCase();
-        
+
         if (value === undefined) {
             return defaultValue;
         }
-        
+
         if (value !== 'true' && value !== 'false') {
             console.warn(`[Environment] Environment variable ${key} is not a valid boolean, using default:`, defaultValue);
             return defaultValue;
         }
-        
+
         return value === 'true';
     }
 
