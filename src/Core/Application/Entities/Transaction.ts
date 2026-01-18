@@ -1,4 +1,4 @@
-import { Column, CompositeIndex, ForeignKey, Index } from "@extensions/decorators";
+import { Column, CompositeIndex, ForeignKey, Index } from "peculiar-orm";
 import { ValidationError } from "../Error/AppError";
 import { TableNames } from "../Enums/TableNames";
 import { ITransaction } from "../Interface/Entities/payments/IPayment";
@@ -65,7 +65,7 @@ export class Transaction implements ITransaction {
     // Payment channel (card, bank, ussd, mobile_money, etc.)
     @Column('VARCHAR(50) DEFAULT NULL')
     public payment_channel?: string;
-    
+
     @Column('TEXT NOT NULL')
     public description: string;
 

@@ -1,4 +1,4 @@
-import { Column, ForeignKey, Index } from "@extensions/decorators";
+import { Column, ForeignKey, Index } from "peculiar-orm";
 import { IFileManager } from "../Interface/Entities/file-manager/IFileManager";
 import { CreateFileManagerDTO } from "../DTOs/FileManagerDTO";
 import { Console, LogLevel } from "@Infrastructure/Utils/Console";
@@ -10,7 +10,7 @@ export class FileManager implements IFileManager {
             Object.assign(this, data);
         }
     }
-    
+
     @Column("UUID PRIMARY KEY DEFAULT gen_random_uuid()")
     _id: string;
 
@@ -19,12 +19,12 @@ export class FileManager implements IFileManager {
 
     @Column("VARCHAR(255) NOT NULL")
     upload_purpose: string;
-    
+
     @Column("VARCHAR(255) NOT NULL")
     file_type: string;
-    
-    @Index({unique: false})
-    @ForeignKey({table: TableNames.USERS, field: "_id"})
+
+    @Index({ unique: false })
+    @ForeignKey({ table: TableNames.USERS, field: "_id" })
     @Column("UUID NOT NULL")
     user_id: string;
 
@@ -33,13 +33,13 @@ export class FileManager implements IFileManager {
 
     @Column("VARCHAR(50)")
     file_extension?: string;
-    
+
     @Column("TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
     created_at: Date | string;
-    
+
     @Column("TEXT")
     fileUrl?: string;
-    
+
     @Column("TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
     updated_at?: Date | string;
 
@@ -50,16 +50,16 @@ export class FileManager implements IFileManager {
 
     static async createFromDTO(dto: CreateFileManagerDTO): Promise<FileManager> {
         try {
-            console.log("Create FileManager DTO: ", {dto});
+            console.log("Create FileManager DTO: ", { dto });
             // Extract extension from file type if not provided
             const extension = dto.file_extension || dto.file_type.split('/')[1] || 'jpg';
-            
+
             // Construct file key using the filename and extension
             const fileKey = `${dto.file_name}.${extension}`;
-            
+
             // Construct the full S3 URL
             const fileUrl = "";
-            
+
             const fileManagerData: Omit<FileManager, '_id' | 'created_at' | 'updated_at'> = {
                 file_key: fileKey,
                 upload_purpose: dto.upload_purpose,
@@ -70,7 +70,7 @@ export class FileManager implements IFileManager {
             };
 
             const fileManager = new FileManager(fileManagerData);
-            console.log("CreateFromDTO FileManager object: ", {fileManager});
+            console.log("CreateFromDTO FileManager object: ", { fileManager });
             return fileManager;
         } catch (error: any) {
             Console.write('FileManager Object creation error:', LogLevel.ERROR, {

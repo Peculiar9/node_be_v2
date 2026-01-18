@@ -42,6 +42,8 @@ import { ITwilioService } from '../Application/Interface/Services/ITwilioService
 import { TwilioService } from '@Infrastructure/Services/TwilioService';
 import { ITwilioEmailService } from '../Application/Interface/Services/ITwilioEmailService';
 import { TwilioEmailService } from '@Infrastructure/Services/TwilioEmailService';
+import { IAccountUseCase } from '@Core/Application/Interface/UseCases/IAccountUseCase';
+import { AccountUseCase } from '@Core/Application/UseCases/AccountUseCase';
 
 
 /**
@@ -110,7 +112,7 @@ export class DIContainer {
 
         // Use Cases
         container.bind<IAuthUseCase>(TYPES.AuthUseCase).to(AuthUseCase).inRequestScope();
-
+        container.bind<IAccountUseCase>(TYPES.AccountUseCase).to(AccountUseCase).inRequestScope();
         // Middleware
         container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware).inRequestScope();
 

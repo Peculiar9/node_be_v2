@@ -3,7 +3,7 @@ import { CreateUserDTO, UpdateUserDTO } from '../DTOs/UserDTO';
 import {  ValidationError } from '../Error/AppError';
 import { UtilityService } from '../../Services/UtilityService';
 import { UserRole } from '../Enums/UserRole';
-import { Column, CompositeIndex,  Index, IndexType } from '@extensions/decorators';
+import { Column, CompositeIndex,  Index, IndexType } from 'peculiar-orm';
 import { UserStatus } from '../Enums/UserStatus';
 import { UserRegistrationDTO } from '../DTOs/AuthDTOV2';
 import CryptoService from '../../Services/CryptoService';

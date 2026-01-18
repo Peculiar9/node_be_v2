@@ -1,6 +1,6 @@
 import { IUserKYC } from "../Interface/Entities/auth-and-user/IVerification";
 
-import { Column, Index, ForeignKey } from "@extensions/decorators";
+import { Column, Index, ForeignKey } from "peculiar-orm";
 import { KYCStage, KYCStatus } from "../Interface/Entities/auth-and-user/IVerification";
 
 export class UserKYC implements IUserKYC {
