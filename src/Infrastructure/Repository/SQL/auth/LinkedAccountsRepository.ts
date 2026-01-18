@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { BaseRepository } from '../BaseRepository';
-import { TransactionManager } from '../Abstractions/TransactionManager';
+import { BaseRepository, TransactionManager } from 'peculiar-orm';
 import { TYPES } from '@Core/Types/Constants';
 import { TableNames } from '@Core/Application/Enums/TableNames';
 import { ILinkedAccounts } from '@Core/Application/Interface/Entities/auth-and-user/ILinkedAcounts';

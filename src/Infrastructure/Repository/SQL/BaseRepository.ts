@@ -1,5 +1,5 @@
 import { IRepository } from "@Core/Application/Interface/Persistence/Repository/IRepository";
-import { TransactionManager } from "./Abstractions/TransactionManager";
+import { TransactionManager } from "peculiar-orm";
 import { QueryResult } from 'pg';
 import { DatabaseError, InternalServerError } from "@Core/Application/Error/AppError";
 import { TableNames } from "@Core/Application/Enums/TableNames";

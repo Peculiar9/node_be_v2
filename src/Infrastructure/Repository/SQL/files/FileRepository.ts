@@ -1,5 +1,5 @@
 // import { injectable } from 'inversify';
-// import { BaseRepository } from '../BaseRepository';
+// import { BaseRepository, TransactionManager } from 'peculiar-orm';
 // import { TransactionManager } from '../Abstractions/TransactionManager';
 // import { IFile } from '@Core/Application/Interface/Entities/files/IFile';
 // import { TableNames } from '@Core/Application/Enums/TableNames';

@@ -1,8 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@Core/Types/Constants';
 import { PaymentTransaction, PaymentTransactionStatus, PaymentTransactionType } from '@Core/Types/PaymentTransaction';
-import { BaseRepository } from '../BaseRepository';
-import { TransactionManager } from '../Abstractions/TransactionManager';
+import { BaseRepository, TransactionManager } from 'peculiar-orm';
 import { TableNames } from '@Core/Application/Enums/TableNames';
 import { Console } from '../../../Utils/Console';
 import { DatabaseError } from '@Core/Application/Error/AppError';

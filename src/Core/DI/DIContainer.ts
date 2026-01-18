@@ -1,8 +1,7 @@
 import { Container } from 'inversify';
 import { APP_NAME, TYPES } from '../Types/Constants';
 import { UserRepository } from '@Infrastructure/Repository/SQL/users/UserRepository';
-import { TransactionManager } from '@Infrastructure/Repository/SQL/Abstractions/TransactionManager';
-import { ConnectionPoolManager } from '@Infrastructure/Repository/SQL/Abstractions/ConnectionPoolManager';
+import { TransactionManager, ConnectionPoolManager } from 'peculiar-orm';
 import { AuthenticationService } from '@Infrastructure/Services/AuthenticationService';
 import { RegistrationService } from '@Infrastructure/Services/RegistrationService';
 import { UserProfileService } from '@Infrastructure/Services/UserProfileService';

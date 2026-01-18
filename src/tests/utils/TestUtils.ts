@@ -1,12 +1,12 @@
 import { Container } from 'inversify';
 import { TYPES } from '@Core/Types/Constants';
 import { Mock } from 'jest-mock';
-import { AuthMiddleware } from '../../Middleware/AuthMiddleware';
+import { AuthMiddleware } from '@Presentation/Http/APIs/Middleware/AuthMiddleware';
 
 export class TestUtils {
     static createMockContainer(): Container {
         const container = new Container();
-        
+
         // Add basic middleware mocks
         container.bind(TYPES.AuthMiddleware).toConstantValue({
             authenticate: jest.fn(),
@@ -19,7 +19,7 @@ export class TestUtils {
 
     static createSpyObj<T extends object>(baseName: string, methodNames: (keyof T)[]): jest.Mocked<T> {
         const obj: any = {};
-        
+
         for (const method of methodNames) {
             obj[method] = jest.fn().mockName(`${baseName}.${String(method)}`);
         }
@@ -35,7 +35,7 @@ export class TestUtils {
         };
     }
 
-    static mockRequest(data: { 
+    static mockRequest(data: {
         body?: any;
         params?: any;
         query?: any;
