@@ -1,5 +1,5 @@
 import { Container, injectable } from 'inversify';
-import { ConnectionPoolManager } from '../Repository/SQL/Abstractions/ConnectionPoolManager';
+import { ConnectionPoolManager } from 'peculiar-orm';
 import { DatabaseError } from '@Core/Application/Error/AppError';
 import { TYPES } from '@Core/Types/Constants';
 import { DatabaseInitializer } from '../Config/DatabaseInitializer';
