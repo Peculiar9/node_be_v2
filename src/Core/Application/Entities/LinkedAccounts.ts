@@ -1,4 +1,4 @@
-import { Column, CompositeIndex, ForeignKey, Index } from '@extensions/decorators';
+import { Column, CompositeIndex, ForeignKey, Index } from "peculiar-orm";
 import { ILinkedAccounts } from '../Interface/Entities/auth-and-user/ILinkedAcounts';
 import { AuthMethod, OAuthProvider } from '../Interface/Entities/auth-and-user/IUser';
 import { ValidationError } from '../Error/AppError';
@@ -11,8 +11,8 @@ export class LinkedAccounts implements ILinkedAccounts {
 
     @Index({ unique: false })
     @Column('UUID NOT NULL')
-    @ForeignKey({ 
-        table: `${TableNames.USERS}`, 
+    @ForeignKey({
+        table: `${TableNames.USERS}`,
         field: '_id',
         constraint: 'fk_linked_accounts_user_id'
     })

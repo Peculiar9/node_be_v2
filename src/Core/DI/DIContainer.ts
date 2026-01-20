@@ -1,8 +1,7 @@
 import { Container } from 'inversify';
 import { APP_NAME, TYPES } from '../Types/Constants';
 import { UserRepository } from '@Infrastructure/Repository/SQL/users/UserRepository';
-import { TransactionManager } from '@Infrastructure/Repository/SQL/Abstractions/TransactionManager';
-import { ConnectionPoolManager } from '@Infrastructure/Repository/SQL/Abstractions/ConnectionPoolManager';
+import { TransactionManager, ConnectionPoolManager } from 'peculiar-orm';
 import { AuthenticationService } from '@Infrastructure/Services/AuthenticationService';
 import { RegistrationService } from '@Infrastructure/Services/RegistrationService';
 import { UserProfileService } from '@Infrastructure/Services/UserProfileService';
@@ -11,6 +10,7 @@ import { AuthHelpers } from '@Infrastructure/Services/helpers/AuthHelpers';
 import { ITokenService } from '../Application/Interface/Services/ITokenService';
 import { AuthMiddleware } from '@Presentation/Http/APIs/Middleware/AuthMiddleware';
 import { getDatabaseConfig } from '@Infrastructure/Database/DatabaseConfig';
+import { EnvironmentConfig } from '@Infrastructure/Config/EnvironmentConfig';
 import { PoolOptions } from 'pg';
 import { UserService } from '@Infrastructure/Services/UserService';
 import { SMSService } from '@Infrastructure/Services/SMSService';
@@ -42,6 +42,8 @@ import { ITwilioService } from '../Application/Interface/Services/ITwilioService
 import { TwilioService } from '@Infrastructure/Services/TwilioService';
 import { ITwilioEmailService } from '../Application/Interface/Services/ITwilioEmailService';
 import { TwilioEmailService } from '@Infrastructure/Services/TwilioEmailService';
+import { IAccountUseCase } from '@Core/Application/Interface/UseCases/IAccountUseCase';
+import { AccountUseCase } from '@Core/Application/UseCases/AccountUseCase';
 
 
 /**
@@ -110,7 +112,7 @@ export class DIContainer {
 
         // Use Cases
         container.bind<IAuthUseCase>(TYPES.AuthUseCase).to(AuthUseCase).inRequestScope();
-
+        container.bind<IAccountUseCase>(TYPES.AccountUseCase).to(AccountUseCase).inRequestScope();
         // Middleware
         container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware).inRequestScope();
 
@@ -133,27 +135,27 @@ export class DIContainer {
 
         // Configuration bindings
         // Google
-        container.bind<string>(TYPES.GOOGLE_CLIENT_ID).toConstantValue(process.env.GOOGLE_CLIENT_ID || '');
-        container.bind<string>(TYPES.GOOGLE_CLIENT_SECRET).toConstantValue(process.env.GOOGLE_CLIENT_SECRET || '');
-        container.bind<string>(TYPES.GOOGLE_REDIRECT_URI).toConstantValue(process.env.GOOGLE_REDIRECT_URI || '');
+        container.bind<string>(TYPES.GOOGLE_CLIENT_ID).toConstantValue(EnvironmentConfig.get('GOOGLE_CLIENT_ID'));
+        container.bind<string>(TYPES.GOOGLE_CLIENT_SECRET).toConstantValue(EnvironmentConfig.get('GOOGLE_CLIENT_SECRET'));
+        container.bind<string>(TYPES.GOOGLE_REDIRECT_URI).toConstantValue(EnvironmentConfig.get('GOOGLE_REDIRECT_URI'));
 
         // Cloudinary
-        container.bind<string>(TYPES.CLOUDINARY_CLOUD_NAME).toConstantValue(process.env.CLOUDINARY_CLOUD_NAME || '');
-        container.bind<string>(TYPES.CLOUDINARY_API_KEY).toConstantValue(process.env.CLOUDINARY_API_KEY || '');
-        container.bind<string>(TYPES.CLOUDINARY_API_SECRET).toConstantValue(process.env.CLOUDINARY_API_SECRET || '');
+        container.bind<string>(TYPES.CLOUDINARY_CLOUD_NAME).toConstantValue(EnvironmentConfig.get('CLOUDINARY_CLOUD_NAME'));
+        container.bind<string>(TYPES.CLOUDINARY_API_KEY).toConstantValue(EnvironmentConfig.get('CLOUDINARY_API_KEY'));
+        container.bind<string>(TYPES.CLOUDINARY_API_SECRET).toConstantValue(EnvironmentConfig.get('CLOUDINARY_API_SECRET'));
         container.bind<IMediaService>(TYPES.MediaService).to(CloudinaryService).inRequestScope();
 
         // Twilio
-        container.bind<string>(TYPES.TWILIO_ACCOUNT_SID).toConstantValue(process.env.TWILIO_ACCOUNT_SID || '');
-        container.bind<string>(TYPES.TWILIO_AUTH_TOKEN).toConstantValue(process.env.TWILIO_AUTH_TOKEN || '');
-        container.bind<string>(TYPES.TWILIO_VERIFY_SERVICE_SID).toConstantValue(process.env.TWILIO_VERIFY_SERVICE_SID || '');
-        container.bind<string>(TYPES.TWILIO_PHONE_NUMBER).toConstantValue(process.env.TWILIO_PHONE_NUMBER || '');
-        container.bind<string>(TYPES.TWILIO_WHATSAPP_NUMBER).toConstantValue(process.env.TWILIO_WHATSAPP_NUMBER || '');
+        container.bind<string>(TYPES.TWILIO_ACCOUNT_SID).toConstantValue(EnvironmentConfig.get('TWILIO_ACCOUNT_SID'));
+        container.bind<string>(TYPES.TWILIO_AUTH_TOKEN).toConstantValue(EnvironmentConfig.get('TWILIO_AUTH_TOKEN'));
+        container.bind<string>(TYPES.TWILIO_VERIFY_SERVICE_SID).toConstantValue(EnvironmentConfig.get('TWILIO_VERIFY_SERVICE_SID'));
+        container.bind<string>(TYPES.TWILIO_PHONE_NUMBER).toConstantValue(EnvironmentConfig.get('TWILIO_PHONE_NUMBER'));
+        container.bind<string>(TYPES.TWILIO_WHATSAPP_NUMBER).toConstantValue(EnvironmentConfig.get('TWILIO_WHATSAPP_NUMBER'));
         container.bind<ITwilioService>(TYPES.TwilioService).to(TwilioService).inRequestScope();
 
         // SendGrid
-        container.bind<string>(TYPES.SENDGRID_API_KEY).toConstantValue(process.env.SENDGRID_API_KEY || '');
-        container.bind<string>(TYPES.SENDGRID_FROM_EMAIL).toConstantValue(process.env.SENDGRID_FROM_EMAIL || `noreply@${APP_NAME}.com`);
+        container.bind<string>(TYPES.SENDGRID_API_KEY).toConstantValue(EnvironmentConfig.get('SENDGRID_API_KEY'));
+        container.bind<string>(TYPES.SENDGRID_FROM_EMAIL).toConstantValue(EnvironmentConfig.get('SENDGRID_FROM_EMAIL', `noreply@${APP_NAME}.com`));
         container.bind<ITwilioEmailService>(TYPES.TwilioEmailService).to(TwilioEmailService).inRequestScope();
 
         console.log("All dependencies bound!!")

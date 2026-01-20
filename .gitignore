@@ -8,6 +8,7 @@ node_modules
 *.ipr
 .idea_modules/
 out/
+build/
 
 # User-specific files
 .idea/workspace.xml

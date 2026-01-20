@@ -1,7 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '@Core/Types/Constants';
-import { BaseRepository } from '../BaseRepository';
-import { TransactionManager } from '../Abstractions/TransactionManager';
+import { BaseRepository, TransactionManager } from 'peculiar-orm';
 import { IFileManager } from '@Core/Application/Interface/Entities/file-manager/IFileManager';
 import { TableNames } from '@Core/Application/Enums/TableNames';
 import { FileManager } from '@Core/Application/Entities/FileManager';

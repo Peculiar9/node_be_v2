@@ -1,5 +1,5 @@
 import { IPaymentMethod, PaymentMethodStatus, PaymentMethodType } from '../Interface/Entities/payment/IPaymentMethod';
-import { Column, CompositeIndex, ForeignKey, Index } from '@extensions/decorators';
+import { Column, CompositeIndex, ForeignKey, Index } from 'peculiar-orm';
 import { ValidationError } from '../Error/AppError';
 import { TableNames } from '../Enums/TableNames';
 
@@ -233,7 +233,7 @@ export class PaymentMethod implements IPaymentMethod {
         }
 
         // Type-specific validations
-        if ((this.type === PaymentMethodType.CREDIT_CARD || this.type === PaymentMethodType.DEBIT_CARD) && 
+        if ((this.type === PaymentMethodType.CREDIT_CARD || this.type === PaymentMethodType.DEBIT_CARD) &&
             (!this.last_four || !this.expiry_month || !this.expiry_year || !this.card_brand)) {
             throw new ValidationError('Card details are required for credit/debit card payment methods');
         }
@@ -264,7 +264,7 @@ export class PaymentMethod implements IPaymentMethod {
             if (this.expiry_month !== undefined && (this.expiry_month < 1 || this.expiry_month > 12)) {
                 throw new ValidationError('Expiry month must be between 1 and 12');
             }
-            
+
             if (this.expiry_year !== undefined) {
                 const currentYear = new Date().getFullYear();
                 if (this.expiry_year < currentYear) {
