@@ -33,22 +33,25 @@ A robust, production-ready Node.js backend starter kit built with TypeScript, fo
 
 ```bash
 src/
-├── Controllers/        # Request handlers (Express Controllers)
-├── Core/
-│   ├── Application/    # Application Business Rules
-│   │   ├── DTOs/       # Data Transfer Objects
-│   │   ├── Entities/   # Domain Entities
-│   │   ├── Enums/      # Domain Enumerations
-│   │   ├── Interface/  # Interfaces (Ports)
-│   │   └── UseCases/   # Application Flows (Interactors)
-│   ├── DIContainer.ts  # Dependency Injection Setup
-│   └── Types/          # DI Symbols & Constants
-├── Infrastructure/     # Frameworks & Drivers
-│   ├── Config/         # Environment & App Config
-│   ├── Database/       # Database Connection Logic
+├── Core/               # The "Heart" (Business Logic)
+│   ├── Application/
+│   │   ├── DTOs/
+│   │   ├── Entities/
+│   │   ├── Enums/
+│   │   ├── Interface/  # Ports (Repositories, Services)
+│   │   └── UseCases/   # Interactors
+│   ├── DI/             # Dependency Injection Setup
+│   └── Types/          # DI Symbols
+├── Infrastructure/     # Adapters & Drivers
+│   ├── Config/
+│   ├── Database/
 │   ├── Repository/     # Data Access Implementations
-│   └── Services/       # External Services (Email, SMS, Payment)
-├── Middleware/         # Express Middleware (Auth, Error Handling)
+│   └── Services/       # External Service Implementations
+├── Presentation/       # Interface Adapters
+│   └── Http/
+│       └── APIs/
+│           ├── Controllers/ # Request Handlers
+│           └── Middleware/  # Express Middleware
 └── index.ts            # Entry Point
 ```
 
