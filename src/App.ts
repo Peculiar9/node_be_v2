@@ -18,6 +18,7 @@ import express, { Response, Request, NextFunction } from 'express';
 import path from 'path';
 import { Console } from '@Infrastructure/Utils/Console';
 import { LoggingConfig } from '@Infrastructure/Config/LoggingConfig';
+import { PerformanceMiddleware } from '@Presentation/Http/APIs/Middleware/PerformanceMiddleware';
 
 class App {
     public app: express.Application;
@@ -43,6 +44,7 @@ class App {
             const server = new InversifyExpressServer(this.container);
             
             server.setConfig((app: express.Application) => {
+                app.use(PerformanceMiddleware.handle);
                 app.use(express.json());
                 app.use(bodyParser.json());
                 app.use(bodyParser.urlencoded({ extended: false }));
