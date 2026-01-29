@@ -131,7 +131,7 @@ export class DIContainer {
         container.bind<IAuthenticationService>(TYPES.AuthenticationService).to(AuthenticationService).inRequestScope();
         container.bind<IRegistrationService>(TYPES.RegistrationService).to(RegistrationService).inRequestScope();
         container.bind<IUserProfileService>(TYPES.UserProfileService).to(UserProfileService).inRequestScope();
-        container.bind<IAWSHelper>(TYPES.AWSHelper).to(AWSHelper).inRequestScope();
+        container.bind<IAWSHelper>(TYPES.AWSHelper).to(AWSHelper).inSingletonScope();
 
         // Configuration bindings
         // Google
@@ -143,7 +143,7 @@ export class DIContainer {
         container.bind<string>(TYPES.CLOUDINARY_CLOUD_NAME).toConstantValue(EnvironmentConfig.get('CLOUDINARY_CLOUD_NAME'));
         container.bind<string>(TYPES.CLOUDINARY_API_KEY).toConstantValue(EnvironmentConfig.get('CLOUDINARY_API_KEY'));
         container.bind<string>(TYPES.CLOUDINARY_API_SECRET).toConstantValue(EnvironmentConfig.get('CLOUDINARY_API_SECRET'));
-        container.bind<IMediaService>(TYPES.MediaService).to(CloudinaryService).inRequestScope();
+        container.bind<IMediaService>(TYPES.MediaService).to(CloudinaryService).inSingletonScope();
 
         // Twilio
         container.bind<string>(TYPES.TWILIO_ACCOUNT_SID).toConstantValue(EnvironmentConfig.get('TWILIO_ACCOUNT_SID'));
@@ -151,12 +151,12 @@ export class DIContainer {
         container.bind<string>(TYPES.TWILIO_VERIFY_SERVICE_SID).toConstantValue(EnvironmentConfig.get('TWILIO_VERIFY_SERVICE_SID'));
         container.bind<string>(TYPES.TWILIO_PHONE_NUMBER).toConstantValue(EnvironmentConfig.get('TWILIO_PHONE_NUMBER'));
         container.bind<string>(TYPES.TWILIO_WHATSAPP_NUMBER).toConstantValue(EnvironmentConfig.get('TWILIO_WHATSAPP_NUMBER'));
-        container.bind<ITwilioService>(TYPES.TwilioService).to(TwilioService).inRequestScope();
+        container.bind<ITwilioService>(TYPES.TwilioService).to(TwilioService).inSingletonScope();
 
         // SendGrid
         container.bind<string>(TYPES.SENDGRID_API_KEY).toConstantValue(EnvironmentConfig.get('SENDGRID_API_KEY'));
         container.bind<string>(TYPES.SENDGRID_FROM_EMAIL).toConstantValue(EnvironmentConfig.get('SENDGRID_FROM_EMAIL', `noreply@${APP_NAME}.com`));
-        container.bind<ITwilioEmailService>(TYPES.TwilioEmailService).to(TwilioEmailService).inRequestScope();
+        container.bind<ITwilioEmailService>(TYPES.TwilioEmailService).to(TwilioEmailService).inSingletonScope();
 
         console.log("All dependencies bound!!")
     }

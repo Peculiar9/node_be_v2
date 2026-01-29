@@ -1,6 +1,6 @@
 import autocannon from 'autocannon';
 
-const url = process.env.TARGET_URL || 'http://localhost:3000';
+const url = process.env.TARGET_URL || `http://localhost:${process.env.PORT}`;
 
 const instance = autocannon({
   url: url,
